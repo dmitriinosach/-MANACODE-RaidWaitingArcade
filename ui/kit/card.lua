@@ -735,7 +735,7 @@ local ART_INSET = 2
 local ART_SIDE = 0.15
 local ART_TOP = 1
 local FADE_X, FADE_Y = 0.19, 0.05
-local FADE_TEX = "Interface\\AddOns\\HTP_Arcade\\art\\card_fade.tga"
+local FADE_TEX = "Interface\\AddOns\\" .. ADDON .. "\\art\\card_fade.tga"
 local function artOf(f)
     if f.art then
         return f.art
@@ -799,7 +799,7 @@ function ns.DeckCardArt(f, icon)
     fadeEdges(f, a, x1, y1, x2, y2)
     return true
 end
-local POSTER_FRAME = "Interface\\AddOns\\HTP_Arcade\\art\\card_frame.tga"
+local POSTER_FRAME = "Interface\\AddOns\\" .. ADDON .. "\\art\\card_frame.tga"
 local POSTER_PLATE_Y = 12 / 101
 local POSTER_FONT = 10 / 101
 local POSTER_INK = { 0.20, 0.12, 0.05 }

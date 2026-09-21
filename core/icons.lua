@@ -347,14 +347,14 @@ end
 local FALLBACK = { 0.18, 0.21, 0.27 }
 function ns.Pics.Apply(tex, name, r, g, b)
     if not tex then return false end
-    tex.htpCut = nil
+    tex.arcCut = nil
     local path, cl, cr, ct, cb = ns.Pics.Cut(name)
     if type(path) == "string" and path ~= "" then
         tex:SetTexture(nil)
         tex:SetTexture(path)
         if tex:GetTexture() then
             if cl then
-                tex.htpCut = { cl, cr, ct, cb }
+                tex.arcCut = { cl, cr, ct, cb }
                 tex:SetTexCoord(cl, cr, ct, cb)
             end
             return true
@@ -384,7 +384,7 @@ local function inside(c, l, r, t, b)
     return c[1] + l * w, c[1] + r * w, c[3] + t * h, c[3] + b * h
 end
 function ns.Pics.Crop(tex, pw, ph, aw, ah)
-    local c = tex and tex.htpCut
+    local c = tex and tex.arcCut
     if c then
         pw = (pw or 0) * (c[2] - c[1])
         ph = (ph or 0) * (c[4] - c[3])

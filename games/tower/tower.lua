@@ -879,13 +879,13 @@ local WIN_OFF = { 0.16, 0.15, 0.20 }
 local WIN_ON  = { 1.00, 0.86, 0.42 }
 local EMPTY_TEX = "Interface\\Buttons\\WHITE8X8"
 local ART = {
-    LINE = "Interface\\AddOns\\HTP_Arcade\\art\\line.tga",
-    ROPE = "Interface\\AddOns\\HTP_Arcade\\art\\rope.tga",
-    HOOK = "Interface\\AddOns\\HTP_Arcade\\art\\hook.tga",
-    TRUSS_H = "Interface\\AddOns\\HTP_Arcade\\art\\truss_h.tga",
-    TRUSS_V = "Interface\\AddOns\\HTP_Arcade\\art\\truss_v.tga",
-    BLOCK = "Interface\\AddOns\\HTP_Arcade\\art\\block_%s_%s_%s%s.tga",
-    PART = "Interface\\AddOns\\HTP_Arcade\\art\\%s.tga",
+    LINE = "Interface\\AddOns\\" .. ADDON .. "\\art\\line.tga",
+    ROPE = "Interface\\AddOns\\" .. ADDON .. "\\art\\rope.tga",
+    HOOK = "Interface\\AddOns\\" .. ADDON .. "\\art\\hook.tga",
+    TRUSS_H = "Interface\\AddOns\\" .. ADDON .. "\\art\\truss_h.tga",
+    TRUSS_V = "Interface\\AddOns\\" .. ADDON .. "\\art\\truss_v.tga",
+    BLOCK = "Interface\\AddOns\\" .. ADDON .. "\\art\\block_%s_%s_%s%s.tga",
+    PART = "Interface\\AddOns\\" .. ADDON .. "\\art\\%s.tga",
     TEX_SIDE = 128, BLOCK_SIDE = 128, HOOK_SIDE = 32, FIT = sqrt(2), TILT_FALL = 6, LINE_FILL = 180 / 256,
 }
 ART.RIG = {

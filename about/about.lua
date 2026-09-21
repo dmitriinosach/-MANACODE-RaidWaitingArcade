@@ -12,16 +12,7 @@ local MIRRORS = {
     { label = "CurseForge",   icon = "INV_Misc_EngGizmos_20", url = "" },
     { label = "WoWInterface", icon = "INV_Misc_EngGizmos_20", url = "" },
 }
-local FAMILY = {
-    { folder = "howToPlay",     name = "howToPlay",
-      aboutKey = "abtHtp" },
-    { folder = "HTP_Arcade",    name = "HTP Аркада",
-      aboutKey = "abtArcade" },
-    { folder = "HTP_FailWatch", name = "HTP FailWatch",
-      aboutKey = "abtFail" },
-}
 ns.About.DATA = ABOUT
-ns.About.FAMILY = FAMILY
 ns.About.MIRRORS = MIRRORS
 function ns.About.Links()
     local out = {}
@@ -37,12 +28,6 @@ function ns.About.Links()
     for _, m in ipairs(MIRRORS) do add(m.label, m.url, m.icon) end
     return out
 end
-local function present(folder)
-    local name = GetAddOnInfo(folder)
-    if not name then return false, false end
-    return true, IsAddOnLoaded(folder) and true or false
-end
-ns.About.Present = present
 local frame
 local ROW_H = 22
 local ROW_X = 110
@@ -144,27 +129,6 @@ local function build()
             end
             shown = shown + 1
             y = copyRow(frame, m.label, m.url, y)
-        end
-    end
-    y = y + 10
-    local head = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    head:SetPoint("TOPLEFT", frame, "TOPLEFT", 16, -y)
-    head:SetText(ns.T("abtFamily"))
-    y = y + 22
-    for _, a in ipairs(FAMILY) do
-        if a.folder ~= ADDON then
-            local has = present(a.folder)
-            local fs = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            fs:SetPoint("TOPLEFT", frame, "TOPLEFT", 16, -y)
-            fs:SetText(has and ("|cff44cc44" .. a.name .. "|r — " .. ns.T("abtInstalled"))
-                            or ("|cffffd100" .. a.name .. "|r"))
-            y = y + 16
-            local sub = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-            sub:SetPoint("TOPLEFT", frame, "TOPLEFT", 26, -y)
-            sub:SetWidth(410)
-            sub:SetJustifyH("LEFT")
-            sub:SetText(ns.T(a.aboutKey))
-            y = y + sub:GetStringHeight() + 8
         end
     end
     frame:SetHeight(y + 24)

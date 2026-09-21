@@ -798,7 +798,7 @@ local function ensurePicker(canvas)
         c:SetPoint("TOPLEFT", picker, "TOPLEFT",
             x0 + col * (THUMB + THUMB_GAP), -(GRID_TOP + r * (THUMB + THUMB_GAP)))
         c.onClick = function()
-            local g, it = live(), c.htpPic
+            local g, it = live(), c.arcPic
             if g and it then g:ChoosePicture(keyOf(it.set, it.p)) end
         end
         picker.cells[i] = c
@@ -850,11 +850,11 @@ local function ensurePicker(canvas)
             local c = picker.cells[i]
             local p = list[(page - 1) * PAGE + i]
             if not p then
-                c.htpPic = nil
+                c.arcPic = nil
                 c:Hide()
             else
                 local key = keyOf(set, p)
-                c.htpPic = { set = set, p = p }
+                c.arcPic = { set = set, p = p }
                 ns.StyleCell(c, "framed")
                 c.icon:SetTexture(ns.Pics.Path(set, p.f))
                 c.icon:SetTexCoord(window(p.w, p.h, SQUEEZE[set]))

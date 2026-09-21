@@ -212,7 +212,7 @@ end
 local function ensure()
     if card then return card end
     card = ns.MakeCard{
-        name = "HTP_ArcadeRecordsOverlay",
+        name = "RaidWaitingArcadeRecordsOverlay",
         escape = true,
         dismiss = true,
         width = WIDTH,

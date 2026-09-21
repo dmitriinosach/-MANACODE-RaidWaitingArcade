@@ -12,7 +12,7 @@ local EDGE_TEX = "Interface\\Tooltips\\UI-Tooltip-Border"
 local function ensure()
     if card then return card end
     card = ns.MakeCard{
-        name = "HTP_ArcadeSlidesOverlay",
+        name = "RaidWaitingArcadeSlidesOverlay",
         escape = true,
         dismiss = true,
         width = WIDTH,

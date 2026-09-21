@@ -1,6 +1,6 @@
 local ADDON, ns = ...
 ns.Link = {}
-local PREFIX = "htpArc"
+local PREFIX = "rwArc"
 local VER = 1
 local BODY_MAX = 248
 local SEND_CAP = 10

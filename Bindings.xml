@@ -1,20 +1,20 @@
 <Bindings>
-    <Binding name="HTPARCADE_LEFT" runOnUp="true" header="HTPARCADE">
-        HTP_ArcadeKey("left", keystate);
+    <Binding name="RAIDWAITINGARCADE_LEFT" runOnUp="true" header="RAIDWAITINGARCADE">
+        RaidWaitingArcadeKey("left", keystate);
     </Binding>
-    <Binding name="HTPARCADE_RIGHT" runOnUp="true">
-        HTP_ArcadeKey("right", keystate);
+    <Binding name="RAIDWAITINGARCADE_RIGHT" runOnUp="true">
+        RaidWaitingArcadeKey("right", keystate);
     </Binding>
-    <Binding name="HTPARCADE_UP" runOnUp="true">
-        HTP_ArcadeKey("up", keystate);
+    <Binding name="RAIDWAITINGARCADE_UP" runOnUp="true">
+        RaidWaitingArcadeKey("up", keystate);
     </Binding>
-    <Binding name="HTPARCADE_DOWN" runOnUp="true">
-        HTP_ArcadeKey("down", keystate);
+    <Binding name="RAIDWAITINGARCADE_DOWN" runOnUp="true">
+        RaidWaitingArcadeKey("down", keystate);
     </Binding>
-    <Binding name="HTPARCADE_FIRE" runOnUp="true">
-        HTP_ArcadeKey("fire", keystate);
+    <Binding name="RAIDWAITINGARCADE_FIRE" runOnUp="true">
+        RaidWaitingArcadeKey("fire", keystate);
     </Binding>
-    <Binding name="HTPARCADE_ALT" runOnUp="true">
-        HTP_ArcadeKey("alt", keystate);
+    <Binding name="RAIDWAITINGARCADE_ALT" runOnUp="true">
+        RaidWaitingArcadeKey("alt", keystate);
     </Binding>
 </Bindings>

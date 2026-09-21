@@ -34,7 +34,7 @@ local function place(f)
     end
 end
 local function build()
-    local f = CreateFrame("Frame", "HTP_ArcadeInvite", UIParent)
+    local f = CreateFrame("Frame", "RaidWaitingArcadeInvite", UIParent)
     f:SetWidth(WIDTH)
     f:SetFrameStrata("FULLSCREEN_DIALOG")
     f:SetToplevel(true)

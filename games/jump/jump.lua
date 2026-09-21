@@ -2270,7 +2270,7 @@ local function drawTypes(host)
         f:Show()
     end
 end
-local ICON_ART = "Interface\\AddOns\\HTP_Arcade\\art\\jump_icon.tga"
+local ICON_ART = "Interface\\AddOns\\" .. ADDON .. "\\art\\jump_icon.tga"
 local LOOK = ns.MakeLook{ wood = BIOME[1].wall, edge = C_GOLD, screen = BIOME[1].lo }
 local MODES = {
     { key = "classic", label = "jump.modeClassic", tip = "jump.modeClassicTip" },

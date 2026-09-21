@@ -38,7 +38,7 @@ local wantClear = false
 local lastDef
 local function button(action)
     if buttons[action] then return buttons[action] end
-    local name = "HTP_ArcadeKey_" .. action
+    local name = "RaidWaitingArcadeKey_" .. action
     local b = CreateFrame("Button", name, UIParent)
     b:RegisterForClicks("AnyDown", "AnyUp")
     b:SetScript("OnClick", function(self, _, down)
@@ -310,7 +310,7 @@ function ns.Keys.Retry()
 end
 local PAUSE_HOT = { "P", "PAUSE" }
 local PAUSE_NAME = "P / Pause"
-local pauseBtn = CreateFrame("Button", "HTP_ArcadePauseKey", UIParent)
+local pauseBtn = CreateFrame("Button", "RaidWaitingArcadePauseKey", UIParent)
 pauseBtn:RegisterForClicks("AnyUp")
 pauseBtn:SetScript("OnClick", function()
     if not ns.Loop.Current() then return end
@@ -380,6 +380,6 @@ function ns.Keys.Cursor(host)
     if not ns.Keys.MouseOn() then return x, y, false, false end
     return x, y, moved, inside
 end
-function HTP_ArcadeKey(action, keystate)
+function RaidWaitingArcadeKey(action, keystate)
     ns.Keys.Fire(action, keystate == "down")
 end

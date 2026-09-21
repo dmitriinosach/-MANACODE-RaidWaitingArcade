@@ -30,8 +30,11 @@ local over = false
 local finale = false
 local finaleUI
 local finaleCard
-local brinked = false
-local brinkWhy
+local unranked = false
+local unrankWhy
+local onStart, onHead = {}, {}
+function ns.OnStart(fn) onStart[#onStart + 1] = fn end
+function ns.OnHead(fn) onHead[#onHead + 1] = fn end
 local hideFinale
 local moves
 local seed
@@ -219,33 +222,6 @@ local function buildHead(parent)
     h.menu = ns.MakeKitButton(h)
     h.menu:SetWidth(82); h.menu:SetHeight(24)
     h.menu.onClick = function() Window:ToMenu() end
-    local foot = parent.devFoot
-    if ns.Dev then
-        h.brink = ns.MakeKitButton(foot)
-        h.brink:SetWidth(58)
-        h.brink:SetHeight(24)
-        h.brink:SetText(ns.Dev.LABEL)
-        h.brink:SetPoint("LEFT", foot, "LEFT", 8, 0)
-        h.brink.tip = ns.Dev.TIP
-        h.brink.onClick = function() Window:Brink() end
-        h.brink:Hide()
-    end
-    if ns.DevStage then
-        h.stage = ns.MakeKitButton(foot)
-        h.stage:SetWidth(46)
-        h.stage:SetHeight(24)
-        h.stage:SetPoint("LEFT", foot, "LEFT", 8 + 58 + 6, 0)
-        h.stage:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-        h.stage.tip = ns.DevStage.TIP
-        h.stage.tipDim = ns.DevStage.TIPDIM
-        h.stage.onClick = function(_, button)
-            local step = IsShiftKeyDown() and 5 or 1
-            if button == "RightButton" then step = -step end
-            ns.DevStage.Set(ns.DevStage.Get() + step)
-            Window:JumpToStage()
-        end
-        h.stage:Hide()
-    end
     h.again = makeIcon(h)
     h.again.icon:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-Undo")
     h.again.onClick = function() Window:Restart() end
@@ -330,15 +306,6 @@ local function buildHead(parent)
         Window:RefreshHead()
         if ns.PrefsUI and ns.PrefsUI.IsShown() then ns.PrefsUI.Refresh() end
     end
-    h.hideDone = CreateFrame("Frame", nil, h)
-    h.hideDone:SetHeight(24); h.hideDone:SetWidth(24)
-    h.hideDone.box = ns.MakeCheck(h.hideDone)
-    h.hideDone.box:SetPoint("LEFT", h.hideDone, "LEFT", 0, 0)
-    h.hideDone.box.onToggle = function(on)
-        ns.Store.SetHideDone(on)
-        if ns.menu then ns.menu:Refresh() end
-    end
-    h.hideDone:Hide()
     h.mate = CreateFrame("Frame", nil, h)
     h.mate:SetHeight(24); h.mate:SetWidth(24)
     h.mate.cell = ns.MakeCell(h.mate)
@@ -416,19 +383,6 @@ local function syncPause(h)
     b.tipDim = ns.Keys.PauseText()
     if ns.PauseUI then ns.PauseUI.Sync() end
 end
-local doneLabel
-local function syncHideDone(h)
-    local c = h.hideDone.box
-    c:SetChecked(ns.Store.HideDone())
-    local text = ns.T("lblHideDone")
-    if doneLabel ~= text then
-        doneLabel = text
-        c.label:SetText(text)
-        c.tipTitle = text
-        c.tip = ns.T("tipHideDone")
-        h.hideDone:SetWidth(24 + 2 + (c.label:GetStringWidth() or 0))
-    end
-end
 local function placeNote(h, used)
     local avail = h:GetWidth() or 0
     if avail <= 0 or h.noteOff then return end
@@ -461,7 +415,6 @@ local function placeHead()
     put(h.sound, GAP)
     put(h.music, GAP)
     put(h.musicNext)
-    put(h.hideDone, GAP)
     put(h.again, GAP)
     put(h.pause)
     put(h.top)
@@ -594,9 +547,9 @@ function Window:ApplyScale()
         savePos()
     end
 end
-local GRIP_TEX = "Interface\\AddOns\\HTP_Arcade\\art\\grip"
-local GRIP_CURSOR = "Interface\\AddOns\\HTP_Arcade\\art\\grip_cursor"
-local GRIP_BLANK = "Interface\\AddOns\\HTP_Arcade\\art\\blank"
+local GRIP_TEX = "Interface\\AddOns\\" .. ADDON .. "\\art\\grip"
+local GRIP_CURSOR = "Interface\\AddOns\\" .. ADDON .. "\\art\\grip_cursor"
+local GRIP_BLANK = "Interface\\AddOns\\" .. ADDON .. "\\art\\blank"
 local GRIP_GOLD = { 1.00, 0.80, 0.30 }
 local GRIP_LIT = { 1.00, 0.93, 0.62 }
 local GRIP_PRESS = { 0.78, 0.58, 0.18 }
@@ -717,7 +670,7 @@ ns.OnLocale(function()
     if cur then ns.SafeCall(cur, "Relocalize") end
 end)
 local function build()
-    frame = CreateFrame("Frame", "HTP_ArcadeFrame", UIParent)
+    frame = CreateFrame("Frame", "RaidWaitingArcadeFrame", UIParent)
     frame:SetSize(W, H)
     frame:SetFrameStrata("DIALOG")
     frame:SetToplevel(true)
@@ -729,18 +682,9 @@ local function build()
         self:StopMovingOrSizing()
         savePos()
     end)
-    tinsert(UISpecialFrames, "HTP_ArcadeFrame")
+    tinsert(UISpecialFrames, "RaidWaitingArcadeFrame")
     frame.close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
     frame.grip = buildGrip()
-    frame.devFoot = CreateFrame("Frame", nil, frame)
-    frame.devFoot:SetHeight(32)
-    frame.devFoot:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 0, -2)
-    frame.devFoot:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, -2)
-    frame.devFoot:SetFrameLevel(frame:GetFrameLevel() + 60)
-    frame.devFoot.bg = frame.devFoot:CreateTexture(nil, "BACKGROUND")
-    frame.devFoot.bg:SetAllPoints()
-    frame.devFoot.bg:SetTexture(0, 0, 0, 0.8)
-    frame.devFoot:Hide()
     frame.miniStrip = CreateFrame("Frame", nil, frame)
     frame.miniStrip:SetHeight(MINI_HEAD_H)
     frame.miniStrip:Hide()
@@ -768,7 +712,7 @@ local function build()
     ns.SlideAnchor("shell.mate", head.mate)
     ns.SlideAnchor("shell.prefs", head.menuPrefs)
     ns.SlideAnchor("shell.grip", frame.grip)
-    canvas = CreateFrame("Frame", "HTP_ArcadeCanvas", frame)
+    canvas = CreateFrame("Frame", "RaidWaitingArcadeCanvas", frame)
     canvas:SetSize(CANVAS_W, CANVAS_H)
     canvas.W, canvas.H = CANVAS_W, CANVAS_H
     bar = buildBar(canvas)
@@ -1203,18 +1147,7 @@ function Window:StartGame(id, opts, resume, forceSeed)
     ns.Loop.Start(cur)
     if cur.Key then ns.Keys.Bind(def) end
     ns.Keys.PauseKeys(true)
-    if ns.DevStage and ns.Dev and ns.Dev.On() and not resume then
-        local want = ns.DevStage.Get()
-        if want > 1 and cur.Stage and ns.DevStage.Of(def) then
-            if ns.SafeCall(cur, "Stage", want) then
-                brinked = true
-                brinkWhy = ns.DevStage.UNRANKED
-                ns.Store.Clear(id, curOpts)
-                ns.SafeCall(cur, "Draw")
-                self:SyncBar()
-            end
-        end
-    end
+    for i = 1, #onStart do pcall(onStart[i], cur, def, resume, curOpts) end
     if miniWant and def.mini then self:SetMini(true) end
     self:RefreshHead()
 end
@@ -1227,8 +1160,8 @@ function Window:StopGame()
     if cur then
         ns.Duo.Quit("quit")
         over = false
-        brinked = false
-        brinkWhy = nil
+        unranked = false
+        unrankWhy = nil
         hideFinale()
         finaleCard = nil
         ns.Over.Hide()
@@ -1249,7 +1182,7 @@ function Window:Restart(newOpts)
         self:StartGame(id, opts)
         return
     end
-    StaticPopupDialogs["HTP_ARCADE_RESTART"] = {
+    StaticPopupDialogs["RAIDWAITINGARCADE_RESTART"] = {
         text = ns.T("askRestart"),
         button1 = ns.T("btnAgain"),
         button2 = ns.T("btnCancel"),
@@ -1259,7 +1192,7 @@ function Window:Restart(newOpts)
         end,
         timeout = 0, whileDead = true, hideOnEscape = true,
     }
-    StaticPopup_Show("HTP_ARCADE_RESTART")
+    StaticPopup_Show("RAIDWAITINGARCADE_RESTART")
 end
 function Window:CurrentId()
     return curDef and curDef.id or nil
@@ -1287,7 +1220,7 @@ end
 function Window:SaveCurrent()
     if not cur or not curDef then return end
     if cur:IsOver() then return end
-    if brinked then return end
+    if unranked then return end
     if curDef.save == false then
         ns.Store.Clear(curDef.id)
         return
@@ -1327,33 +1260,14 @@ local function showFinale()
     finaleUI.plate:SetWidth(finaleUI.text:GetStringWidth() + 36)
     finaleUI:Show()
 end
-function Window:Brink()
-    if not cur or not cur.Brink then return end
-    if not ns.SafeCall(cur, "Brink") then return end
-    brinked = true
-    brinkWhy = ns.Dev and ns.Dev.UNRANKED or nil
-    ns.Store.Clear(curDef.id)
-    ns.SafeCall(cur, "Draw")
-    self:SyncBar()
-    self:RefreshHead()
+function Window:Current()
+    return cur, curDef, curOpts
 end
-function Window:JumpToStage()
-    if not cur or not cur.Stage or not curDef then
-        return
-    end
-    local s = ns.DevStage and ns.DevStage.Of(curDef)
-    if not s then return end
-    local n = ns.DevStage.Get()
-    if s.max and n > s.max then
-        n = s.max
-        ns.DevStage.Set(n)
-    end
-    local id, opts = curDef.id, curOpts
-    self:StartGame(id, opts)
-    if not ns.SafeCall(cur, "Stage", n) then return end
-    brinked = true
-    brinkWhy = ns.DevStage.UNRANKED
-    ns.Store.Clear(id, opts)
+function Window:Unrank(why)
+    if not cur or not curDef then return end
+    unranked = true
+    unrankWhy = why
+    ns.Store.Clear(curDef.id, curOpts)
     ns.SafeCall(cur, "Draw")
     self:SyncBar()
     self:RefreshHead()
@@ -1385,9 +1299,9 @@ function Window:GameOver()
     local okScore, score = ns.SafeCall(cur, "Score")
     if not okScore then score = 0 end
     local ranked, why = true, nil
-    if brinked then
+    if unranked then
         ranked = false
-        why = brinkWhy or (ns.Dev and ns.Dev.UNRANKED) or nil
+        why = unrankWhy
     elseif cur.Ranked then
         local okRank, r = ns.SafeCall(cur, "Ranked")
         if okRank and r ~= true then
@@ -1511,16 +1425,15 @@ local function miniReady()
     local ok, v = ns.SafeCall(cur, "MiniReady")
     return ok and v and true or false
 end
-local function syncFoot(on)
-    local f = frame.devFoot
-    if on and not miniOn then f:Show() else f:Hide() end
+local function syncHooks()
+    for i = 1, #onHead do pcall(onHead[i], cur, curDef) end
 end
 local function headShape()
     local mus = (ns.Music.Live() and ns.Music.Pick()) and "+mus" or ""
     local mate = ns.Pair.Mate()
     mus = mus .. (mate and ("+m:" .. mate .. (ns.Pair.Waiting() and "?" or "")) or "+m0")
     if not (cur and curDef) then
-        return (ns.HasDoneGames() and "menu+done" or "menu") .. mus
+        return "menu" .. mus
     end
     local s = "game" .. mus
     if miniReady() then s = s .. "+mini" end
@@ -1651,24 +1564,16 @@ function Window:RefreshHead()
         head.keys:Hide()
         head.again:Hide()
         head.pause:Hide()
-        if head.brink then head.brink:Hide() end
-        if head.stage then head.stage:Hide() end
         head.top:Hide()
         head.menuPrefs:Show()
         head.prefs:Hide()
         syncPrefsBack(head)
-        if ns.HasDoneGames() then
-            head.hideDone:Show()
-            syncHideDone(head)
-        else
-            head.hideDone:Hide()
-        end
         syncSound(head)
         syncMusic(head)
         head.mate:Show()
         syncMate(head)
         syncHeld()
-        syncFoot(ns.Dev and ns.Dev.On() and #(ns.menuDev or {}) > 0)
+        syncHooks()
         if changed then placeHead() end
         return
     end
@@ -1677,7 +1582,6 @@ function Window:RefreshHead()
     head.noteOff = true
     head.note:Hide()
     head.menuPrefs:Hide()
-    head.hideDone:Hide()
     head.menu:Show()
     if miniOn and not miniReady() then
         self:SetMini(false)
@@ -1688,17 +1592,6 @@ function Window:RefreshHead()
     head.prefs:Show()
     syncPrefsBack(head)
     if curDef.again == false then head.again:Hide() else head.again:Show() end
-    if head.brink then
-        if ns.Dev.On() and cur.Brink then head.brink:Show() else head.brink:Hide() end
-    end
-    if head.stage then
-        if ns.Dev.On() and cur.Stage and ns.DevStage.Of(curDef) then
-            head.stage:SetText(ns.DevStage.Label(ns.DevStage.Get()))
-            head.stage:Show()
-        else
-            head.stage:Hide()
-        end
-    end
     syncSound(head)
     syncMusic(head)
     if curDef.duo == "turns" then
@@ -1709,7 +1602,7 @@ function Window:RefreshHead()
         head.mateX:Hide()
     end
     syncHeld()
-    syncFoot((head.brink and head.brink:IsShown()) or (head.stage and head.stage:IsShown()))
+    syncHooks()
     if ns.Records.Keeps(curDef) then head.top:Show() else head.top:Hide() end
     if ns.Keys.HasScheme(curDef, cur.Key ~= nil) then head.keys:Show() else head.keys:Hide() end
     if curDef.physics and ns.Loop.Current() then

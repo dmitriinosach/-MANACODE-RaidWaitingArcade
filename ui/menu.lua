@@ -31,7 +31,7 @@ local ADDR_BACKDROP = {
 }
 local Menu = {}
 ns.menu = Menu
-local frame, games, pool, links, devRow
+local frame, games, pool, links
 local probe
 local function styleTile(t)
     local th = ns.CurrentTheme().tile
@@ -113,42 +113,6 @@ local function paintWeave()
     else
         games:SetBackdrop(nil)
     end
-end
-ns.menuDev = {}
-function ns.RegisterMenuDev(def)
-    if type(def) ~= "table" or type(def.run) ~= "function" then return end
-    ns.menuDev[#ns.menuDev + 1] = def
-end
-local function buildDevRow(parent)
-    if #ns.menuDev == 0 then return end
-    local foot = ns.window:Frame().devFoot
-    devRow = CreateFrame("Frame", nil, parent)
-    devRow:SetHeight(ns.Space.ctl)
-    devRow:SetPoint("RIGHT", foot, "RIGHT", -8, 0)
-    devRow:SetFrameLevel(foot:GetFrameLevel() + 5)
-    local prev
-    for _, d in ipairs(ns.menuDev) do
-        local b = ns.MakeKitButton(devRow)
-        b:SetHeight(ns.Space.ctl)
-        if d.text then b.devText = d.text end
-        if d.clicks then b:RegisterForClicks("LeftButtonUp", "RightButtonUp") end
-        b:SetText(d.text and d.text() or (d.label or "?"))
-        b:SetWidth(math.max(72, b.text:GetStringWidth() + 22))
-        b.tipTitle = d.label
-        b.tip = d.tip
-        b.tipDim = d.tipDim
-        b.onClick = function(self, button)
-            d.run(button)
-            if self.devText then self:SetText(self.devText()) end
-        end
-        if prev then
-            b:SetPoint("RIGHT", prev, "LEFT", -ns.Space.row, 0)
-        else
-            b:SetPoint("RIGHT", devRow, "RIGHT", 0, 0)
-        end
-        prev = b
-    end
-    devRow:Hide()
 end
 local function showAddr(p, url)
     p.addr.url = url
@@ -291,7 +255,6 @@ local function build()
             cage:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", PAD, PAD)
         end
     end
-    if ns.Dev then buildDevRow(frame) end
     games = bare(frame)
     games:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -PAD)
     games:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -PAD,
@@ -499,9 +462,6 @@ function Menu:Show()
     ensure()
     hideOverlays()
     if links then hideAddr(links) end
-    if devRow then
-        if ns.Dev.On() then devRow:Show() else devRow:Hide() end
-    end
     layout()
     frame:Show()
 end

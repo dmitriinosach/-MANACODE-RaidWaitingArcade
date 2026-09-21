@@ -779,7 +779,7 @@ function Game:Fresh()
     if g and g ~= self and g.BeginRound then g:BeginRound() end
 end
 function Game:AskFresh()
-    ask = ask or ns.MakeCard{ name = "HTP_ArcadeSolitaireAsk", escape = true,
+    ask = ask or ns.MakeCard{ name = "RaidWaitingArcadeSolitaireAsk", escape = true,
                               dismiss = true, level = ASK_LEVEL, look = LOOK }
     local me = self
     ask:Show(self.canvas,

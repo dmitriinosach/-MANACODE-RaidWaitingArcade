@@ -15,7 +15,7 @@ function ns.Curtain.Show(host, title, body, label, onPlay)
     })
 end
 function ns.Curtain.Ask(host, title, body, buttons)
-    card = card or ns.MakeCard{ name = "HTP_ArcadeCurtain", level = LEVEL }
+    card = card or ns.MakeCard{ name = "RaidWaitingArcadeCurtain", level = LEVEL }
     card:Show(host, title, body, buttons)
 end
 function ns.Curtain.Hide()

@@ -4,7 +4,7 @@ local card
 local function ensure()
     if card then return card end
     card = ns.MakeCard{
-        name = "HTP_ArcadeHelpOverlay",
+        name = "RaidWaitingArcadeHelpOverlay",
         escape = true,
         dismiss = true,
         strata = "FULLSCREEN_DIALOG",

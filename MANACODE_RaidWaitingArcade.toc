@@ -1,12 +1,11 @@
 ## Interface: 30300
-## Title: HTP Arcade
-## Title-ruRU: HTP Аркада |cff808080— пока ждём рейд|r
+## Title: |cff3399ff[MANACODE]|r Arcade |cff808080- while the raid gathers|r
+## Title-ruRU: |cff3399ff[MANACODE]|r Аркада |cff808080— пока ждём рейд|r
 ## Notes: Mini-games in WoW theme. Play while the raid gathers.
 ## Notes-ruRU: Мини-игры на три минуты, пока собирается рейд
-## Author: CircleL
-## Version: 1.0.0-beta
-## SavedVariables: HTP_ArcadeDB
-## OptionalDeps: howToPlay
+## Author: Manacode
+## Version: 0.9.0
+## SavedVariables: RaidWaitingArcadeDB
 arc.lua
 core\locale.lua
 locale\ruRU.lua
@@ -89,8 +88,8 @@ ui\murloc.lua
 ui\bomb.lua
 ui\prefs.lua
 ui\minimap.lua
+ui\options.lua
 ui\toast.lua
-ui\htp.lua
 ui\intro.lua
 about\about.lua
 games\pairs\locale.lua

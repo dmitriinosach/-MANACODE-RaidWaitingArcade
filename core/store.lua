@@ -9,11 +9,10 @@ local function charKey()
     return name .. "-" .. realm
 end
 local function ensure()
-    HTP_ArcadeDB = HTP_ArcadeDB or {}
-    local db = HTP_ArcadeDB
+    RaidWaitingArcadeDB = RaidWaitingArcadeDB or {}
+    local db = RaidWaitingArcadeDB
     db.version = db.version or 1
     if db.sound == nil then db.sound = false end
-    if db.hideDone == nil then db.hideDone = true end
     db.pos = db.pos or {}
     db.skins = db.skins or {}
     db.chars = db.chars or {}
@@ -143,14 +142,6 @@ function ns.Store.SetSound(on)
     if not ns.Music then return end
     if on then ns.Music.Resume() else ns.Music.Hush() end
 end
-function ns.Store.HideDone()
-    local db = ns.Store.DB()
-    if db.hideDone == nil then db.hideDone = true end
-    return db.hideDone and true or false
-end
-function ns.Store.SetHideDone(on)
-    ns.Store.DB().hideDone = on and true or false
-end
 function ns.Store.CombatClose()
     local db = ns.Store.DB()
     if db.combatClose == nil then db.combatClose = true end
@@ -158,6 +149,20 @@ function ns.Store.CombatClose()
 end
 function ns.Store.SetCombatClose(on)
     ns.Store.DB().combatClose = on and true or false
+end
+function ns.Store.Minimap()
+    return not ns.Store.DB().mmHide
+end
+function ns.Store.SetMinimap(on)
+    ns.Store.DB().mmHide = not on or nil
+    if ns.Launch then ns.Launch.Sync() end
+end
+function ns.Store.Launcher()
+    return ns.Store.DB().launcher and true or false
+end
+function ns.Store.SetLauncher(on)
+    ns.Store.DB().launcher = on and true or nil
+    if ns.Launch then ns.Launch.Sync() end
 end
 function ns.Store.SeeThrough()
     return ns.Store.DB().seeThrough and true or false

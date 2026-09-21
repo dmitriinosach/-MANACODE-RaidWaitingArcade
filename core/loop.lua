@@ -5,7 +5,7 @@ local MAX_STEPS = 6
 local FRAME = 1 / 60
 local since = 0
 ns.Loop = {}
-local driver = CreateFrame("Frame", "HTP_ArcadeLoop", UIParent)
+local driver = CreateFrame("Frame", "RaidWaitingArcadeLoop", UIParent)
 driver:Hide()
 local cur
 local acc = 0
@@ -92,7 +92,7 @@ end
 function ns.Loop.Current()
     return cur
 end
-local events = CreateFrame("Frame", "HTP_ArcadeEvents", UIParent)
+local events = CreateFrame("Frame", "RaidWaitingArcadeEvents", UIParent)
 events:RegisterEvent("ADDON_LOADED")
 events:RegisterEvent("PLAYER_LOGOUT")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")

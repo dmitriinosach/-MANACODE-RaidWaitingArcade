@@ -1,11 +1,14 @@
 local ADDON, ns = ...
 ns.ADDON = ADDON
-ns.VERSION = "1.0.0-beta"
+ns.VERSION = "0.9.0"
 ns.games = {}
 ns.gameOrder = {}
+RaidWaitingArcadeNS = ns
 local function prefix()
     local name = ns.T and ns.T("abtTitle") or nil
-    if type(name) ~= "string" or name == "" or name:find("^%[") then name = "HTP Arcade" end
+    if type(name) ~= "string" or name == "" or name == "[abtTitle]" then name = "[MANACODE] Arcade" end
+    local tag, rest = name:match("^(%[MANACODE%])%s*(.*)$")
+    if tag then return "|cff3399ff" .. tag .. "|r |cff33cc44" .. rest .. "|r: " end
     return "|cff33cc44" .. name .. "|r: "
 end
 function ns.say(msg)
@@ -95,22 +98,17 @@ function ns.GameList()
     return ns.gameOrder
 end
 function ns.MenuList()
-    if not (ns.Store and ns.Store.HideDone()) then return ns.gameOrder end
+    local keep = ns.menuFilter
+    if not keep then return ns.gameOrder end
     local out = {}
     for _, def in ipairs(ns.gameOrder) do
-        if not def.done then out[#out + 1] = def end
+        if keep(def) then out[#out + 1] = def end
     end
     return out
 end
-function ns.HasDoneGames()
-    for _, def in ipairs(ns.gameOrder) do
-        if def.done then return true end
-    end
-    return false
-end
-SLASH_HTPARCADE1 = "/arc"
-SLASH_HTPARCADE2 = "/arcade"
-SlashCmdList["HTPARCADE"] = function(msg)
+SLASH_RAIDWAITINGARCADE1 = "/arc"
+SLASH_RAIDWAITINGARCADE2 = "/arcade"
+SlashCmdList["RAIDWAITINGARCADE"] = function(msg)
     local id = strtrim(msg or ""):lower()
     if id == "broken" then
         local n = 0

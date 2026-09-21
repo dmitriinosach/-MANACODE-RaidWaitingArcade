@@ -11,7 +11,7 @@ local KEY_ROWS = 4
 local MUSIC_OFF = "!"
 local UI = {}
 ns.PrefsUI = UI
-local frame, look, play, keys, wipe, dev
+local frame, look, play, keys, wipe, icons
 local wipeSel
 local function checkRow(panel, y, label, tip)
     local c = ns.MakeCheck(panel)
@@ -50,25 +50,21 @@ local function askWipe()
     local id = wipeSel
     if not id then return end
     local label = gameLabel(id)
-    StaticPopupDialogs["HTP_ARCADE_WIPE2"] = {
+    StaticPopupDialogs["RAIDWAITINGARCADE_WIPE2"] = {
         text = ns.T("wipeAsk2"),
         button1 = ns.T("wipeBtn"),
         button2 = ns.T("btnCancel"),
         OnAccept = function() doWipe(id) end,
         timeout = 0, whileDead = true, hideOnEscape = true,
     }
-    StaticPopupDialogs["HTP_ARCADE_WIPE1"] = {
+    StaticPopupDialogs["RAIDWAITINGARCADE_WIPE1"] = {
         text = ns.T("wipeAsk1"):format(label),
         button1 = ns.T("wipeBtn"),
         button2 = ns.T("btnCancel"),
-        OnAccept = function() StaticPopup_Show("HTP_ARCADE_WIPE2") end,
+        OnAccept = function() StaticPopup_Show("RAIDWAITINGARCADE_WIPE2") end,
         timeout = 0, whileDead = true, hideOnEscape = true,
     }
-    StaticPopup_Show("HTP_ARCADE_WIPE1")
-end
-local function syncDevOpen()
-    if not dev then return end
-    if ns.Dev.On() then dev.open:Enable() else dev.open:Disable() end
+    StaticPopup_Show("RAIDWAITINGARCADE_WIPE1")
 end
 local OVER_LEVEL = 100
 local function build()
@@ -198,29 +194,15 @@ local function build()
     wipe.btn:SetHeight(CTL_H)
     wipe.btn:SetPoint("LEFT", wipe.pick, "RIGHT", ns.Space.row, 0)
     wipe.btn.onClick = function() askWipe() end
-    if ns.Dev and ns.DevHub then
-        local say = ns.DevHub.SAY
-        dev = ns.MakePanel(frame, say.cap)
-        dev:SetWidth(halfW)
-        dev:SetHeight(CAP_H + CTL_H + INSET)
-        dev.open = ns.MakeKitButton(dev)
-        dev.open:SetHeight(CTL_H)
-        dev.open:SetPoint("TOPRIGHT", dev, "TOPRIGHT", -INSET, -CAP_H)
-        dev.open:SetText(say.open)
-        dev.open:SetWidth(math.max(72, dev.open.text:GetStringWidth() + 22))
-        dev.open.tip = say.openTip
-        dev.open.onClick = function()
-            UI.Back()
-            ns.DevHub.Toggle()
-        end
-        dev.mode = checkRow(dev, CAP_H, say.mode, say.modeTip)
-        dev.mode.onToggle = function(on)
-            ns.Dev.Set(on)
-            syncDevOpen()
-        end
-    end
+    icons = ns.MakePanel(frame, ns.T("prefsIcon"))
+    icons:SetWidth(halfW)
+    icons:SetHeight(wipe:GetHeight())
+    look.minimap = checkRow(icons, CAP_H, ns.T("lblMinimap"))
+    look.minimap.onToggle = function(on) ns.Store.SetMinimap(on) end
+    look.launcher = checkRow(icons, CAP_H, ns.T("lblLauncher"), ns.T("tipLauncher"))
+    look.launcher:SetPoint("TOPLEFT", icons, "TOPLEFT", INSET + math.floor((halfW - INSET * 2) / 2), -CAP_H)
+    look.launcher.onToggle = function(on) ns.Store.SetLauncher(on) end
     local lastH = wipe:GetHeight()
-    if dev then lastH = math.max(lastH, dev:GetHeight()) end
     local blockH = rowsLook + GAP + keys:GetHeight() + GAP + lastH
     local topY = PAD + TITLE_H
     local y = topY + math.floor((canvas.H - topY - PAD - blockH) / 2)
@@ -228,9 +210,7 @@ local function build()
     play:SetPoint("TOPLEFT", look, "TOPRIGHT", GAP, 0)
     keys:SetPoint("TOPLEFT", look, "BOTTOMLEFT", 0, -GAP)
     wipe:SetPoint("TOPLEFT", keys, "BOTTOMLEFT", 0, -GAP)
-    if dev then
-        dev:SetPoint("TOPLEFT", wipe, "TOPRIGHT", GAP, 0)
-    end
+    icons:SetPoint("TOPLEFT", wipe, "TOPRIGHT", GAP, 0)
     parent:HookScript("OnHide", function() UI.Hide() end)
     UI.Paint()
 end
@@ -244,7 +224,7 @@ function UI.Paint()
     ns.PaintPanel(play)
     ns.PaintPanel(keys)
     ns.PaintPanel(wipe)
-    if dev then ns.PaintPanel(dev) end
+    ns.PaintPanel(icons)
 end
 ns.OnLocale(function()
     if UI.IsShown() then UI.Refresh() end
@@ -268,6 +248,8 @@ function UI.Refresh()
     look.scale:SetWidth(look.scale:FitWidth())
     look.seethru:SetChecked(ns.Store.SeeThrough())
     look.combat:SetChecked(ns.Store.CombatClose())
+    look.minimap:SetChecked(ns.Store.Minimap())
+    look.launcher:SetChecked(ns.Store.Launcher())
     look.lang:SetOptions(ns.LocaleOptions(), ns.LocalePref(), ns.T("lblLang"))
     look.lang:SetWidth(look.lang:FitWidth())
     look.lang.tip = ns.T("tipLang")
@@ -275,12 +257,16 @@ function UI.Refresh()
     look.cap:SetText(ns.T("prefsLook"))
     play.cap:SetText(ns.T("prefsPlay"))
     keys.cap:SetText(ns.T("prefsKeys"))
+    icons.cap:SetText(ns.T("prefsIcon"))
     look.theme.cap:SetText(ns.T("lblLook"))
     look.scale.cap:SetText(ns.T("lblScale"))
     look.seethru.label:SetText(ns.T("lblSeeThrough"))
     look.seethru.tip = ns.T("tipSeeThrough")
     look.combat.label:SetText(ns.T("lblCombat"))
     look.combat.tip = ns.T("tipCombat")
+    look.minimap.label:SetText(ns.T("lblMinimap"))
+    look.launcher.label:SetText(ns.T("lblLauncher"))
+    look.launcher.tip = ns.T("tipLauncher")
     look.lang.cap:SetText(ns.T("lblLang"))
     look.news.cap:SetText(ns.T("newsAnchor"))
     look.news.move:SetText(ns.T("newsMove"))
@@ -291,10 +277,6 @@ function UI.Refresh()
     keys.reset.tip = ns.T("keysResetTip")
     keys.info.tipTitle = ns.T("prefsKeys")
     keys.info.tip = ns.T("keysNote")
-    if dev then
-        dev.mode:SetChecked(ns.Dev.On())
-        syncDevOpen()
-    end
     play.sound:SetChecked(ns.Store.Sound())
     play.sound.label:SetText(ns.T("lblSound"))
     play.sound.tip = ns.T("tipSound")

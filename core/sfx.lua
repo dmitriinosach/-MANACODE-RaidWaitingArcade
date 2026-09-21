@@ -629,8 +629,8 @@ function ns.Sfx.Play(key)
     local ref = ns.Sfx.Get(currentGame(), key)
     if ref then emit(ref) end
 end
-SLASH_HTPARCADESFX1 = "/arcsfx"
-SlashCmdList["HTPARCADESFX"] = function(msg)
+SLASH_RAIDWAITINGARCADESFX1 = "/arcsfx"
+SlashCmdList["RAIDWAITINGARCADESFX"] = function(msg)
     local what = msg and msg:match("^%s*(.-)%s*$") or ""
     if what == "" then
         local list = {}

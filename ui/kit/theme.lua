@@ -29,7 +29,7 @@ local PARCH      = "Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizo
 local WOOD       = "Interface\\AchievementFrame\\UI-Achievement-WoodBorder"
 local ACH_BG     = "Interface\\AchievementFrame\\UI-Achievement-AchievementBackground"
 local STONE      = "Interface\\ItemTextFrame\\ItemText-Stone-TopLeft"
-local WEAVE      = "Interface\\AddOns\\HTP_Arcade\\art\\weave_%s.tga"
+local WEAVE      = "Interface\\AddOns\\" .. ADDON .. "\\art\\weave_%s.tga"
 local DRAGON     = "Interface\\AchievementFrame\\UI-Achievement-StatsBackground"
 local PAPER_OLD  = "Interface\\AchievementFrame\\UI-Achievement-Parchment-Horizontal-Desaturated"
 local STONE_CROP = { 0.03125, 1, 0.046875, 1 }
@@ -102,7 +102,7 @@ local function buttonSkin(w)
     }
 end
 function ns.LookOf(f)
-    local canvas = _G.HTP_ArcadeCanvas
+    local canvas = _G.RaidWaitingArcadeCanvas
     local game = canvas and ns.GameLook and ns.GameLook()
     while f do
         if f.look then return f.look end

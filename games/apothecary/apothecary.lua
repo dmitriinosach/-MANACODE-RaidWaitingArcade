@@ -1444,7 +1444,7 @@ ns.RegisterGame {
         }
     end,
 }
-function HTP_ArcadeApothecaryTest(n)
+function RaidWaitingArcadeApothecaryTest(n)
     n = n or 50
     local bad, walked, worstNodes, worstTries = 0, 0, 0, 0
     for level = 1, 20 do
@@ -1488,7 +1488,7 @@ function HTP_ArcadeApothecaryTest(n)
     ns.say(("худший стол: пересдач %d, узлов %d"):format(worstTries, worstNodes))
     ns.say(bad == 0 and "генератор чист" or ("провалов: " .. bad))
 end
-function HTP_ArcadeApothecaryStuck(maxNodes)
+function RaidWaitingArcadeApothecaryStuck(maxNodes)
     if not cur or cur.pass then
         ns.say("аптекарь: партии нет");
         return
@@ -1547,7 +1547,7 @@ function HTP_ArcadeApothecaryStuck(maxNodes)
     end
     ns.say(("аптекарь: тупик не найден, просмотрено %d узлов"):format(nodes))
 end
-function HTP_ArcadeApothecaryLadder(n)
+function RaidWaitingArcadeApothecaryLadder(n)
     local box = ladder()
     box.done = max(0, floor(tonumber(n) or 0))
     ns.say(("лестница: пройдено %d, следующая ступень %d"):format(box.done, box.done + 1))
