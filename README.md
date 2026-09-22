@@ -42,7 +42,7 @@ Known issue of the Forever beta client itself: it does not load addon saved data
 ## Installation
 
 1. Download the zip from the Releases page: https://github.com/dmitriinosach/-MANACODE-RaidWaitingArcade/releases
-2. Extract it into the game's `Interface\AddOns` folder. Inside the zip is the folder `MANACODE_RaidWaitingArcade`. It must keep exactly this name.
+2. Extract it into the game's `Interface\AddOns` folder. Inside the zip is the folder `ManaCode_RaidWaitingArcade`. It must keep exactly this name.
    - 3.3.5a: `<client folder>\Interface\AddOns`
    - Retail: `World of Warcraft\_retail_\Interface\AddOns`
 3. Do not use GitHub's green "Code → Download ZIP" button. That archive has a different folder name and the game will not load the addon.
@@ -115,7 +115,7 @@ Download only from the Releases page, the website or the Discord server. Do not 
 ## Установка
 
 1. Скачать zip со страницы релизов: https://github.com/dmitriinosach/-MANACODE-RaidWaitingArcade/releases
-2. Распаковать в папку игры `Interface\AddOns`. Внутри архива папка `MANACODE_RaidWaitingArcade`. Имя менять нельзя.
+2. Распаковать в папку игры `Interface\AddOns`. Внутри архива папка `ManaCode_RaidWaitingArcade`. Имя менять нельзя.
    - 3.3.5a: `<папка клиента>\Interface\AddOns`
    - Ретейл: `World of Warcraft\_retail_\Interface\AddOns`
 3. Не пользоваться зелёной кнопкой GitHub «Code → Download ZIP». У того архива другое имя папки, и игра аддон не загрузит.

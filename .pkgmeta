@@ -1,4 +1,4 @@
-package-as: MANACODE_RaidWaitingArcade
+package-as: ManaCode_RaidWaitingArcade
 
 ignore:
   - README.md
