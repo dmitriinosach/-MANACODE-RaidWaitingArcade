@@ -448,7 +448,7 @@ local function cellClick(self)
     cur:CellClick(self.role, self.rowAt, self.idx)
 end
 local function fillTex(tex, col)
-    tex:SetTexture(col[1], col[2], col[3], col[4])
+    ns.Paint(tex, col[1], col[2], col[3], col[4])
 end
 local function fillCell(c, pair)
     fillTex(c.bg, pair[1])
@@ -456,15 +456,15 @@ local function fillCell(c, pair)
 end
 local function buildUI(canvas)
     local u = {}
-    u.deco = CreateFrame("Frame", nil, canvas)
+    u.deco = ns.NewFrame("Frame", nil, canvas)
     u.deco:SetFrameLevel(canvas:GetFrameLevel())
     u.deco:SetAllPoints(canvas)
     u.deco:Hide()
     local scr = ns.window:ScreenFill(u.deco)
-    scr:SetTexture(1, 1, 1, 1)
-    scr:SetGradient("VERTICAL",
-        C_GROUND_BOT[1], C_GROUND_BOT[2], C_GROUND_BOT[3],
-        C_GROUND_TOP[1], C_GROUND_TOP[2], C_GROUND_TOP[3])
+    ns.Paint(scr, 1, 1, 1, 1)
+    ns.Gradient(scr, "VERTICAL",
+        C_GROUND_BOT[1], C_GROUND_BOT[2], C_GROUND_BOT[3], 1,
+        C_GROUND_TOP[1], C_GROUND_TOP[2], C_GROUND_TOP[3], 1)
     u.glow = u.deco:CreateTexture(nil, "ARTWORK")
     u.glow:SetTexture(GLOW_TEX)
     u.glow:SetBlendMode("ADD")
@@ -507,7 +507,7 @@ local function buildUI(canvas)
         fillTex(t, C_FLASK)
         u.flask[i] = t
     end
-    u.face = CreateFrame("Frame", nil, canvas)
+    u.face = ns.NewFrame("Frame", nil, canvas)
     u.face:SetFrameLevel(canvas:GetFrameLevel() + 4)
     u.face:SetAllPoints(canvas)
     u.status = u.face:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -531,7 +531,7 @@ local function buildUI(canvas)
         cur:Brew()
     end
     local function border(r, g, b)
-        local f = CreateFrame("Frame", nil, canvas)
+        local f = ns.NewFrame("Frame", nil, canvas)
         f:SetFrameLevel(canvas:GetFrameLevel() + 6)
         f:SetBackdrop({ edgeFile = EDGE_TEX, edgeSize = 12 })
         f:SetBackdropBorderColor(r, g, b, 1)
@@ -539,7 +539,7 @@ local function buildUI(canvas)
         return f
     end
     u.act = border(1, 0.82, 0)
-    u.panel = CreateFrame("Frame", nil, canvas)
+    u.panel = ns.NewFrame("Frame", nil, canvas)
     u.panel:SetFrameLevel(canvas:GetFrameLevel() + 2)
     u.panel:SetWidth(PANEL_W)
     u.panel:Hide()
@@ -547,7 +547,7 @@ local function buildUI(canvas)
     u.plate:SetAllPoints(u.panel)
     fillTex(u.plate, C_COL)
     outline(u.panel, u.panel)
-    u.col = CreateFrame("Frame", nil, u.panel)
+    u.col = ns.NewFrame("Frame", nil, u.panel)
     u.col:SetFrameLevel(u.panel:GetFrameLevel() + 1)
     u.col:SetPoint("TOPLEFT", u.panel, "TOPLEFT", PANEL_PAD, -PANEL_PAD)
     u.col:SetPoint("BOTTOMRIGHT", u.panel, "BOTTOMRIGHT", -PANEL_PAD, PANEL_PAD)
@@ -613,7 +613,7 @@ local function buildUI(canvas)
     u.lvl:SetHeight(ROW)
     u.lvl:SetPoint("BOTTOMLEFT", u.col, "BOTTOMLEFT", 0, NOTE_H)
     local function spot(parent)
-        local f = CreateFrame("Frame", nil, parent)
+        local f = ns.NewFrame("Frame", nil, parent)
         f:EnableMouse(false)
         f:Hide()
         return f
@@ -638,7 +638,7 @@ local function buildUI(canvas)
     u.spotLvl:SetPoint("BOTTOMRIGHT", u.col, "BOTTOMRIGHT", 4, -4)
     u.spotLvl:SetHeight(NOTE_H + ROW + 24)
     u.spotLvl:Show()
-    u.flash = CreateFrame("Frame", nil, canvas)
+    u.flash = ns.NewFrame("Frame", nil, canvas)
     u.flash:SetFrameLevel(canvas:GetFrameLevel() + 8)
     u.flash.tex = u.flash:CreateTexture(nil, "OVERLAY")
     u.flash.tex:SetAllPoints(u.flash)
@@ -810,7 +810,7 @@ local function touch(c, item, hot)
     if hot then
         c:SetHighlightTexture(HL_TEX, "ADD")
     else
-        c:SetHighlightTexture(nil)
+        ns.Compat.ClearHighlight(c)
     end
 end
 function Game:Draw()

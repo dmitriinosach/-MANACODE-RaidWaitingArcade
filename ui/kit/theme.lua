@@ -342,7 +342,7 @@ function ns.PaintPanel(p)
     if p.cap then p.cap:SetTextColor(ns.CardEdge(ns.LookOf(p))) end
 end
 function ns.MakePanel(parent, caption, look)
-    local p = CreateFrame("Frame", nil, parent)
+    local p = ns.NewFrame("Frame", nil, parent)
     p.look = look
     p.kitPaint = ns.PaintPanel
     panels[#panels + 1] = p
@@ -394,7 +394,7 @@ function ns.PaintBody(tex, body, a, v0, v1)
         local c = body.color or { 0, 0, 0 }
         tex:SetTexCoord(0, 1, 0, 1)
         tex:SetVertexColor(1, 1, 1, 1)
-        tex:SetTexture(c[1], c[2], c[3], a)
+        ns.Paint(tex, c[1], c[2], c[3], a)
     end
 end
 function ns.PaintScreen(tex, a)
@@ -442,9 +442,9 @@ function ns.MakeTable(canvas, look)
 end
 local function paintNiche(f)
     local th = lookOf(f).niche
-    f.plate:SetTexture(th.bg[1], th.bg[2], th.bg[3], th.bg[4])
+    ns.Paint(f.plate, th.bg[1], th.bg[2], th.bg[3], th.bg[4])
     for i = 1, #f.edge do
-        f.edge[i]:SetTexture(th.edge[1], th.edge[2], th.edge[3], th.edge[4])
+        ns.Paint(f.edge[i], th.edge[1], th.edge[2], th.edge[3], th.edge[4])
     end
 end
 function ns.MakeNiche(parent, level, look)
@@ -478,7 +478,7 @@ function ns.MakeCap(parent, x, y)
     return fs
 end
 function ns.MakeSlot(parent, look)
-    local b = CreateFrame("Button", nil, parent)
+    local b = ns.NewFrame("Button", nil, parent)
     b.look = look
     b.bg = ns.Fill(b, "BACKGROUND", { 0, 0, 0, 1 })
     b.bg:SetAllPoints(b)
@@ -499,7 +499,7 @@ function ns.MakeSlot(parent, look)
         self.on = on and true or false
         local th = lookOf(self).slot
         local bg = on and th.bgOn or th.bg
-        self.bg:SetTexture(bg[1], bg[2], bg[3], bg[4])
+        ns.Paint(self.bg, bg[1], bg[2], bg[3], bg[4])
         local e = th.edge
         if on then
             e = { ns.CardEdge(ns.LookOf(self)) }
@@ -507,7 +507,7 @@ function ns.MakeSlot(parent, look)
             e = th.hot
         end
         for i = 1, #self.edge do
-            self.edge[i]:SetTexture(e[1], e[2], e[3], e[4] or 1)
+            ns.Paint(self.edge[i], e[1], e[2], e[3], e[4] or 1)
         end
     end
     b:SetScript("OnEnter", function(self)

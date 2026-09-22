@@ -14,7 +14,7 @@ ns.RegisterFX{
             f.move:SetSmoothing("IN")
             f.grow:SetScale(0.8, 0.8)
             f.grow:SetDuration(SINK)
-            f.fade:SetChange(-1)
+            ns.AlphaChange(f.fade, -1)
             f.fade:SetDuration(SINK)
             f.anim:Play()
         end
@@ -32,7 +32,7 @@ ns.RegisterFX{
         s.move:SetSmoothing("OUT")
         s.grow:SetScale(1.6, 1.6)
         s.grow:SetDuration(0.6)
-        s.fade:SetChange(-1)
+        ns.AlphaChange(s.fade, -1)
         s.fade:SetDuration(0.4)
         s.fade:SetStartDelay(0.2)
         s.anim:Play()

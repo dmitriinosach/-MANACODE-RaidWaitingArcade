@@ -117,7 +117,7 @@ local function pass(tex, kind, side, anchor, sil, col, grow, hole)
                     local x0, x1 = p[2], p[4]
                     if mirror then x0, x1 = GRID - p[4], GRID - p[2] end
                     local c = (p[1] == "h") and hole or col
-                    t:SetTexture(c[1], c[2], c[3])
+                    ns.Paint(t, c[1], c[2], c[3])
                     t:SetVertexColor(1, 1, 1)
                     t:SetWidth((x1 - x0) * u + grow * 2)
                     t:SetHeight((p[5] - p[3]) * u + grow * 2)
@@ -131,7 +131,7 @@ local function pass(tex, kind, side, anchor, sil, col, grow, hole)
     for k = n + 1, CP.MAX_PARTS do tex[k]:Hide() end
 end
 function CP.Make(parent)
-    local f = CreateFrame("Frame", nil, parent)
+    local f = ns.NewFrame("Frame", nil, parent)
     f:SetFrameLevel(parent:GetFrameLevel() + 1)
     f.out, f.part = {}, {}
     for k = 1, CP.MAX_PARTS do
@@ -252,7 +252,7 @@ local function fall(f, e)
     if f.t >= DUST_LIFE then CP.DustStop(f) end
 end
 function CP.MakeDust(parent)
-    local f = CreateFrame("Frame", nil, parent)
+    local f = ns.NewFrame("Frame", nil, parent)
     f:SetFrameLevel(parent:GetFrameLevel() + 1)
     f.grain, f.g, f.n, f.t = {}, {}, 0, 0
     for k = 1, CP.GRAIN * CP.GRAIN do
@@ -301,7 +301,7 @@ function CP.Crumble(f, kind, side, size)
                 local t = f.grain[n]
                 t:ClearAllPoints()
                 t:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", g.x, g.y)
-                t:SetTexture(c[1], c[2], c[3])
+                ns.Paint(t, c[1], c[2], c[3])
                 t:SetWidth(cell)
                 t:SetHeight(cell)
                 t:SetAlpha(g.a)

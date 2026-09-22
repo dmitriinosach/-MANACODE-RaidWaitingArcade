@@ -34,7 +34,7 @@ local function place(f)
     end
 end
 local function build()
-    local f = CreateFrame("Frame", "RaidWaitingArcadeInvite", UIParent)
+    local f = ns.NewFrame("Frame", "RaidWaitingArcadeInvite", UIParent)
     f:SetWidth(WIDTH)
     f:SetFrameStrata("FULLSCREEN_DIALOG")
     f:SetToplevel(true)
@@ -123,7 +123,7 @@ local function paint()
     local th = ns.CurrentTheme()
     ns.PaintBody(plate.body, th.window.body, 1)
     local r = th.rule
-    plate.rule:SetTexture(r[1], r[2], r[3], r[4] or 1)
+    ns.Paint(plate.rule, r[1], r[2], r[3], r[4] or 1)
     plate.cap:SetTextColor(ns.Accent())
 end
 local function ensure()

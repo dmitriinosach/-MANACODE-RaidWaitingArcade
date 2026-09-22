@@ -96,7 +96,7 @@ local function slotOf(btn)
     return btn.action or btn:GetID()
 end
 local function topFrame()
-    local f = CreateFrame("Frame", nil, UIParent)
+    local f = ns.NewFrame("Frame", nil, UIParent)
     f:SetFrameStrata("FULLSCREEN_DIALOG")
     f:EnableMouse(false)
     f:Hide()
@@ -109,7 +109,7 @@ local function makeModel(parent, w, h, path, len)
     m:SetHeight(h)
     m:SetPoint("CENTER", parent, "CENTER", 0, 0)
     m:SetFrameLevel(parent:GetFrameLevel() + 1)
-    if not pcall(m.SetModel, m, path) then
+    if not pcall(m.SetModel, m, ns.Compat.Model(path)) then
         m:Hide()
         return nil
     end
@@ -117,7 +117,7 @@ local function makeModel(parent, w, h, path, len)
     m.hold = MODEL_HOLD
     m.anim = 0
     m:SetScript("OnShow", function(self)
-        pcall(self.SetModel, self, self.path)
+        pcall(self.SetModel, self, ns.Compat.Model(self.path))
         self.hold = MODEL_HOLD
         self.seq = nil
         self.facing = nil
@@ -179,7 +179,7 @@ local function ensure()
     gob = topFrame()
     gob:SetWidth(GOB_SZ)
     gob:SetHeight(GOB_SZ)
-    gob.say = CreateFrame("Frame", nil, gob)
+    gob.say = ns.NewFrame("Frame", nil, gob)
     gob.say:SetFrameLevel(gob:GetFrameLevel() + 4)
     gob.say:SetWidth(260)
     gob.say:SetHeight(16)
@@ -243,7 +243,7 @@ local function ensure()
     restore:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
     restore:HookScript("OnLeave", function(self) self:SetAlpha(BTN_A) end)
     restore:Hide()
-    drv = CreateFrame("Frame", nil, UIParent)
+    drv = ns.NewFrame("Frame", nil, UIParent)
     drv:Hide()
     drv:SetScript("OnUpdate", function(_, dt)
         local ok, err = pcall(tick, dt)
@@ -793,6 +793,6 @@ end
 function M.Abort()
     finish()
 end
-local events = CreateFrame("Frame", nil, UIParent)
-events:RegisterEvent("PLAYER_REGEN_DISABLED")
+local events = ns.NewFrame("Frame", nil, UIParent)
+ns.Listen(events, "PLAYER_REGEN_DISABLED")
 events:SetScript("OnEvent", function() M.Abort() end)

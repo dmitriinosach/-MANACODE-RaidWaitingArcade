@@ -33,7 +33,7 @@ local function tips(b, drag)
     b:SetScript("OnLeave", ns.TipHide)
 end
 local function buildMinimap()
-    button = CreateFrame("Button", "RaidWaitingArcadeMinimapButton", Minimap)
+    button = ns.NewFrame("Button", "RaidWaitingArcadeMinimapButton", Minimap)
     button:SetSize(31, 31)
     button:SetFrameStrata("MEDIUM")
     button:SetFrameLevel(Minimap:GetFrameLevel() + 8)
@@ -69,7 +69,7 @@ local function placeLauncher()
     launcher:SetPoint(p[1], UIParent, p[2], p[3], p[4])
 end
 local function buildLauncher()
-    launcher = CreateFrame("Button", "RaidWaitingArcadeLauncher", UIParent)
+    launcher = ns.NewFrame("Button", "RaidWaitingArcadeLauncher", UIParent)
     launcher:SetSize(LAUNCH, LAUNCH)
     launcher:SetFrameStrata("MEDIUM")
     launcher:SetClampedToScreen(true)
@@ -105,8 +105,8 @@ function ns.Launch.Sync()
         launcher:Hide()
     end
 end
-local f = CreateFrame("Frame")
-f:RegisterEvent("PLAYER_LOGIN")
+local f = ns.NewFrame("Frame")
+ns.Listen(f, "PLAYER_LOGIN")
 f:SetScript("OnEvent", function(self)
     self:UnregisterAllEvents()
     if Minimap then buildMinimap() end

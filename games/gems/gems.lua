@@ -739,25 +739,25 @@ end
 local function ensureUI(canvas)
     if ui then return ui end
     ui = {}
-    ui.mulF = CreateFrame("Frame", nil, canvas)
+    ui.mulF = ns.NewFrame("Frame", nil, canvas)
     ui.mulF:SetAllPoints(canvas)
     ui.mulF:SetFrameLevel(canvas:GetFrameLevel() + 20)
     ui.mul = ui.mulF:CreateFontString(nil, "OVERLAY", "NumberFont_Outline_Large")
-    if not ui.mul:SetFont("Fonts\\ARIALN.TTF", 52, "THICKOUTLINE") then
-        ui.mul:SetFont((ui.mul:GetFont()), 52, "THICKOUTLINE")
+    if not ns.SetFont(ui.mul, "Fonts\\ARIALN.TTF", 52, "THICKOUTLINE") then
+        ns.SetFont(ui.mul, (ui.mul:GetFont()), 52, "THICKOUTLINE")
     end
     ui.mul:SetTextColor(1, 0.9, 0.3)
     ui.mul:Hide()
     ui.pop = ui.mulF:CreateFontString(nil, "OVERLAY", "NumberFont_Outline_Large")
-    if not ui.pop:SetFont("Fonts\\ARIALN.TTF", 22, "OUTLINE") then
-        ui.pop:SetFont((ui.pop:GetFont()), 22, "OUTLINE")
+    if not ns.SetFont(ui.pop, "Fonts\\ARIALN.TTF", 22, "OUTLINE") then
+        ns.SetFont(ui.pop, (ui.pop:GetFont()), 22, "OUTLINE")
     end
     ui.pop:SetTextColor(1, 0.95, 0.6)
     ui.pop:Hide()
     ui.line = {}
     for i = 1, 4 do
         local t = ui.mulF:CreateTexture(nil, "OVERLAY")
-        t:SetTexture(1, 1, 1, 1)
+        ns.Paint(t, 1, 1, 1, 1)
         t:Hide()
         ui.line[i] = t
     end
@@ -765,16 +765,16 @@ local function ensureUI(canvas)
     ui.note = ui.mulF:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     ui.note:SetPoint("CENTER", ui.mulF, "CENTER", 0, 0)
     ui.note:Hide()
-    ui.root = CreateFrame("Frame", nil, canvas)
+    ui.root = ns.NewFrame("Frame", nil, canvas)
     ui.root:SetFrameLevel(canvas:GetFrameLevel() + 3)
     ui.root:SetAllPoints(canvas)
     ui.root:Hide()
     ui.seam = ui.root:CreateTexture(nil, "ARTWORK")
-    ui.seam:SetTexture(EDGE[1], EDGE[2], EDGE[3], 0.4)
+    ns.Paint(ui.seam, EDGE[1], EDGE[2], EDGE[3], 0.4)
     ui.seam:SetWidth(1)
     ui.seam:SetPoint("TOPRIGHT", ui.root, "TOPRIGHT", -COL_W, -PAD)
     ui.seam:SetPoint("BOTTOMRIGHT", ui.root, "BOTTOMRIGHT", -COL_W, PAD)
-    ui.col = CreateFrame("Frame", nil, ui.root)
+    ui.col = ns.NewFrame("Frame", nil, ui.root)
     ui.col:SetFrameLevel(ui.root:GetFrameLevel() + 1)
     ui.col:SetPoint("TOPRIGHT", ui.root, "TOPRIGHT", -COL_PAD, -COL_PAD)
     ui.col:SetPoint("BOTTOMRIGHT", ui.root, "BOTTOMRIGHT", -COL_PAD, COL_PAD)
@@ -793,25 +793,25 @@ local function ensureUI(canvas)
     end
     ui.bestCap, ui.best = statRow(ROW * 4 + 6, ns.T("gems.colBest"))
     ui.rule = ui.col:CreateTexture(nil, "ARTWORK")
-    ui.rule:SetTexture(EDGE[1], EDGE[2], EDGE[3], 0.35)
+    ns.Paint(ui.rule, EDGE[1], EDGE[2], EDGE[3], 0.35)
     ui.rule:SetHeight(1)
     ui.rule:SetPoint("TOPLEFT", ui.col, "TOPLEFT", 0, -(ROW * 5 + 4))
     ui.rule:SetPoint("TOPRIGHT", ui.col, "TOPRIGHT", 0, -(ROW * 5 + 4))
     ui.leftCap, ui.left = statRow(ROW * 5 + 26, nil, true)
     ui.barBg = ui.col:CreateTexture(nil, "ARTWORK")
-    ui.barBg:SetTexture(0.10, 0.09, 0.07, 1)
+    ns.Paint(ui.barBg, 0.10, 0.09, 0.07, 1)
     ui.barBg:SetWidth(COL_IN)
     ui.barBg:SetHeight(4)
     ui.barBg:SetPoint("TOPLEFT", ui.col, "TOPLEFT", 0, -(ROW * 5 + 52))
     ui.bar = ui.col:CreateTexture(nil, "OVERLAY")
-    ui.bar:SetTexture(EDGE[1], EDGE[2], EDGE[3], 0.9)
+    ns.Paint(ui.bar, EDGE[1], EDGE[2], EDGE[3], 0.9)
     ui.bar:SetHeight(4)
     ui.bar:SetPoint("TOPLEFT", ui.barBg, "TOPLEFT", 0, 0)
     ui.lvlCap, ui.lvl = statRow(ROW * 8 + 4, nil, true)
     ui.triesCap, ui.tries = statRow(ROW * 9 + 8, ns.T("gems.colTries"))
     ui.goals = {}
     for i = 1, 3 do
-        local row = CreateFrame("Frame", nil, ui.col)
+        local row = ns.NewFrame("Frame", nil, ui.col)
         row:SetWidth(COL_IN)
         row:SetHeight(GOAL_CELL)
         if i == 1 then
@@ -870,7 +870,7 @@ function Game:DressGoal(f, g)
         local r, gr, b
         if name then r, gr, b = ns.Shelves.Tint(name) else r, gr, b = ns.Palette.RGB(g.color) end
         if not r then r, gr, b = 0.55, 0.55, 0.55 end
-        f.tint:SetTexture(r * 0.55, gr * 0.55, b * 0.55, 1)
+        ns.Paint(f.tint, r * 0.55, gr * 0.55, b * 0.55, 1)
         f:SetBackdropBorderColor(r, gr, b, 1)
         f.tipTitle = false
         f.tip = ns.T("gems.goalColorTip")
@@ -878,16 +878,16 @@ function Game:DressGoal(f, g)
         local own = self.blk and self.blk[g.kind == "rock" and B_ROCK or B_RAW]
         if g.kind == "rock" then
             f.icon:SetTexture(own and ns.IconPath(own) or nil)
-            f.tint:SetTexture(0.30, 0.24, 0.18, 1)
+            ns.Paint(f.tint, 0.30, 0.24, 0.18, 1)
             f:SetBackdropBorderColor(0.45, 0.38, 0.30, 1)
         elseif g.kind == "raw" then
             f.icon:SetTexture(own and ns.IconPath(own) or nil)
-            f.tint:SetTexture(0.72, 0.62, 0.28, 1)
+            ns.Paint(f.tint, 0.72, 0.62, 0.28, 1)
             f:SetBackdropBorderColor(1, 0.9, 0.4, 1)
         else
             f.icon:SetTexture(self:Gem(1))
             f.icon:SetVertexColor(0.45, 0.55, 0.75)
-            f.tint:SetTexture(0.22, 0.30, 0.44, 1)
+            ns.Paint(f.tint, 0.22, 0.30, 0.44, 1)
             f:SetBackdropBorderColor(0.6, 0.8, 1, 1)
         end
         ns.CropIcon(f.icon)
@@ -988,7 +988,7 @@ function Game:ShowPick(c, r)
     }
     for i = 1, 4 do
         local t, m = u.line[i], box[i]
-        t:SetTexture(cr, cg, cb, SEL_A)
+        ns.Paint(t, cr, cg, cb, SEL_A)
         t:ClearAllPoints()
         t:SetWidth(m[3])
         t:SetHeight(m[4])
@@ -1094,13 +1094,13 @@ local function ensurePool(canvas)
 end
 local function buildMenu(canvas)
     local m = { cards = {}, gem = {}, sp = {}, blk = {}, rec = {} }
-    m.root = CreateFrame("Frame", nil, canvas)
+    m.root = ns.NewFrame("Frame", nil, canvas)
     m.root:SetFrameLevel(canvas:GetFrameLevel() + 6)
     m.root:SetAllPoints(canvas)
     m.root:Hide()
     for i = 1, #MODES do
         local x = M_PAD + (i - 1) * (CARD_W + CARD_GAP)
-        local b = CreateFrame("Button", nil, m.root)
+        local b = ns.NewFrame("Button", nil, m.root)
         b:SetFrameLevel(m.root:GetFrameLevel() + 2)
         b:SetWidth(CARD_W)
         b:SetHeight(CARD_H)
@@ -1188,7 +1188,7 @@ local function buildMenu(canvas)
 end
 local function buildLadder(canvas)
     local d = { row = {}, dot = {}, goal = {} }
-    d.root = CreateFrame("Frame", nil, canvas)
+    d.root = ns.NewFrame("Frame", nil, canvas)
     d.root:SetFrameLevel(canvas:GetFrameLevel() + 6)
     d.root:SetAllPoints(canvas)
     d.root:Hide()
@@ -1198,12 +1198,12 @@ local function buildLadder(canvas)
     d.sum = d.root:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     d.sum:SetPoint("TOPLEFT", d.sumCap, "BOTTOMLEFT", 0, -6)
     d.rule = d.root:CreateTexture(nil, "ARTWORK")
-    d.rule:SetTexture(EDGE[1], EDGE[2], EDGE[3], 0.35)
+    ns.Paint(d.rule, EDGE[1], EDGE[2], EDGE[3], 0.35)
     d.rule:SetHeight(1)
     d.rule:SetPoint("TOPLEFT", d.root, "TOPLEFT", M_PAD, -84)
     d.rule:SetPoint("TOPRIGHT", d.root, "TOPRIGHT", -M_PAD, -84)
     for i = 1, LAD_ROWS do
-        local row = CreateFrame("Frame", nil, d.root)
+        local row = ns.NewFrame("Frame", nil, d.root)
         row:SetWidth(LAD_W)
         row:SetHeight(LAD_ROW_H - 4)
         row:SetPoint("TOPLEFT", d.root, "TOPLEFT", M_PAD, -(96 + (i - 1) * LAD_ROW_H))
@@ -1374,7 +1374,7 @@ function Game:Dress(f, color, kind, size)
         else
             r, g, b = self:Tint(color)
         end
-        f.tint:SetTexture(r * 0.55, g * 0.55, b * 0.55, 1)
+        ns.Paint(f.tint, r * 0.55, g * 0.55, b * 0.55, 1)
     end
 end
 function Game:DressBlock(f, b, size)
@@ -1392,11 +1392,11 @@ function Game:DressBlock(f, b, size)
         f.icon:SetTexture(nil)
     end
     if b == B_ROCK then
-        f.tint:SetTexture(0.30, 0.24, 0.18, 1)
+        ns.Paint(f.tint, 0.30, 0.24, 0.18, 1)
         f._tint = "rock"
         f:SetBackdropBorderColor(0.45, 0.38, 0.30, 1)
     else
-        f.tint:SetTexture(0.72, 0.62, 0.28, 1)
+        ns.Paint(f.tint, 0.72, 0.62, 0.28, 1)
         f._tint = "raw"
         f:SetBackdropBorderColor(1, 0.9, 0.4, 1)
     end
@@ -1765,19 +1765,19 @@ function Game:SyncLadder()
         row.name:SetText(ns.TL(p.rec.label) .. (p.wall and (" " .. ns.T("gems.ladWall")) or ""))
         row.goal:SetText(goalText(p) .. "  " .. ns.T("gems.ladMovesFmt", p.moves))
         if n < self.level then
-            row.plate:SetTexture(0.10, 0.12, 0.08, 0.85)
+            ns.Paint(row.plate, 0.10, 0.12, 0.08, 0.85)
             row.state:SetText(ns.T("gems.ladDone"))
             row.state:SetTextColor(0.45, 0.80, 0.35)
             row.num:SetTextColor(0.72, 0.69, 0.62)
             row.name:SetTextColor(0.85, 0.82, 0.75)
         elseif n == self.level then
-            row.plate:SetTexture(0.20, 0.16, 0.06, 0.95)
+            ns.Paint(row.plate, 0.20, 0.16, 0.06, 0.95)
             row.state:SetText(ns.T("gems.ladNow"))
             row.state:SetTextColor(1, 0.82, 0.3)
             row.num:SetTextColor(1, 0.82, 0.3)
             row.name:SetTextColor(1, 0.9, 0.5)
         else
-            row.plate:SetTexture(0.06, 0.05, 0.04, 0.7)
+            ns.Paint(row.plate, 0.06, 0.05, 0.04, 0.7)
             row.state:SetText(ns.T("gems.ladNext"))
             row.state:SetTextColor(0.5, 0.48, 0.44)
             row.num:SetTextColor(0.5, 0.48, 0.44)
@@ -1790,7 +1790,7 @@ function Game:SyncLadder()
         for r = 1, N do
             local t = d.dot[c][r]
             if r >= self.low[c] and r <= self.high[c] then
-                t:SetTexture(0.24, 0.21, 0.14, 1)
+                ns.Paint(t, 0.24, 0.21, 0.14, 1)
                 t:Show()
             else
                 t:Hide()

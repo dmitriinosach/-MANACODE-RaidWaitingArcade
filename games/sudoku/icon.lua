@@ -14,7 +14,7 @@ local NUM_FONT = "Fonts\\ARIALN.TTF"
 local function put(t, host, x, y, w, h, c)
     t:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
     t:SetWidth(max(1, w)); t:SetHeight(max(1, h))
-    t:SetTexture(c[1], c[2], c[3], 1)
+    ns.Paint(t, c[1], c[2], c[3], 1)
 end
 function ns.SudokuTileIcon(host, size)
     local pad  = max(1, floor(size * 0.07 + 0.5))
@@ -38,8 +38,8 @@ function ns.SudokuTileIcon(host, size)
     local px = max(6, floor(cell * 1.05 + 0.5))
     for i, d in ipairs(DIGITS) do
         local fs = ns.ArtText(host, i)
-        if not fs:SetFont(NUM_FONT, px, "") then
-            fs:SetFont((fs:GetFont()), px, "")
+        if not ns.SetFont(fs, NUM_FONT, px, "") then
+            ns.SetFont(fs, (fs:GetFont()), px, "")
         end
         fs:SetWidth(cell); fs:SetHeight(cell)
         fs:SetJustifyH("CENTER"); fs:SetJustifyV("MIDDLE")

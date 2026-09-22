@@ -41,7 +41,7 @@ local function repick(key, value)
 end
 local function ensureTable()
     if panel then return end
-    panel = CreateFrame("Frame", nil, tableHost)
+    panel = ns.NewFrame("Frame", nil, tableHost)
     panel:SetAllPoints(tableHost)
     head = { icon = {}, label = {} }
     head.when = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -128,7 +128,7 @@ local function paint(force)
     panel:SetBackdrop(th.panel.backdrop)
     panel:SetBackdropColor(unpack(th.panel.bg))
     panel:SetBackdropBorderColor(unpack(th.panel.border))
-    head.rule:SetTexture(th.rule[1], th.rule[2], th.rule[3], th.rule[4])
+    ns.Paint(head.rule, th.rule[1], th.rule[2], th.rule[3], th.rule[4])
 end
 ns.OnTheme(function() paint(true) end)
 ns.OnLocale(function()

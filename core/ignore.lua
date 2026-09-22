@@ -48,9 +48,9 @@ function ns.Ignore.Wipe()
 end
 function ns.Ignore.Shunned(name)
     local k = key(name)
-    if not k or not GetNumIgnores or not GetIgnoreName then return false end
-    for i = 1, GetNumIgnores() do
-        if key(GetIgnoreName(i)) == k then return true end
+    if not k then return false end
+    for i = 1, ns.Compat.NumIgnores() do
+        if key(ns.Compat.IgnoreName(i)) == k then return true end
     end
     return false
 end
@@ -83,9 +83,9 @@ function ns.Ignore.NextMode()
 end
 local function isFriend(name)
     local k = key(name)
-    if not k or not GetNumFriends or not GetFriendInfo then return false end
-    for i = 1, GetNumFriends() do
-        if key(GetFriendInfo(i)) == k then return true end
+    if not k then return false end
+    for i = 1, ns.Compat.NumFriends() do
+        if key((ns.Compat.FriendInfo(i))) == k then return true end
     end
     return false
 end
@@ -111,9 +111,8 @@ function ns.Ignore.Allowed(name)
     if mode == "guild" and isGuild(who) then return true end
     return false, "privacy"
 end
-local boot = CreateFrame("Frame")
-boot:RegisterEvent("PLAYER_ENTERING_WORLD")
+local boot = ns.NewFrame("Frame")
+ns.Listen(boot, "PLAYER_ENTERING_WORLD")
 boot:SetScript("OnEvent", function()
-    if ShowFriends then ShowFriends() end
-    if IsInGuild and IsInGuild() and GuildRoster then GuildRoster() end
+    ns.Compat.RefreshRoster()
 end)

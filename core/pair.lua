@@ -183,7 +183,7 @@ ns.Link.On("PRX", function(from)
     say(ns.T("pairLeft", who))
     news(ns.T("pairLeft", who), "pair")
 end)
-local ticker = CreateFrame("Frame")
+local ticker = ns.NewFrame("Frame")
 local acc = 0
 ticker:SetScript("OnUpdate", function(_, dt)
     acc = acc + dt
@@ -219,8 +219,8 @@ ns.Link.OnPresence(function(name)
     end
     if mate and name:lower() == mate:lower() then tell() end
 end)
-local boot = CreateFrame("Frame")
-boot:RegisterEvent("PLAYER_ENTERING_WORLD")
+local boot = ns.NewFrame("Frame")
+ns.Listen(boot, "PLAYER_ENTERING_WORLD")
 boot:SetScript("OnEvent", function(self)
     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     local who = saved()

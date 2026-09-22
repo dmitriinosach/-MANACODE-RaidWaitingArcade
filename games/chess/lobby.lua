@@ -130,9 +130,9 @@ local function online(name)
     local who = ns.Link.Norm(name)
     if not who then return nil end
     local low = who:lower()
-    local nf = GetNumFriends and GetNumFriends() or 0
+    local nf = ns.Compat.NumFriends()
     for i = 1, nf do
-        local nm, _, _, _, connected = GetFriendInfo(i)
+        local nm, connected = ns.Compat.FriendInfo(i)
         if type(nm) == "string" and nm:lower() == low then return connected and true or false end
     end
     if IsInGuild and IsInGuild() then
@@ -164,13 +164,13 @@ end
 local function plate(parent, col)
     local t = parent:CreateTexture(nil, "BACKGROUND")
     t:SetAllPoints(parent)
-    t:SetTexture(col[1], col[2], col[3], col[4] or 1)
+    ns.Paint(t, col[1], col[2], col[3], col[4] or 1)
     return t
 end
 local function outline(f, col)
     local function bar(p1, p2, w, h)
         local t = f:CreateTexture(nil, "BORDER")
-        t:SetTexture(col[1], col[2], col[3], col[4] or 1)
+        ns.Paint(t, col[1], col[2], col[3], col[4] or 1)
         t:SetPoint(p1, f, p1, 0, 0)
         t:SetPoint(p2, f, p2, 0, 0)
         if w then t:SetWidth(w) end
@@ -188,7 +188,7 @@ local function build(canvas)
     end
     ui = {}
     ui.canvas = canvas
-    ui.frame = CreateFrame("Frame", nil, canvas)
+    ui.frame = ns.NewFrame("Frame", nil, canvas)
     ui.frame:SetFrameLevel(canvas:GetFrameLevel() + 10)
     ui.frame:SetAllPoints(canvas)
     ui.frame:EnableMouse(true)
@@ -229,7 +229,7 @@ local function build(canvas)
     end
     ui.row = {}
     for i = 1, VIS do
-        local f = CreateFrame("Button", nil, ui.frame)
+        local f = ns.NewFrame("Button", nil, ui.frame)
         f:SetWidth(612)
         f:SetHeight(ROW_H)
         f:SetPoint("TOPLEFT", ui.frame, "TOPLEFT", 14, -(48 + (i - 1) * ROW_STEP))

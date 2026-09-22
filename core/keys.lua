@@ -39,7 +39,7 @@ local lastDef
 local function button(action)
     if buttons[action] then return buttons[action] end
     local name = "RaidWaitingArcadeKey_" .. action
-    local b = CreateFrame("Button", name, UIParent)
+    local b = ns.NewFrame("Button", name, UIParent)
     b:RegisterForClicks("AnyDown", "AnyUp")
     b:SetScript("OnClick", function(self, _, down)
         ns.Keys.Fire(action, down and true or false)
@@ -310,7 +310,7 @@ function ns.Keys.Retry()
 end
 local PAUSE_HOT = { "P", "PAUSE" }
 local PAUSE_NAME = "P / Pause"
-local pauseBtn = CreateFrame("Button", "RaidWaitingArcadePauseKey", UIParent)
+local pauseBtn = ns.NewFrame("Button", "RaidWaitingArcadePauseKey", UIParent)
 pauseBtn:RegisterForClicks("AnyUp")
 pauseBtn:SetScript("OnClick", function()
     if not ns.Loop.Current() then return end

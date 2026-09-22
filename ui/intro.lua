@@ -22,7 +22,7 @@ end
 local waiter
 function ns.Intro.Maybe()
     if ns.Store.DB().introSeen then return end
-    waiter = waiter or CreateFrame("Frame")
+    waiter = waiter or ns.NewFrame("Frame")
     waiter:SetScript("OnUpdate", function(self)
         self:SetScript("OnUpdate", nil)
         if not ns.window:IsShown() or ns.window:CurrentId() then return end

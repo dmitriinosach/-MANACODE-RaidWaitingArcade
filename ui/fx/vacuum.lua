@@ -18,7 +18,7 @@ ns.RegisterFX{
             f.grow:SetScale(0.2, 0.2)
             f.grow:SetDuration(FLY)
             f.grow:SetSmoothing("IN")
-            f.fade:SetChange(-1)
+            ns.AlphaChange(f.fade, -1)
             f.fade:SetDuration(FLY * 0.4)
             f.fade:SetStartDelay(FLY * 0.6)
             f.anim:Play()

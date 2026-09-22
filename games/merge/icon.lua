@@ -11,7 +11,7 @@ local NUM_FONT = "Fonts\\ARIALN.TTF"
 local function put(t, host, x, y, w, h, c)
     t:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
     t:SetWidth(max(1, w)); t:SetHeight(max(1, h))
-    t:SetTexture(c[1], c[2], c[3], c[4] or 1)
+    ns.Paint(t, c[1], c[2], c[3], c[4] or 1)
 end
 local function band(host, i, size, y, w, h, c, layer)
     put(ns.ArtFill(host, i, layer), host, floor((size - w) / 2), y, w, h, c)
@@ -41,8 +41,8 @@ function ns.MergeTileIcon(host, size)
         floor((size - bodyW) / 2) + inset + max(1, floor(bodyW * 0.10 + 0.5)),
         shldY, max(1, floor(bodyW * 0.09 + 0.5)), bodyY + bodyH - shldY - inset, SHINE)
     local fs = ns.ArtText(host, 1)
-    if not fs:SetFont(NUM_FONT, px, "OUTLINE") then
-        fs:SetFont((fs:GetFont()), px, "OUTLINE")
+    if not ns.SetFont(fs, NUM_FONT, px, "OUTLINE") then
+        ns.SetFont(fs, (fs:GetFont()), px, "OUTLINE")
     end
     fs:SetWidth(size); fs:SetHeight(bodyH)
     fs:SetJustifyH("CENTER"); fs:SetJustifyV("MIDDLE")

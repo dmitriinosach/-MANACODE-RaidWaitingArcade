@@ -83,7 +83,7 @@ local GUN_LEVEL = {
     { n = 5, spread = 70, rel = 0.8 },
 }
 local CHAIN_STEP, CHAIN_MAX = 10, 5
-local SHOT_SFX = 0.22
+local SHOT_SFX = 0.6
 local BEAM_TIME, BEAM_HIT, BEAM_HALF = 2.0, 0.12, 9
 local FORM_ROWS = {
     { "ghoul", "ghoul", "ghoul", "ghoul", "ghoul" },
@@ -182,7 +182,7 @@ local BOMB_TINT = {
 }
 local view, enemyPool, shotPool, bombPool, dropPool, poolPool, boltPool
 local function roundFrame(parent, level, size, elite)
-    local f = CreateFrame("Frame", nil, parent)
+    local f = ns.NewFrame("Frame", nil, parent)
     f:SetFrameLevel(parent:GetFrameLevel() + level)
     f:SetWidth(size)
     f:SetHeight(size)
@@ -212,7 +212,7 @@ local function roundFrame(parent, level, size, elite)
     return f
 end
 local function boltFrame(canvas, level, art)
-    local f = CreateFrame("Frame", nil, canvas)
+    local f = ns.NewFrame("Frame", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel() + level)
     f:SetWidth(art)
     f:SetHeight(art)
@@ -238,7 +238,7 @@ local function ensureView(canvas)
     view.art = art
     view.sky = {}
     for L = 1, SKY_LAYERS do
-        local f = CreateFrame("Frame", nil, canvas)
+        local f = ns.NewFrame("Frame", nil, canvas)
         f:SetFrameLevel(canvas:GetFrameLevel())
         f:Hide()
         f.star = {}
@@ -248,25 +248,25 @@ local function ensureView(canvas)
             local a = 0.14 + 0.12 * L
             t:SetWidth(s)
             t:SetHeight(s)
-            t:SetTexture(1, 1, 1, a)
+            ns.Paint(t, 1, 1, 1, a)
             f.star[i] = t
         end
         view.sky[L] = f
     end
-    view.form = CreateFrame("Frame", nil, canvas)
+    view.form = ns.NewFrame("Frame", nil, canvas)
     view.form:SetFrameLevel(canvas:GetFrameLevel() + 2)
     view.form:SetWidth(FORM_W)
     view.form:SetHeight(FORM_H)
     view.form:Hide()
-    view.breath = CreateFrame("Frame", nil, canvas)
+    view.breath = ns.NewFrame("Frame", nil, canvas)
     view.breath:SetFrameLevel(canvas:GetFrameLevel() + 1)
     view.breath:SetWidth(F.frostW)
     view.breath.tex = view.breath:CreateTexture(nil, "ARTWORK")
     view.breath.tex:SetAllPoints()
-    view.breath.tex:SetTexture(0.6, 0.85, 1, 0.5)
+    ns.Paint(view.breath.tex, 0.6, 0.85, 1, 0.5)
     view.breath:Hide()
     poolPool = ns.NewPool(function()
-        local f = CreateFrame("Frame", nil, canvas)
+        local f = ns.NewFrame("Frame", nil, canvas)
         f:SetFrameLevel(canvas:GetFrameLevel() + 1)
         f:SetWidth(F.plagueR * 2)
         f:SetHeight(F.plagueR * 2)
@@ -277,15 +277,15 @@ local function ensureView(canvas)
         f.tex:SetVertexColor(0.45, 0.95, 0.35, 0.55)
         return f
     end)
-    view.beam = CreateFrame("Frame", nil, canvas)
+    view.beam = ns.NewFrame("Frame", nil, canvas)
     view.beam:SetFrameLevel(canvas:GetFrameLevel() + 1)
     view.beam:SetWidth(BEAM_W)
     view.beam:SetHeight(10)
     view.beam.tex = view.beam:CreateTexture(nil, "ARTWORK")
     view.beam.tex:SetAllPoints()
-    view.beam.tex:SetTexture(0.7, 0.9, 1, 0.5)
+    ns.Paint(view.beam.tex, 0.7, 0.9, 1, 0.5)
     view.beam:Hide()
-    view.ward = CreateFrame("Frame", nil, canvas)
+    view.ward = ns.NewFrame("Frame", nil, canvas)
     view.ward:SetFrameLevel(canvas:GetFrameLevel() + 2)
     view.ward:SetWidth(SHIP * WARD_BUBBLE)
     view.ward:SetHeight(SHIP * WARD_BUBBLE)
@@ -323,7 +323,7 @@ local function ensureView(canvas)
     view.wyrm.elite:SetVertexColor(D.ELITE_GOLD[1], D.ELITE_GOLD[2], D.ELITE_GOLD[3])
     view.wyrm.elite:Show()
     view.mobs = {}
-    local hud = CreateFrame("Frame", nil, canvas)
+    local hud = ns.NewFrame("Frame", nil, canvas)
     hud:SetAllPoints()
     hud:SetFrameLevel(canvas:GetFrameLevel() + 6)
     hud:EnableMouse(false)
@@ -344,13 +344,13 @@ local function ensureView(canvas)
     end
     view.bossBg = hud:CreateTexture(nil, "ARTWORK")
     view.bossBg:SetHeight(10)
-    view.bossBg:SetTexture(0, 0, 0, 0.65)
+    ns.Paint(view.bossBg, 0, 0, 0, 0.65)
     view.bossBg:SetPoint("TOPLEFT", hud, "TOPLEFT", 12, -38)
     view.bossBg:SetPoint("TOPRIGHT", hud, "TOPRIGHT", -12, -38)
     view.bossBg:Hide()
     view.bossFill = hud:CreateTexture(nil, "OVERLAY")
     view.bossFill:SetHeight(10)
-    view.bossFill:SetTexture(0.85, 0.25, 0.25, 0.95)
+    ns.Paint(view.bossFill, 0.85, 0.25, 0.25, 0.95)
     view.bossFill:SetPoint("TOPLEFT", view.bossBg, "TOPLEFT", 0, 0)
     view.bossFill:Hide()
     view.bossName = hud:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -368,7 +368,7 @@ local function ensureView(canvas)
     view.cdBg = hud:CreateTexture(nil, "ARTWORK")
     view.cdBg:SetWidth(120)
     view.cdBg:SetHeight(6)
-    view.cdBg:SetTexture(0, 0, 0, 0.6)
+    ns.Paint(view.cdBg, 0, 0, 0, 0.6)
     view.cdBg:SetPoint("BOTTOMRIGHT", hud, "BOTTOMRIGHT", -12, 8)
     view.cdFill = hud:CreateTexture(nil, "OVERLAY")
     view.cdFill:SetHeight(6)
@@ -2503,7 +2503,7 @@ end
 function Game:PaintGun()
     local w = self:Gun()
     local c = w.colour
-    view.cdFill:SetTexture(c[1], c[2], c[3], 0.9)
+    ns.Paint(view.cdFill, c[1], c[2], c[3], 0.9)
     if not view.ship.shipIsSprite and not view.ship.shipIsClass then
         view.ship.rim:SetVertexColor(c[1], c[2], c[3])
     end
@@ -2655,9 +2655,9 @@ function Game:Draw()
         view.breath:ClearAllPoints()
         view.breath:SetPoint("BOTTOMLEFT", canvas, "BOTTOMLEFT", sm.x - F.streamW / 2, 0)
         if sm.t < F.streamTell then
-            view.breath.tex:SetTexture(0.5, 0.9, 0.3, 0.12 + 0.18 * (sm.t / F.streamTell))
+            ns.Paint(view.breath.tex, 0.5, 0.9, 0.3, 0.12 + 0.18 * (sm.t / F.streamTell))
         else
-            view.breath.tex:SetTexture(0.45, 0.95, 0.3, 0.7)
+            ns.Paint(view.breath.tex, 0.45, 0.95, 0.3, 0.7)
         end
         view.breath:Show()
     else
@@ -2668,9 +2668,9 @@ function Game:Draw()
         view.breath:ClearAllPoints()
         view.breath:SetPoint("BOTTOMLEFT", canvas, "BOTTOMLEFT", br.x - F.frostW / 2, 0)
         if br.t < F.frostTell then
-            view.breath.tex:SetTexture(0.5, 0.8, 1, 0.10 + 0.14 * (br.t / F.frostTell))
+            ns.Paint(view.breath.tex, 0.5, 0.8, 1, 0.10 + 0.14 * (br.t / F.frostTell))
         else
-            view.breath.tex:SetTexture(0.75, 0.95, 1, 0.75)
+            ns.Paint(view.breath.tex, 0.75, 0.95, 1, 0.75)
         end
         view.breath:Show()
     else
@@ -2684,9 +2684,9 @@ function Game:Draw()
         view.beam:ClearAllPoints()
         view.beam:SetPoint("BOTTOMLEFT", canvas, "BOTTOMLEFT", bm.x - BEAM_W / 2, 0)
         if bm.t < BEAM_TELL then
-            view.beam.tex:SetTexture(1, 0.4, 0.3, 0.18 + 0.15 * (bm.t / BEAM_TELL))
+            ns.Paint(view.beam.tex, 1, 0.4, 0.3, 0.18 + 0.15 * (bm.t / BEAM_TELL))
         else
-            view.beam.tex:SetTexture(0.75, 0.92, 1, 0.85)
+            ns.Paint(view.beam.tex, 0.75, 0.92, 1, 0.85)
         end
         view.beam:Show()
     else
@@ -2760,10 +2760,10 @@ function Game:DrawHud()
         if frac < 0 then frac = 0 end
         if self:Shielded() then
             view.bossName:SetText(self.boss.name .. "  |cff60d0ff" .. ns.T("invaders.hudShield") .. "|r")
-            view.bossFill:SetTexture(0.35, 0.6, 0.9, 0.95)
+            ns.Paint(view.bossFill, 0.35, 0.6, 0.9, 0.95)
         else
             view.bossName:SetText(self.boss.name)
-            view.bossFill:SetTexture(0.85, 0.25, 0.25, 0.95)
+            ns.Paint(view.bossFill, 0.85, 0.25, 0.25, 0.95)
         end
         view.bossFill:SetWidth(max(1, (self.W - 24) * frac))
         view.bossName:Show()

@@ -3,7 +3,7 @@ local PAD, ROW = 16, 30
 local panel
 local checks = {}
 local function check(key, textKey, y, get, set)
-    local c = CreateFrame("CheckButton", "RaidWaitingArcadeOpt_" .. key, panel, "InterfaceOptionsCheckButtonTemplate")
+    local c = ns.NewFrame("CheckButton", "RaidWaitingArcadeOpt_" .. key, panel, ns.Compat.checkTemplate)
     c:SetPoint("TOPLEFT", panel, "TOPLEFT", PAD, -y)
     c.textKey = textKey
     c.get = get
@@ -15,7 +15,7 @@ local function check(key, textKey, y, get, set)
     return c
 end
 local function button(y, textKey, run)
-    local b = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    local b = ns.NewFrame("Button", nil, panel, "UIPanelButtonTemplate")
     b:SetHeight(22)
     b:SetPoint("TOPLEFT", panel, "TOPLEFT", PAD, -y)
     b.textKey = textKey
@@ -23,7 +23,7 @@ local function button(y, textKey, run)
     return b
 end
 local function openArcade(prefs)
-    if InterfaceOptionsFrame then InterfaceOptionsFrame:Hide() end
+    ns.Compat.HideOptions()
     if HideUIPanel and GameMenuFrame then HideUIPanel(GameMenuFrame) end
     ns.window:Open()
     if prefs and ns.PrefsUI then ns.PrefsUI.Show() end
@@ -31,7 +31,7 @@ end
 local function refresh()
     panel.title:SetText(ns.T("appTitle"))
     for _, c in ipairs(checks) do
-        _G[c:GetName() .. "Text"]:SetText(ns.T(c.textKey))
+        ns.Compat.CheckLabel(c):SetText(ns.T(c.textKey))
         c:SetChecked(c.get())
     end
     for _, b in ipairs(panel.buttons) do
@@ -40,7 +40,7 @@ local function refresh()
     end
 end
 local function build()
-    panel = CreateFrame("Frame", "RaidWaitingArcadeOptions", UIParent)
+    panel = ns.NewFrame("Frame", "RaidWaitingArcadeOptions", UIParent)
     panel.name = ns.T("appTitle")
     panel.title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     panel.title:SetPoint("TOPLEFT", panel, "TOPLEFT", PAD, -PAD)
@@ -59,16 +59,16 @@ local function build()
     }
     panel.refresh = refresh
     panel:SetScript("OnShow", refresh)
-    InterfaceOptions_AddCategory(panel)
+    ns.Compat.AddOptions(panel)
 end
-local f = CreateFrame("Frame")
-f:RegisterEvent("PLAYER_LOGIN")
+local f = ns.NewFrame("Frame")
+ns.Listen(f, "PLAYER_LOGIN")
 f:SetScript("OnEvent", function(self)
     self:UnregisterAllEvents()
-    if type(InterfaceOptions_AddCategory) ~= "function" then return end
+    if not ns.Compat.CanAddOptions() then return end
     build()
 end)
 function ns.OpenBlizzOptions()
     if not panel then return end
-    InterfaceOptionsFrame_OpenToCategory(panel)
+    ns.Compat.OpenOptions(panel)
 end

@@ -430,9 +430,9 @@ ns.Link.OnPresence(function(name)
     if name:lower() ~= peer:lower() then return end
     lastHeard, pinged = GetTime(), nil
 end)
-local ticker = CreateFrame("Frame")
+local ticker = ns.NewFrame("Frame")
 local since = 0
-ticker:RegisterEvent("PLAYER_TARGET_CHANGED")
+ns.Listen(ticker, "PLAYER_TARGET_CHANGED")
 ticker:SetScript("OnEvent", function()
     if not stage then tell() end
 end)

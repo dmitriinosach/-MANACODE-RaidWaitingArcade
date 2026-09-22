@@ -9,7 +9,7 @@ local CELLS = {
 local function put(t, host, x, y, w, h, c)
     t:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
     t:SetWidth(max(1, w)); t:SetHeight(max(1, h))
-    t:SetTexture(c[1], c[2], c[3], 1)
+    ns.Paint(t, c[1], c[2], c[3], 1)
 end
 function ns.TetrisTileIcon(host, size)
     local cell = max(3, floor(size / 4))

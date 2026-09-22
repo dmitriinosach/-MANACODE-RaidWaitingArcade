@@ -114,7 +114,7 @@ local TILE_COORD = { 0.25, 0.5, 0.25, 0.5 }
 local EMPTY_TEX = "Interface\\Buttons\\WHITE8X8"
 local view, cellPool
 local function cellFrame(canvas, level)
-    local f = CreateFrame("Frame", nil, canvas)
+    local f = ns.NewFrame("Frame", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel() + level)
     f:SetWidth(CELL - 1)
     f:SetHeight(CELL - 1)
@@ -128,8 +128,8 @@ local function cellFrame(canvas, level)
 end
 local function paintKant(rim, face, c)
     local r, g, b = c[1], c[2], c[3]
-    face:SetTexture(r, g, b, 1)
-    rim:SetTexture(min(r * 1.35, 1), min(g * 1.35, 1), min(b * 1.35, 1), 1)
+    ns.Paint(face, r, g, b, 1)
+    ns.Paint(rim, min(r * 1.35, 1), min(g * 1.35, 1), min(b * 1.35, 1), 1)
 end
 local function paintCell(f, kind)
     paintKant(f.rim, f.face, PIECE_RGB[kind])
@@ -139,8 +139,8 @@ local function styleBrick(b)
     local tone = PIECE_RGB[look.tone]
     local lit = b.chosen or (b.hover and not b.locked)
     local edge = lit and tone or (b.hover and C_EDGE or C_NEDGE)
-    b.rim:SetTexture(edge[1], edge[2], edge[3], 1)
-    b.face:SetTexture(C_WELL[1], C_WELL[2], C_WELL[3], 1)
+    ns.Paint(b.rim, edge[1], edge[2], edge[3], 1)
+    ns.Paint(b.face, C_WELL[1], C_WELL[2], C_WELL[3], 1)
     local lc = lit and C_VAL or C_SUB
     b.label:SetTextColor(lc[1], lc[2], lc[3])
     for i = 1, BAR_N do
@@ -148,14 +148,14 @@ local function styleBrick(b)
         if i <= look.bars then
             paintKant(bar.rim, bar.face, lit and tone or C_CAP)
         else
-            bar.rim:SetTexture(C_NEDGE[1], C_NEDGE[2], C_NEDGE[3], 1)
-            bar.face:SetTexture(C_GRID[1], C_GRID[2], C_GRID[3], 1)
+            ns.Paint(bar.rim, C_NEDGE[1], C_NEDGE[2], C_NEDGE[3], 1)
+            ns.Paint(bar.face, C_GRID[1], C_GRID[2], C_GRID[3], 1)
         end
     end
     b:SetAlpha((b.locked and not b.chosen) and DIFF_GHOST or 1)
 end
 local function diffBrick(parent, y)
-    local b = CreateFrame("Button", nil, parent)
+    local b = ns.NewFrame("Button", nil, parent)
     b:SetWidth(DIFF_W)
     b:SetHeight(DIFF_H)
     b:SetPoint("TOPLEFT", parent, "TOPLEFT", LEFT_X, -y)
@@ -165,7 +165,7 @@ local function diffBrick(parent, y)
     b.face:SetPoint("TOPLEFT", b, "TOPLEFT", KANT, -KANT)
     b.face:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", 0, 0)
     b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    b.label:SetFont(FONT, 12, "")
+    ns.SetFont(b.label, FONT, 12, "")
     b.label:SetJustifyH("LEFT")
     b.label:SetPoint("LEFT", b, "LEFT", 10, -1)
     b.bars = {}
@@ -200,28 +200,28 @@ end
 local function ensureView(canvas)
     if view then return end
     view = {}
-    local deco = CreateFrame("Frame", nil, canvas)
+    local deco = ns.NewFrame("Frame", nil, canvas)
     deco:SetFrameLevel(canvas:GetFrameLevel() + 1)
     deco:SetAllPoints(canvas)
     deco:Hide()
     view.deco = deco
-    local rim = CreateFrame("Frame", nil, canvas)
+    local rim = ns.NewFrame("Frame", nil, canvas)
     rim:SetFrameLevel(canvas:GetFrameLevel() + 6)
     rim:SetAllPoints(canvas)
     rim:Hide()
     view.rim = rim
     local function fill(parent, layer, x, top, w, h, c, a)
         local t = parent:CreateTexture(nil, layer)
-        t:SetTexture(c[1], c[2], c[3], a or 1)
+        ns.Paint(t, c[1], c[2], c[3], a or 1)
         t:SetWidth(w); t:SetHeight(h)
         t:SetPoint("TOPLEFT", parent, "TOPLEFT", x, -top)
         return t
     end
     local scr = ns.window:ScreenFill(deco)
-    scr:SetTexture(1, 1, 1, 1)
-    scr:SetGradient("VERTICAL",
-        C_SCR_BOT[1], C_SCR_BOT[2], C_SCR_BOT[3],
-        C_SCR_TOP[1], C_SCR_TOP[2], C_SCR_TOP[3])
+    ns.Paint(scr, 1, 1, 1, 1)
+    ns.Gradient(scr, "VERTICAL",
+        C_SCR_BOT[1], C_SCR_BOT[2], C_SCR_BOT[3], 1,
+        C_SCR_TOP[1], C_SCR_TOP[2], C_SCR_TOP[3], 1)
     for _, wx in ipairs({ 0, FIELD_X + FIELD_W }) do
         fill(deco, "BORDER", wx, 0, WING_W, FIELD_H, C_WING, 0.5)
         for i = 1, WING_W / 40 - 1 do
@@ -249,7 +249,7 @@ local function ensureView(canvas)
     fill(deco, "ARTWORK", NEXT_X + NEXT_W - 1, NEXT_TOP, 1, NEXT_H, C_NEDGE)
     local function text(host, x, y, size, c, right)
         local fs = host:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        fs:SetFont(FONT, size, "")
+        ns.SetFont(fs, FONT, size, "")
         fs:SetTextColor(c[1], c[2], c[3])
         fs:SetJustifyH(right and "RIGHT" or "LEFT")
         fs:SetPoint(right and "RIGHT" or "LEFT", deco, "TOPLEFT", x, -y)
@@ -258,7 +258,7 @@ local function ensureView(canvas)
     local ROW_SCORE, ROW_CLOCK = 33, 69
     ns.SetKeyText(text(deco, LEFT_X, ROW_SCORE, 11, C_CAP), "tetris.scoreCap")
     view.scoreVal = text(deco, LEFT_R, ROW_SCORE, 22, C_VAL, true)
-    local clockBox = CreateFrame("Frame", nil, deco)
+    local clockBox = ns.NewFrame("Frame", nil, deco)
     clockBox:SetPoint("TOPLEFT", deco, "TOPLEFT", LEFT_X, -(ROW_CLOCK - 16))
     clockBox:SetWidth(LEFT_R - LEFT_X)
     clockBox:SetHeight(32)

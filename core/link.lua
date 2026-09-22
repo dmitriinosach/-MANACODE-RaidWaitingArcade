@@ -1,6 +1,7 @@
 local ADDON, ns = ...
 ns.Link = {}
 local PREFIX = "rwArc"
+ns.Compat.RegisterPrefix(PREFIX)
 local VER = 1
 local BODY_MAX = 248
 local SEND_CAP = 10
@@ -152,16 +153,15 @@ function ns.Link.Send(to, tag, ...)
         body = body .. "\t" .. tostring(v)
     end
     if #body > BODY_MAX then return false end
-    SendAddonMessage(PREFIX, body, "WHISPER", to)
+    ns.Compat.SendAddon(PREFIX, body, "WHISPER", to)
     return true
 end
 local shouted = false
 local partyWas, partyAt = 0, 0
 local PARTY_GAP = 15
 local function around()
-    local raid = GetNumRaidMembers and GetNumRaidMembers() or 0
+    local raid, party = ns.Compat.GroupSize()
     if raid > 0 then return raid, "RAID" end
-    local party = GetNumPartyMembers and GetNumPartyMembers() or 0
     if party > 0 then return party, "PARTY" end
     return 0, nil
 end
@@ -174,7 +174,7 @@ local function shoutGuild()
     shouted = true
     if not (IsInGuild and IsInGuild()) then return end
     if not budgetOk() then return end
-    SendAddonMessage(PREFIX, hereBody(), "GUILD")
+    ns.Compat.SendAddon(PREFIX, hereBody(), "GUILD")
 end
 local function shoutGroup()
     local n, chan = around()
@@ -188,7 +188,7 @@ local function shoutGroup()
     if now - partyAt < PARTY_GAP then return end
     partyAt = now
     if not budgetOk() then return end
-    SendAddonMessage(PREFIX, hereBody(), chan)
+    ns.Compat.SendAddon(PREFIX, hereBody(), chan)
 end
 local SHOUT_GAP = 20
 local shoutAt, shoutSt = 0, nil
@@ -200,10 +200,10 @@ function ns.Link.Shout()
     shoutSt, shoutAt = st, now
     local body = hereBody()
     if IsInGuild and IsInGuild() and budgetOk() then
-        SendAddonMessage(PREFIX, body, "GUILD")
+        ns.Compat.SendAddon(PREFIX, body, "GUILD")
     end
     local _, chan = around()
-    if chan and budgetOk() then SendAddonMessage(PREFIX, body, chan) end
+    if chan and budgetOk() then ns.Compat.SendAddon(PREFIX, body, chan) end
 end
 function ns.Link.Norm(name)
     if type(name) ~= "string" or name == "" then return nil end
@@ -285,11 +285,11 @@ local seers = {}
 function ns.Link.Watch(fn)
     if type(fn) == "function" then seers[#seers + 1] = fn end
 end
-local f = CreateFrame("Frame")
-f:RegisterEvent("CHAT_MSG_ADDON")
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
-f:RegisterEvent("PARTY_MEMBERS_CHANGED")
-f:RegisterEvent("RAID_ROSTER_UPDATE")
+local f = ns.NewFrame("Frame")
+ns.Listen(f, "CHAT_MSG_ADDON")
+ns.Listen(f, "PLAYER_ENTERING_WORLD")
+ns.Listen(f, "PARTY_MEMBERS_CHANGED")
+ns.Listen(f, "RAID_ROSTER_UPDATE")
 f:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
     if event == "PLAYER_ENTERING_WORLD" then
         shoutGuild()
@@ -297,7 +297,7 @@ f:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
         shoutGroup()
         return
     end
-    if event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" then
+    if event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" or event == "GROUP_ROSTER_UPDATE" then
         shoutGroup()
         return
     end

@@ -1179,7 +1179,7 @@ local function line(t, x1, y1, x2, y2)
     t:SetHeight(side)
     t:ClearAllPoints()
     t:SetPoint("CENTER", t:GetParent(), "BOTTOMLEFT", (x1 + x2) / 2, (y1 + y2) / 2)
-    t:SetRotation(atan2(-dx, dy))
+    ns.Rotate(t, atan2(-dx, dy))
     t:Show()
 end
 local function crestFloor(p, on)
@@ -1202,7 +1202,7 @@ local function paintPart(t, tex, r, g, b)
     if tex then
         t:SetVertexColor(r, g, b)
     else
-        t:SetTexture(r, g, b, 1)
+        ns.Paint(t, r, g, b, 1)
         t:SetVertexColor(1, 1, 1)
     end
 end
@@ -1240,7 +1240,7 @@ local function tintFloor(p, T, k, tone)
                 local c, kk = partTone(T, k, d[5], d[6])
                 local r, g, b = tone(c, kk)
                 for i = 1, T.wins do
-                    p.wdeco[(i - 1) * FORM.MAX_WDECO + j]:SetTexture(r, g, b, 1)
+                    ns.Paint(p.wdeco[(i - 1) * FORM.MAX_WDECO + j], r, g, b, 1)
                 end
             end
         end
@@ -1314,7 +1314,7 @@ local function resFrame(canvas)
 end
 local function setPart(t, c)
     if c then
-        t:SetTexture(c[1], c[2], c[3])
+        ns.Paint(t, c[1], c[2], c[3])
         t:Show()
     else
         t:Hide()
@@ -1322,16 +1322,16 @@ local function setPart(t, c)
 end
 local function dress(f, F, chute)
     local c = F.chute or chute
-    f.crown:SetTexture(min(1, c[1] * 1.10), min(1, c[2] * 1.10), min(1, c[3] * 1.10))
-    f.dome:SetTexture(c[1], c[2], c[3])
-    f.rim:SetTexture(c[1] * 0.84, c[2] * 0.84, c[3] * 0.84)
+    ns.Paint(f.crown, min(1, c[1] * 1.10), min(1, c[2] * 1.10), min(1, c[3] * 1.10))
+    ns.Paint(f.dome, c[1], c[2], c[3])
+    ns.Paint(f.rim, c[1] * 0.84, c[2] * 0.84, c[3] * 0.84)
     local sk, rb, lg = F.skin, F.robe, F.legs
-    f.head:SetTexture(sk[1], sk[2], sk[3])
-    f.armL:SetTexture(sk[1], sk[2], sk[3])
-    f.armR:SetTexture(sk[1], sk[2], sk[3])
-    f.torso:SetTexture(rb[1], rb[2], rb[3])
-    f.legL:SetTexture(lg[1], lg[2], lg[3])
-    f.legR:SetTexture(lg[1], lg[2], lg[3])
+    ns.Paint(f.head, sk[1], sk[2], sk[3])
+    ns.Paint(f.armL, sk[1], sk[2], sk[3])
+    ns.Paint(f.armR, sk[1], sk[2], sk[3])
+    ns.Paint(f.torso, rb[1], rb[2], rb[3])
+    ns.Paint(f.legL, lg[1], lg[2], lg[3])
+    ns.Paint(f.legR, lg[1], lg[2], lg[3])
     local aw = min(RES_ARM_MAX, F.arm or 3)
     f.armL:SetWidth(aw)
     f.armR:SetWidth(aw)
@@ -1397,12 +1397,12 @@ local function shapeRoof(T)
             t:ClearAllPoints()
             t:SetPoint("BOTTOM", f, "BOTTOM", T.fw * p[3], p[4])
             if p[5] == true then
-                t:SetTexture(PAL.GOLD[1], PAL.GOLD[2], PAL.GOLD[3], 1)
+                ns.Paint(t, PAL.GOLD[1], PAL.GOLD[2], PAL.GOLD[3], 1)
             elseif p[6] then
-                t:SetTexture(p[6][1], p[6][2], p[6][3], 1)
+                ns.Paint(t, p[6][1], p[6][2], p[6][3], 1)
             else
                 local k = p[5] or (1.15 - 0.06 * i)
-                t:SetTexture(min(1, c[1] * k), min(1, c[2] * k), min(1, c[3] * k), 1)
+                ns.Paint(t, min(1, c[1] * k), min(1, c[2] * k), min(1, c[3] * k), 1)
             end
             t:Show()
         else
@@ -1470,13 +1470,13 @@ local function drawMini(h, T, n, mode, withCap)
             for q = 1, V.wins do
                 local t = f.win[q]
                 if locked then
-                    t:SetTexture(LOCK_TINT[1] * 0.42, LOCK_TINT[2] * 0.42,
+                    ns.Paint(t, LOCK_TINT[1] * 0.42, LOCK_TINT[2] * 0.42,
                                  LOCK_TINT[3] * 0.42, 1)
                 elseif mode == "sel" then
-                    t:SetTexture(litC[1], litC[2], litC[3], 1)
+                    ns.Paint(t, litC[1], litC[2], litC[3], 1)
                 else
                     local off = V.off or WIN_OFF
-                    t:SetTexture(off[1], off[2], off[3], 1)
+                    ns.Paint(t, off[1], off[2], off[3], 1)
                 end
             end
         else
@@ -1538,7 +1538,7 @@ local function buildMenu(canvas)
         rec:SetPoint("CENTER", m.root, "BOTTOMLEFT", cx, MENU_REC_Y)
         local hgt = m.root:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
         hgt:SetPoint("CENTER", m.root, "BOTTOMLEFT", cx, MENU_REC_Y - 15)
-        local hit = CreateFrame("Button", nil, m.root)
+        local hit = ns.NewFrame("Button", nil, m.root)
         hit:SetFrameLevel(m.root:GetFrameLevel() + 2)
         hit:SetWidth(col)
         hit:SetHeight(300)
@@ -2478,8 +2478,8 @@ function Game:PaintSlot(i)
     if chosen or hot then
         local p = chosen and PLOT_SEL or PLOT_HOVER
         local b = chosen and BASE_SEL or BASE_HOVER
-        s.plot:SetTexture(p[1], p[2], p[3], 1)
-        s.base:SetTexture(b[1], b[2], b[3], 1)
+        ns.Paint(s.plot, p[1], p[2], p[3], 1)
+        ns.Paint(s.base, b[1], b[2], b[3], 1)
         s.plot:Show()
         s.base:Show()
     else
@@ -2822,7 +2822,7 @@ function Game:Paint()
     local hi = mixTo(mixB, SKY_DAY_HI, SKY_NIGHT_HI, t)
     for i = 1, BG.SKY_BANDS do
         local k = (i - 1) / (BG.SKY_BANDS - 1)
-        view.band[i]:SetTexture(mix(lo[1], hi[1], k), mix(lo[2], hi[2], k),
+        ns.Paint(view.band[i], mix(lo[1], hi[1], k), mix(lo[2], hi[2], k),
                                 mix(lo[3], hi[3], k), 1)
     end
     local sa = clamp01(t * 1.7 - 0.55)
@@ -2834,16 +2834,16 @@ function Game:Paint()
     for i = 1, #view.mount do
         local p = view.mount[i]
         if p.tone == "snow" then
-            p.tex:SetTexture(sr, sg, sb, 1)
+            ns.Paint(p.tex, sr, sg, sb, 1)
         else
-            p.tex:SetTexture(mr, mg, mb, 1)
+            ns.Paint(p.tex, mr, mg, mb, 1)
         end
     end
     local alt = self:Alt()
     local da = BG.DECK_A * clamp01((alt - BG.DECK_FROM) / (BG.DECK_FULL - BG.DECK_FROM))
     local d = mixTo(mixA, BG.DECK_DAY, BG.DECK_NIGHT, t)
     if da > 0.01 then
-        view.deck:SetGradientAlpha("VERTICAL", d[1], d[2], d[3], da, d[1], d[2], d[3], 0)
+        ns.Gradient(view.deck, "VERTICAL", d[1], d[2], d[3], da, d[1], d[2], d[3], 0)
         view.deck:Show()
     else
         view.deck:Hide()
@@ -2851,12 +2851,12 @@ function Game:Paint()
     local stra = da * 0.9
     for i = 1, BG.STRATUS do
         local c = view.stratus[i]
-        c[1]:SetTexture(d[1], d[2], d[3], stra)
-        c[2]:SetTexture(d[1], d[2], d[3], stra * 0.7)
+        ns.Paint(c[1], d[1], d[2], d[3], stra)
+        ns.Paint(c[2], d[1], d[2], d[3], stra * 0.7)
     end
     local hr, hg, hb = HAZE_DAY[1], HAZE_DAY[2], HAZE_DAY[3]
     local ha = HAZE_A * (1 - clamp01(t * 1.15))
-    view.haze:SetGradientAlpha("VERTICAL", hr, hg, hb, ha, hr, hg, hb, 0)
+    ns.Gradient(view.haze, "VERTICAL", hr, hg, hb, ha, hr, hg, hb, 0)
     local set = SCENES[skinKey()]
     for ri = 1, #set do
         local row = set[ri]
@@ -2867,16 +2867,16 @@ function Game:Paint()
         for i = 1, #parts do
             local p = parts[i]
             if p.tone == "body" then
-                p.tex:SetTexture(br, bg, bb, 1)
+                ns.Paint(p.tex, br, bg, bb, 1)
             elseif p.tone == "glass" then
-                p.tex:SetTexture(gr, gg, gb, 1)
+                ns.Paint(p.tex, gr, gg, gb, 1)
             else
-                p.tex:SetTexture(tr, tg, tb, 1)
+                ns.Paint(p.tex, tr, tg, tb, 1)
             end
         end
         local floor = view.rowFloor[ri]
         if floor then
-            floor:SetTexture(br, bg, bb, 1)
+            ns.Paint(floor, br, bg, bb, 1)
         end
     end
     local cr, cg, cb = mix3(TREE_CROWN, lo, 0.16)
@@ -2884,19 +2884,19 @@ function Game:Paint()
     for i = 1, #view.tree do
         local p = view.tree[i]
         if p.tone == "crown" then
-            p.tex:SetTexture(cr, cg, cb, 1)
+            ns.Paint(p.tex, cr, cg, cb, 1)
         else
-            p.tex:SetTexture(kr, kg, kb2, 1)
+            ns.Paint(p.tex, kr, kg, kb2, 1)
         end
     end
     local g = mixTo(mixA, GROUND_DAY, GROUND_NIGHT, t)
-    view.ground:SetTexture(g[1], g[2], g[3], 1)
+    ns.Paint(view.ground, g[1], g[2], g[3], 1)
     local kb = mixTo(mixB, KERB_DAY, KERB_NIGHT, t)
-    view.kerb:SetTexture(kb[1], kb[2], kb[3], 1)
+    ns.Paint(view.kerb, kb[1], kb[2], kb[3], 1)
     local ca = mix(CLOUD_A, 0.14, t)
     for i = 1, CLOUDS do
         local c = view.cloud[i]
-        for k = 1, 3 do c[k]:SetTexture(0.97, 0.98, 1.00, ca) end
+        for k = 1, 3 do ns.Paint(c[k], 0.97, 0.98, 1.00, ca) end
     end
     local ba = mix(1, 0.45, t)
     for i = 1, #view.bal do view.bal[i].tex:SetAlpha(ba) end
@@ -3071,7 +3071,7 @@ function Game:DrawRuler()
             local a = best and 1 or 0.8
             for r = 1, #RULER.WEDGE do
                 local t = m.rows[r]
-                t:SetTexture(c[1], c[2], c[3], a)
+                ns.Paint(t, c[1], c[2], c[3], a)
                 t:ClearAllPoints()
                 t:SetPoint("BOTTOMLEFT", view.ruler, "BOTTOMLEFT", RULER.LX, sy + half - r * RULER.ROW)
                 t:Show()
@@ -3176,7 +3176,7 @@ function Game:Draw()
                 local lit = V.lit or WIN_ON
                 for i = 1, V.wins do
                     local c = (i <= on) and lit or (V.off or WIN_OFF)
-                    f.win[i]:SetTexture(c[1], c[2], c[3], 1)
+                    ns.Paint(f.win[i], c[1], c[2], c[3], 1)
                 end
             end
             if f.badgeDrawn ~= self.badge then
@@ -3322,12 +3322,12 @@ function Game:Draw()
             if brot then rot = brot end
             view.block:ClearAllPoints()
             view.block:SetPoint("CENTER", canvas, "BOTTOMLEFT", bx, by)
-            view.block:SetRotation(rot)
+            ns.Rotate(view.block, rot)
             view.block:Show()
             if self.badge then
                 view.blockBadge:ClearAllPoints()
                 view.blockBadge:SetPoint("CENTER", canvas, "BOTTOMLEFT", bx, by)
-                view.blockBadge:SetRotation(rot)
+                ns.Rotate(view.blockBadge, rot)
                 view.blockBadge:Show()
             else
                 view.blockBadge:Hide()
@@ -3341,7 +3341,7 @@ function Game:Draw()
             local hx, hy = tx + ux * ART.RIG.HOOK_UP, ty + uy * ART.RIG.HOOK_UP
             view.hook:ClearAllPoints()
             view.hook:SetPoint("CENTER", canvas, "BOTTOMLEFT", hx, hy)
-            view.hook.tex:SetRotation(rot)
+            ns.Rotate(view.hook.tex, rot)
             view.hook:Show()
             local kx, ky = hx + ux * ART.RIG.HOOK_TOP, hy + uy * ART.RIG.HOOK_TOP
             local ropeY = ART.RIG.JIB_Y - ART.RIG.TROLLEY_H
@@ -3388,7 +3388,7 @@ local function drawFloors(host)
     local lit = { T.wins, T.mid, 1 }
     local litC = T.lit or WIN_ON
     for i = 1, 3 do
-        local f = CreateFrame("Frame", nil, host)
+        local f = ns.NewFrame("Frame", nil, host)
         f:SetWidth(fw)
         f:SetHeight(fh)
         f:SetPoint("BOTTOMLEFT", host, "BOTTOMLEFT", ox + offs[i], 4 + (i - 1) * (fh + 2))
@@ -3397,7 +3397,7 @@ local function drawFloors(host)
         tintFloor(p, T, SHADE[i], plainTone)
         for j = 1, T.wins do
             local t = (j <= lit[i]) and litC or (T.off or WIN_OFF)
-            p.win[j]:SetTexture(t[1], t[2], t[3], 1)
+            ns.Paint(p.win[j], t[1], t[2], t[3], 1)
         end
     end
 end

@@ -26,9 +26,9 @@ local function fromTarget()
 end
 local function fromFriends()
     local out = {}
-    local n = GetNumFriends and GetNumFriends() or 0
+    local n = ns.Compat.NumFriends()
     for i = 1, n do
-        local name, _, _, _, connected = GetFriendInfo(i)
+        local name, connected = ns.Compat.FriendInfo(i)
         if type(name) == "string" and name ~= "" and connected then
             out[#out + 1] = { name = name }
         end
@@ -65,13 +65,13 @@ end
 local function plate(parent, col)
     local t = parent:CreateTexture(nil, "BACKGROUND")
     t:SetAllPoints(parent)
-    t:SetTexture(col[1], col[2], col[3], col[4] or 1)
+    ns.Paint(t, col[1], col[2], col[3], col[4] or 1)
     return t
 end
 local function outline(f, col)
     local function bar(p1, p2, w, h)
         local t = f:CreateTexture(nil, "BORDER")
-        t:SetTexture(col[1], col[2], col[3], col[4] or 1)
+        ns.Paint(t, col[1], col[2], col[3], col[4] or 1)
         t:SetPoint(p1, f, p1, 0, 0)
         t:SetPoint(p2, f, p2, 0, 0)
         if w then
@@ -89,13 +89,13 @@ end
 local refresh, call
 local function build()
     ui = {}
-    ui.dim = CreateFrame("Frame", nil, UIParent)
+    ui.dim = ns.NewFrame("Frame", nil, UIParent)
     ui.dim:EnableMouse(true)
     ui.dim:Hide()
     local d = ui.dim:CreateTexture(nil, "BACKGROUND")
     d:SetAllPoints(ui.dim)
-    d:SetTexture(0.04, 0.035, 0.025, 0.72)
-    ui.panel = CreateFrame("Frame", nil, ui.dim)
+    ns.Paint(d, 0.04, 0.035, 0.025, 0.72)
+    ui.panel = ns.NewFrame("Frame", nil, ui.dim)
     ui.panel:SetFrameLevel(ui.dim:GetFrameLevel() + 1)
     ui.panel:SetWidth(PW)
     ui.panel:SetHeight(PH_LIST)
@@ -131,7 +131,7 @@ local function build()
         end
         ui.tab[key] = b
     end
-    ui.list = CreateFrame("Frame", nil, ui.panel)
+    ui.list = ns.NewFrame("Frame", nil, ui.panel)
     ui.list:SetPoint("TOPLEFT", ui.panel, "TOPLEFT", 20, -Y_LIST)
     ui.list:SetWidth(PW - 40)
     ui.list:SetHeight(H_LIST)
@@ -144,12 +144,12 @@ local function build()
     end)
     ui.cand = {}
     for i = 1, VIS do
-        local f = CreateFrame("Frame", nil, ui.list)
+        local f = ns.NewFrame("Frame", nil, ui.list)
         f:SetWidth(PW - 52)
         f:SetHeight(38)
         f:SetPoint("TOPLEFT", ui.list, "TOPLEFT", 6, -(8 + (i - 1) * 42))
         f.dot = f:CreateTexture(nil, "OVERLAY")
-        f.dot:SetTexture(1, 1, 1, 1)
+        ns.Paint(f.dot, 1, 1, 1, 1)
         f.dot:SetWidth(8)
         f.dot:SetHeight(8)
         f.dot:SetPoint("LEFT", f, "LEFT", 10, 0)
@@ -180,7 +180,7 @@ local function build()
     ui.hint:SetWidth(PW - 40)
     ui.hint:SetTextColor(C_SOFT[1], C_SOFT[2], C_SOFT[3])
     ui.hint:SetText(ns.T("callByName"))
-    ui.box = CreateFrame("EditBox", nil, ui.panel)
+    ui.box = ns.NewFrame("EditBox", nil, ui.panel)
     ui.box:SetWidth(PW - 168)
     ui.box:SetHeight(26)
     ui.box:SetPoint("TOPLEFT", ui.panel, "TOPLEFT", 20, -132)
@@ -380,12 +380,7 @@ function P.Show(host, o)
     ui.tabKey = ui.tabKey or "target"
     ui.top = 1
     ui.box:SetText("")
-    if ShowFriends then
-        ShowFriends()
-    end
-    if IsInGuild and IsInGuild() and GuildRoster then
-        GuildRoster()
-    end
+    ns.Compat.RefreshRoster()
     ui.dim:Show()
     refresh()
 end

@@ -9,10 +9,12 @@ local function store()
     return db.icondex.item
 end
 local function short(path)
+    if type(path) ~= "string" then return path end
     local name = path:match("[^\\/]+$")
     return name or path
 end
 local function full(name)
+    if type(name) ~= "string" then return name end
     if name:find("\\", 1, true) then return name end
     return ICON_DIR .. name
 end
@@ -20,7 +22,7 @@ function ns.IconDex.Item(id)
     local cache = store()
     local was = cache[id]
     if was then return full(was) end
-    local tex = GetItemIcon(id)
+    local tex = ns.Compat.ItemIcon(id)
     if not tex then
         return nil
     end
@@ -37,7 +39,7 @@ function ns.IconDex.Learn(id, tex)
     return true
 end
 function ns.IconDex.Spell(id)
-    local _, _, tex = GetSpellInfo(id)
+    local tex = ns.Compat.SpellIcon(id)
     return tex
 end
 function ns.IconDex.Of(kind, v)
@@ -67,7 +69,7 @@ function ns.IconDex.Retry(max)
             table.remove(pending, cursor)
             got = got + 1
         else
-            if it.kind == "item" then GetItemInfo(it.v) end
+            if it.kind == "item" then ns.Compat.ItemInfo(it.v) end
             cursor = cursor + 1
         end
         tries = tries + 1
@@ -92,7 +94,7 @@ function ns.IconDex.Clean(key, kind, list)
             remember(kind, v)
         else
             iconOf[v] = tex
-            local k = tex:lower()
+            local k = type(tex) == "string" and tex:lower() or tex
             if not seen[k] then
                 seen[k] = true
                 distinct[#distinct + 1] = v

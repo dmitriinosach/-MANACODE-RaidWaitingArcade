@@ -11,7 +11,7 @@ ns.RegisterFX{
             f.move:SetDuration(0.32)
             f.grow:SetScale(1.35, 1.35)
             f.grow:SetDuration(0.32)
-            f.fade:SetChange(-1)
+            ns.AlphaChange(f.fade, -1)
             f.fade:SetDuration(0.32)
             f.anim:Play()
         end

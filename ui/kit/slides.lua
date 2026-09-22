@@ -26,11 +26,11 @@ local function ensureSpot()
     bands = {}
     for i = 1, 4 do
         local t = ov:CreateTexture(nil, "BACKGROUND")
-        t:SetTexture(0, 0, 0, DIM_A)
+        ns.Paint(t, 0, 0, 0, DIM_A)
         t:Hide()
         bands[i] = t
     end
-    ring = CreateFrame("Frame", nil, ov)
+    ring = ns.NewFrame("Frame", nil, ov)
     ring:SetBackdrop({ edgeFile = EDGE_TEX, edgeSize = 12 })
     ring:SetFrameLevel(ov:GetFrameLevel() + 1)
     ring:Hide()

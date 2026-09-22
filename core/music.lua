@@ -47,8 +47,7 @@ local playing
 local stopTicker
 local function raw(p)
     if type(p) ~= "string" or p == "" then return false end
-    if type(PlayMusic) ~= "function" then return false end
-    PlayMusic(p)
+    if not ns.Compat.PlayMusic(p) then return false end
     playing = p
     return true
 end
@@ -59,7 +58,7 @@ end
 function ns.Music.Stop()
     if stopTicker then stopTicker() end
     playing = nil
-    if type(StopMusic) == "function" then StopMusic() end
+    ns.Compat.StopMusic()
 end
 function ns.Music.Playing()
     return playing
@@ -326,7 +325,7 @@ local function playNext()
 end
 local function ensureTicker()
     if ticker then return end
-    ticker = CreateFrame("Frame", nil, UIParent)
+    ticker = ns.NewFrame("Frame", nil, UIParent)
     ticker:Hide()
     ticker:SetScript("OnUpdate", function(_, dt)
         if not left then return end

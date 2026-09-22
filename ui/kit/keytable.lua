@@ -22,7 +22,7 @@ function ns.KeyTableHeight(n, spec)
 end
 function ns.MakeKeyTable(parent, spec)
     local t = setmetatable({ spec = spec, rows = {} }, Table)
-    t.frame = CreateFrame("Frame", nil, parent)
+    t.frame = ns.NewFrame("Frame", nil, parent)
     t.frame:SetWidth(spec.width or parent:GetWidth() or 400)
     t.frame:SetHeight(ROW_H)
     if spec.header then
@@ -157,7 +157,7 @@ function Table:SetRows(rows)
             self.hMouse:Hide()
         end
         local c = (ns.LookOf(f) or ns.CurrentTheme()).rule
-        self.hRule:SetTexture(c[1], c[2], c[3], c[4])
+        ns.Paint(self.hRule, c[1], c[2], c[3], c[4])
         self.hRule:ClearAllPoints()
         self.hRule:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -(HEAD_H - 3))
         self.hRule:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -(HEAD_H - 3))
@@ -182,14 +182,14 @@ end
 ns.KeyGrab = {}
 local grab, onKey
 local function build()
-    local f = CreateFrame("Frame", nil, UIParent)
+    local f = ns.NewFrame("Frame", nil, UIParent)
     f:SetFrameStrata("FULLSCREEN_DIALOG")
     f:EnableMouse(true)
     f:Hide()
     local dim = f:CreateTexture(nil, "BACKGROUND")
     dim:SetAllPoints()
-    dim:SetTexture(0, 0, 0, 0.7)
-    local card = CreateFrame("Frame", nil, f)
+    ns.Paint(dim, 0, 0, 0, 0.7)
+    local card = ns.NewFrame("Frame", nil, f)
     card:SetWidth(320)
     card:SetHeight(142)
     card:SetPoint("CENTER", f, "CENTER", 0, 0)

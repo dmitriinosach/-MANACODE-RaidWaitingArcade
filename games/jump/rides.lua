@@ -79,6 +79,6 @@ function ns.JumpRidePaint(rd, slot, list)
     local col = { rd.body, rd.trim, rd.fire, rd.spark or rd.fire }
     for i = 1, #list do
         local c = col[list[i][5]] or rd.body
-        slot[i]:SetTexture(c[1], c[2], c[3], 1)
+        ns.Paint(slot[i], c[1], c[2], c[3], 1)
     end
 end

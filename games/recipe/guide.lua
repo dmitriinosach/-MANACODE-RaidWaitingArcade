@@ -18,7 +18,7 @@ local C_EDGE = { 0.30, 0.26, 0.19 }
 local C_FACE = { 0.15, 0.13, 0.10 }
 local function fill(host, layer, x, y, w, h, c)
     local t = host:CreateTexture(nil, layer)
-    t:SetTexture(c[1], c[2], c[3], c[4] or 1)
+    ns.Paint(t, c[1], c[2], c[3], c[4] or 1)
     t:SetWidth(w)
     t:SetHeight(h)
     t:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)

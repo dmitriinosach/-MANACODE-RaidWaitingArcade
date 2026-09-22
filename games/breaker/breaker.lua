@@ -115,8 +115,8 @@ local FLOAT_RISE = 30
 local BANNER_LIFE = 1.1
 local FONT_TXT = "Fonts\\ARIALN.TTF"
 local function bigFont(fs, size)
-    if fs:SetFont(FONT_TXT, size, "THICKOUTLINE") then return end
-    fs:SetFont((fs:GetFont()), size, "THICKOUTLINE")
+    if ns.SetFont(fs, FONT_TXT, size, "THICKOUTLINE") then return end
+    ns.SetFont(fs, (fs:GetFont()), size, "THICKOUTLINE")
 end
 local function tileAt(i)
     local t = tiles[i]
@@ -125,7 +125,7 @@ local function tileAt(i)
         ic = field:CreateTexture(nil, "ARTWORK"),
         hl = field:CreateTexture(nil, "OVERLAY"),
     }
-    t.hl:SetTexture(1, 1, 1, 1)
+    ns.Paint(t.hl, 1, 1, 1, 1)
     t.hl:SetBlendMode("ADD")
     t.hl:SetAlpha(HL_A)
     t.hl:Hide()
@@ -138,7 +138,7 @@ local function edgeAt()
     local e = edges[edgeUsed]
     if not e then
         e = edgeF:CreateTexture(nil, "OVERLAY")
-        e:SetTexture(1, 1, 1, 1)
+        ns.Paint(e, 1, 1, 1, 1)
         edges[edgeUsed] = e
     end
     return e
@@ -184,7 +184,7 @@ local function capAt(parent, y, key)
 end
 local function buildMenu(canvas)
     local m = { hover = nil, tipMode = nil }
-    m.root = CreateFrame("Frame", nil, canvas)
+    m.root = ns.NewFrame("Frame", nil, canvas)
     m.root:SetFrameLevel(canvas:GetFrameLevel() + 6)
     m.root:SetAllPoints(canvas)
     m.root:Hide()
@@ -198,7 +198,7 @@ local function buildMenu(canvas)
         s.plate:SetWidth(TILE_W)
         s.plate:SetHeight(TILE_H)
         s.plate:SetPoint("TOPLEFT", m.root, "TOPLEFT", x, -TILE_TOP)
-        s.win = CreateFrame("Frame", nil, s.plate)
+        s.win = ns.NewFrame("Frame", nil, s.plate)
         s.win:SetFrameLevel(s.plate:GetFrameLevel() + 1)
         s.win:SetWidth(WIN_SIDE + WIN_PAD * 2)
         s.win:SetHeight(WIN_SIDE + WIN_PAD * 2)
@@ -209,7 +209,7 @@ local function buildMenu(canvas)
             insets = { left = 2, right = 2, top = 2, bottom = 2 },
         }
         s.win:SetBackdropColor(C_GROUT[1], C_GROUT[2], C_GROUT[3], C_GROUT[4])
-        s.deck = CreateFrame("Frame", nil, s.win)
+        s.deck = ns.NewFrame("Frame", nil, s.win)
         s.deck:SetFrameLevel(s.win:GetFrameLevel() + 1)
         s.deck:SetPoint("BOTTOMLEFT", s.win, "BOTTOMLEFT", WIN_PAD, WIN_PAD)
         s.deck:SetWidth(WIN_SIDE)
@@ -275,36 +275,36 @@ local function buildMenu(canvas)
     m.play:SetHeight(PLAY_H)
     m.play:SetPoint("TOP", m.root, "TOP", 0, -PLAY_TOP)
     ns.SetKeyText(m.play, "breaker.menuPlay")
-    m.play.text:SetFont((m.play.text:GetFont()), 16)
+    ns.SetFont(m.play.text, (m.play.text:GetFont()), 16, "")
     m.resume = ns.MakeKitButton(m.root)
     m.resume:SetFrameLevel(m.root:GetFrameLevel() + 3)
     m.resume:SetWidth(PAIR_W)
     m.resume:SetHeight(PLAY_H)
     ns.SetKeyText(m.resume, "breaker.menuResume")
-    m.resume.text:SetFont((m.resume.text:GetFont()), 16)
+    ns.SetFont(m.resume.text, (m.resume.text:GetFont()), 16, "")
     m.resume:Hide()
     return m
 end
 local function ensureView(canvas)
     if field then return end
     deco = ns.MakeTable(canvas, LOOK)
-    field = CreateFrame("Frame", nil, canvas)
+    field = ns.NewFrame("Frame", nil, canvas)
     field:SetFrameLevel(canvas:GetFrameLevel() + 1)
     field:Hide()
     local bg = field:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints()
-    bg:SetTexture(C_GROUT[1], C_GROUT[2], C_GROUT[3], C_GROUT[4])
-    rim = CreateFrame("Frame", nil, canvas)
+    ns.Paint(bg, C_GROUT[1], C_GROUT[2], C_GROUT[3], C_GROUT[4])
+    rim = ns.NewFrame("Frame", nil, canvas)
     rim:SetFrameLevel(canvas:GetFrameLevel() + 1)
     rim:SetBackdrop{ edgeFile = TEX_EDGE, edgeSize = 10 }
     rim:SetBackdropBorderColor(C_FRAME[1], C_FRAME[2], C_FRAME[3], C_FRAME[4])
     rim:Hide()
     tiles = {}
-    edgeF = CreateFrame("Frame", nil, field)
+    edgeF = ns.NewFrame("Frame", nil, field)
     edgeF:SetAllPoints()
     edgeF:SetFrameLevel(field:GetFrameLevel() + 3)
     edges = {}
-    hint = CreateFrame("Frame", nil, canvas)
+    hint = ns.NewFrame("Frame", nil, canvas)
     hint:SetFrameLevel(field:GetFrameLevel() + 4)
     hint:SetBackdrop{
         bgFile = ns.CARD_BACKDROP.bgFile,
@@ -322,7 +322,7 @@ local function ensureView(canvas)
     hint.sub:SetPoint("TOPLEFT", hint.fs, "BOTTOMLEFT", 1, -1)
     hint:Hide()
     ui = {}
-    ui.root = CreateFrame("Frame", nil, canvas)
+    ui.root = ns.NewFrame("Frame", nil, canvas)
     ui.root:SetFrameLevel(canvas:GetFrameLevel() + 3)
     ui.root:SetAllPoints(canvas)
     ui.root:Hide()
@@ -349,7 +349,7 @@ local function ensureView(canvas)
     end
     ui.bestCap, ui.best = statRow(ROW * 4 + 6, "breaker.bestCap")
     ui.rule = ui.col:CreateTexture(nil, "ARTWORK")
-    ui.rule:SetTexture(C_RULE[1], C_RULE[2], C_RULE[3], C_RULE[4])
+    ns.Paint(ui.rule, C_RULE[1], C_RULE[2], C_RULE[3], C_RULE[4])
     ui.rule:SetHeight(1)
     ui.rule:SetPoint("TOPLEFT", ui.col, "TOPLEFT", 0, -(ROW * 5 + 4))
     ui.rule:SetPoint("TOPRIGHT", ui.col, "TOPRIGHT", 0, -(ROW * 5 + 4))
@@ -359,12 +359,12 @@ local function ensureView(canvas)
     clearedCap:Hide()
     clearedVal:Hide()
     ui.barBg = ui.col:CreateTexture(nil, "ARTWORK")
-    ui.barBg:SetTexture(C_DARK[1], C_DARK[2], C_DARK[3], 1)
+    ns.Paint(ui.barBg, C_DARK[1], C_DARK[2], C_DARK[3], 1)
     ui.barBg:SetWidth(COL_IN)
     ui.barBg:SetHeight(4)
     ui.barBg:SetPoint("TOPLEFT", ui.col, "TOPLEFT", 0, -(ROW * 5 + 52))
     ui.bar = ui.col:CreateTexture(nil, "OVERLAY")
-    ui.bar:SetTexture(C_GOLD[1], C_GOLD[2], C_GOLD[3], 0.85)
+    ns.Paint(ui.bar, C_GOLD[1], C_GOLD[2], C_GOLD[3], 0.85)
     ui.bar:SetHeight(4)
     ui.bar:SetPoint("TOPLEFT", ui.barBg, "TOPLEFT", 0, 0)
     ui.waveCap, ui.wave = statRow(ROW * 8 + 8, "breaker.waveCap")
@@ -382,7 +382,7 @@ local function ensureView(canvas)
     ns.SetKeyText(ui.setCap, "breaker.setCap")
     ui.setCap:SetTextColor(C_CAP[1], C_CAP[2], C_CAP[3])
     menu = buildMenu(canvas)
-    fx = CreateFrame("Frame", nil, canvas)
+    fx = ns.NewFrame("Frame", nil, canvas)
     fx:SetAllPoints()
     fx:SetFrameLevel(field:GetFrameLevel() + 20)
     fx:Hide()
@@ -708,7 +708,7 @@ function Game:Start(seed, moves)
     for i = 1, self.colors do
         if not self.shelf[i] then
             local id = ns.itemSets.gems[i]
-            if id then GetItemInfo(id) end
+            if id then ns.Compat.ItemInfo(id) end
         end
     end
     for _ = 1, 8 do
@@ -1244,7 +1244,7 @@ function Game:ShowHover(grp, color)
     for i = 1, #grp do
         set[grp[i]] = true
         local hl = tiles[grp[i]].hl
-        hl:SetTexture(cr, cg, cb, 1)
+        ns.Paint(hl, cr, cg, cb, 1)
         hl:Show()
     end
     local step = self.step
@@ -1253,7 +1253,7 @@ function Game:ShowHover(grp, color)
     local w = step >= 52 and 2 or 1
     local function line(x, y, ww, hh)
         local e = edgeAt()
-        e:SetTexture(cr, cg, cb, EDGE_A)
+        ns.Paint(e, cr, cg, cb, EDGE_A)
         e:SetWidth(ww)
         e:SetHeight(hh)
         e:ClearAllPoints()

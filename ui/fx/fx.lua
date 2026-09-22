@@ -40,7 +40,7 @@ function ns.FX.LevelOptions()
 end
 local pool
 local function newGhost()
-    local f = CreateFrame("Frame", nil, UIParent)
+    local f = ns.NewFrame("Frame", nil, UIParent)
     f.tex = f:CreateTexture(nil, "OVERLAY")
     f.tex:SetAllPoints(f)
     f.anim = f:CreateAnimationGroup()

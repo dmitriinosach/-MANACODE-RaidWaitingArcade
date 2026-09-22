@@ -419,9 +419,9 @@ end
 function ns.Sfx.BaseOf(name)
     return base and base[name] or nil
 end
-local loader = CreateFrame("Frame")
-loader:RegisterEvent("ADDON_LOADED")
-loader:RegisterEvent("PLAYER_LOGOUT")
+local loader = ns.NewFrame("Frame")
+ns.Listen(loader, "ADDON_LOADED")
+ns.Listen(loader, "PLAYER_LOGOUT")
 loader:SetScript("OnEvent", function(self, event, name)
     if event == "PLAYER_LOGOUT" then
         ns.Sfx.Undock()
@@ -439,14 +439,12 @@ local function emit(ref)
     if type(ref) ~= "string" or ref == "" then return false end
     local e = ns.Sounds.Find(ref)
     if e then
-        if e.ps and not e.v and ns.Sfx.Volume() >= 1 then
-            PlaySound(e.s)
-        else
-            PlaySoundFile(e.p)
+        if not (e.ps and not e.v and ns.Sfx.Volume() >= 1 and ns.Compat.PlaySound(e.s)) then
+            ns.Compat.PlaySoundFile(e.p)
         end
         return true
     end
-    if ref:find(BS, 1, true) then PlaySoundFile(ref) else PlaySound(ref) end
+    if ref:find(BS, 1, true) then ns.Compat.PlaySoundFile(ref) else ns.Compat.PlaySound(ref) end
     return true
 end
 function ns.Sounds.Play(ref)

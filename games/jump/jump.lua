@@ -112,11 +112,11 @@ local view, platPool
 local CH = 480
 local function tex(f, layer, c, a)
     local t = f:CreateTexture(nil, layer)
-    if c then t:SetTexture(c[1], c[2], c[3], a or 1) end
+    if c then ns.Paint(t, c[1], c[2], c[3], a or 1) end
     return t
 end
 local function sheet(canvas, level)
-    local f = CreateFrame("Frame", nil, canvas)
+    local f = ns.NewFrame("Frame", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel() + level)
     f:SetAllPoints(canvas)
     f:Hide()
@@ -148,7 +148,7 @@ local function mix3(a, b, t)
            a[3] + (b[3] - a[3]) * t
 end
 local function plateFrame(parent)
-    local f = CreateFrame("Frame", nil, parent)
+    local f = ns.NewFrame("Frame", nil, parent)
     f.body  = tex(f, "BACKGROUND")
     f.edge  = tex(f, "BORDER")
     f.shade = tex(f, "BORDER")
@@ -171,20 +171,20 @@ local function plateFrame(parent)
 end
 local function paintPlate(f, kind, spring)
     local p = PLATE[kind] or PLATE[1]
-    f.body:SetTexture(p[1][1], p[1][2], p[1][3], 1)
-    f.edge:SetTexture(p[2][1], p[2][2], p[2][3], 1)
-    f.shade:SetTexture(p[3][1], p[3][2], p[3][3], 1)
+    ns.Paint(f.body, p[1][1], p[1][2], p[1][3], 1)
+    ns.Paint(f.edge, p[2][1], p[2][2], p[2][3], 1)
+    ns.Paint(f.shade, p[3][1], p[3][2], p[3][3], 1)
     if p[4] then
-        f.capL:SetTexture(p[4][1], p[4][2], p[4][3], 1)
-        f.capR:SetTexture(p[4][1], p[4][2], p[4][3], 1)
+        ns.Paint(f.capL, p[4][1], p[4][2], p[4][3], 1)
+        ns.Paint(f.capR, p[4][1], p[4][2], p[4][3], 1)
         f.capL:Show(); f.capR:Show()
     else
         f.capL:Hide(); f.capR:Hide()
     end
     local mc = (kind == 3) and p[3] or p[2]
     if kind == 2 or kind == 3 or kind == ICE then
-        f.mark1:SetTexture(mc[1], mc[2], mc[3], 1)
-        f.mark2:SetTexture(mc[1], mc[2], mc[3], 1)
+        ns.Paint(f.mark1, mc[1], mc[2], mc[3], 1)
+        ns.Paint(f.mark2, mc[1], mc[2], mc[3], 1)
     else
         f.mark1:Hide(); f.mark2:Hide()
     end
@@ -383,7 +383,7 @@ local function ensureHero(idx)
     for i = 1, #def.parts do
         local p = def.parts[i]
         local t = view.meSheet:CreateTexture(nil, HERO_LAYER[p[9] or 3] or "ARTWORK")
-        t:SetTexture(p[5] or 1, p[6] or 1, p[7] or 1, p[8] or 1)
+        ns.Paint(t, p[5] or 1, p[6] or 1, p[7] or 1, p[8] or 1)
         t:Hide()
         list[i] = t
     end
@@ -404,7 +404,7 @@ local function ensureMob(idx)
     for i = 1, #def.parts do
         local p = def.parts[i]
         local t = view.mobSheet:CreateTexture(nil, HERO_LAYER[p[9] or 3] or "ARTWORK")
-        t:SetTexture(p[5] or 1, p[6] or 1, p[7] or 1, p[8] or 1)
+        ns.Paint(t, p[5] or 1, p[6] or 1, p[7] or 1, p[8] or 1)
         t:Hide()
         list[i] = t
     end
@@ -443,7 +443,7 @@ local function ensureBoss(idx)
     for i = 1, #g.art do
         local p = g.art[i]
         local t = view.bossSheet:CreateTexture(nil, HERO_LAYER[p[9] or 3] or "ARTWORK")
-        t:SetTexture(p[5] or 1, p[6] or 1, p[7] or 1, p[8] or 1)
+        ns.Paint(t, p[5] or 1, p[6] or 1, p[7] or 1, p[8] or 1)
         t:Hide()
         list[i] = t
     end
@@ -510,11 +510,11 @@ end
 local function ensurePanel(canvas)
     if ui then return end
     ui = {}
-    ui.root = CreateFrame("Frame", nil, canvas)
+    ui.root = ns.NewFrame("Frame", nil, canvas)
     ui.root:SetFrameLevel(canvas:GetFrameLevel() + 10)
     ui.root:SetAllPoints(canvas)
     ui.root:Hide()
-    ui.col = CreateFrame("Frame", nil, ui.root)
+    ui.col = ns.NewFrame("Frame", nil, ui.root)
     ui.col:SetFrameLevel(ui.root:GetFrameLevel() + 1)
     ui.col:SetPoint("TOPRIGHT", ui.root, "TOPRIGHT", -12, -12)
     ui.col:SetWidth(PANEL_W)
@@ -587,20 +587,20 @@ local function floorMark(r, kind)
     local m = r.mark
     local x = M.mapW / 2 - 6
     if kind == "skull" then
-        m[1]:SetTexture(0.86, 0.84, 0.72, 1); markAt(m[1], r, x, 16, 12, 9)
-        m[2]:SetTexture(0.86, 0.84, 0.72, 1); markAt(m[2], r, x + 2, 7, 8, 3)
-        m[3]:SetTexture(0.10, 0.09, 0.07, 1); markAt(m[3], r, x + 2, 13, 3, 3)
-        m[4]:SetTexture(0.10, 0.09, 0.07, 1); markAt(m[4], r, x + 7, 13, 3, 3)
+        ns.Paint(m[1], 0.86, 0.84, 0.72, 1); markAt(m[1], r, x, 16, 12, 9)
+        ns.Paint(m[2], 0.86, 0.84, 0.72, 1); markAt(m[2], r, x + 2, 7, 8, 3)
+        ns.Paint(m[3], 0.10, 0.09, 0.07, 1); markAt(m[3], r, x + 2, 13, 3, 3)
+        ns.Paint(m[4], 0.10, 0.09, 0.07, 1); markAt(m[4], r, x + 7, 13, 3, 3)
     elseif kind == "lock" then
-        m[1]:SetTexture(0.42, 0.37, 0.28, 1); markAt(m[1], r, x + 1, 10, 10, 8)
-        m[2]:SetTexture(0.42, 0.37, 0.28, 1); markAt(m[2], r, x + 3, 16, 6, 2)
+        ns.Paint(m[1], 0.42, 0.37, 0.28, 1); markAt(m[1], r, x + 1, 10, 10, 8)
+        ns.Paint(m[2], 0.42, 0.37, 0.28, 1); markAt(m[2], r, x + 3, 16, 6, 2)
         m[3]:Hide(); m[4]:Hide()
     else
         for i = 1, 4 do m[i]:Hide() end
     end
 end
 local function heroCell(host, idx, x)
-    local b = CreateFrame("Button", nil, host)
+    local b = ns.NewFrame("Button", nil, host)
     b:SetWidth(M.heroCell)
     b:SetHeight(M.heroCell + 6)
     b:SetPoint("TOPLEFT", host, "TOPLEFT", x, -M.heroY)
@@ -622,7 +622,7 @@ local function heroCell(host, idx, x)
             for i = 1, #def.parts do
                 local pp = def.parts[i]
                 local t = b:CreateTexture(nil, HERO_LAYER[pp[9] or 3] or "ARTWORK")
-                t:SetTexture(pp[5] or 1, pp[6] or 1, pp[7] or 1, pp[8] or 1)
+                ns.Paint(t, pp[5] or 1, pp[6] or 1, pp[7] or 1, pp[8] or 1)
                 t:SetWidth(pp[3] * sc)
                 t:SetHeight(pp[4] * sc)
                 t:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT",
@@ -646,29 +646,29 @@ end
 local function ensureMenu(canvas)
     if menu then return end
     menu = {}
-    menu.root = CreateFrame("Frame", nil, canvas)
+    menu.root = ns.NewFrame("Frame", nil, canvas)
     menu.root:SetFrameLevel(canvas:GetFrameLevel() + 12)
     menu.root:SetAllPoints(canvas)
     menu.root:Hide()
     local veil = menu.root:CreateTexture(nil, "BACKGROUND")
     veil:SetAllPoints()
-    veil:SetTexture(0.03, 0.03, 0.04, 0.80)
+    ns.Paint(veil, 0.03, 0.03, 0.04, 0.80)
     menu.mapCap = label(menu.root, "GameFontNormalSmall", C_DIM)
     menu.mapCap:SetPoint("TOPLEFT", menu.root, "TOPLEFT", M.nameX, -M.capY)
     menu.column = menu.root:CreateTexture(nil, "BACKGROUND")
     menu.column:SetPoint("TOPLEFT", menu.root, "TOPLEFT", M.mapX, -(M.mapY - 10))
     menu.column:SetWidth(M.mapW)
     menu.column:SetHeight((M.mapRows - 1) * M.mapStep + 22)
-    menu.column:SetTexture(0.10, 0.09, 0.07, 0.92)
+    ns.Paint(menu.column, 0.10, 0.09, 0.07, 0.92)
     menu.floor = {}
     for i = 1, M.mapRows do menu.floor[i] = mapRow(menu.root) end
-    menu.right = CreateFrame("Frame", nil, menu.root)
+    menu.right = ns.NewFrame("Frame", nil, menu.root)
     menu.right:SetWidth(M.rightW)
     menu.right:SetPoint("TOPLEFT", menu.root, "TOPLEFT", M.rightX, 0)
     menu.right:SetPoint("BOTTOM", menu.root, "BOTTOM", 0, 0)
     menu.card = {}
     for i = 1, 2 do
-        local b = CreateFrame("Button", nil, menu.right)
+        local b = ns.NewFrame("Button", nil, menu.right)
         b:SetWidth(M.rightW - M.pad * 2)
         b:SetHeight(M.cardH)
         b:SetPoint("TOPLEFT", menu.right, "TOPLEFT", M.pad, -M.cardY[i])
@@ -694,7 +694,7 @@ local function ensureMenu(canvas)
         end)
         menu.card[i] = b
     end
-    menu.body = CreateFrame("Frame", nil, menu.right)
+    menu.body = ns.NewFrame("Frame", nil, menu.right)
     menu.body:SetWidth(M.rightW)
     menu.body:SetPoint("TOPLEFT", menu.right, "TOPLEFT", 0, 0)
     menu.body:SetPoint("BOTTOM", menu.right, "BOTTOM", 0, 0)
@@ -712,7 +712,7 @@ local function ensureMenu(canvas)
     menu.tableCap = label(menu.body, "GameFontNormalSmall", C_DIM)
     menu.tableCap:SetPoint("TOPLEFT", menu.body, "TOPLEFT", M.pad, -M.tableCap)
     menu.tablePlate = menu.body:CreateTexture(nil, "BACKGROUND")
-    menu.tablePlate:SetTexture(0.09, 0.08, 0.06, 0.92)
+    ns.Paint(menu.tablePlate, 0.09, 0.08, 0.06, 0.92)
     menu.tablePlate:SetPoint("TOPLEFT", menu.body, "TOPLEFT", M.pad, -(M.rowY - M.rowPad))
     menu.tablePlate:SetWidth(inner)
     menu.tablePlate:SetHeight(M.rows * M.rowH + M.rowPad * 2 - 4)
@@ -1526,10 +1526,10 @@ function Game:MenuSync()
             r.at:SetText(d.note)
             local c = d.c
             if d.taken then
-                r.bar:SetTexture(c[1], c[2], c[3], 1)
+                ns.Paint(r.bar, c[1], c[2], c[3], 1)
                 r.name:SetTextColor(C_GOLD[1], C_GOLD[2], C_GOLD[3])
             else
-                r.bar:SetTexture(c[1] * 0.45, c[2] * 0.45, c[3] * 0.45, 1)
+                ns.Paint(r.bar, c[1] * 0.45, c[2] * 0.45, c[3] * 0.45, 1)
                 r.name:SetTextColor(C_SOFT[1], C_SOFT[2], C_SOFT[3])
             end
             if d.dim then r.name:SetTextColor(C_DIM[1], C_DIM[2], C_DIM[3]) end
@@ -1547,10 +1547,10 @@ function Game:MenuSyncRight(mode)
         local c = menu.card[i]
         if i > 1 and not CITADEL_ON then c:Hide() else c:Show() end
         local on = (c.mode == mode)
-        c.bg:SetTexture(on and 0.14 or 0.09, on and 0.11 or 0.08, on and 0.08 or 0.06, 0.92)
+        ns.Paint(c.bg, on and 0.14 or 0.09, on and 0.11 or 0.08, on and 0.08 or 0.06, 0.92)
         for k = 1, 4 do
-            if on then c.edge[k]:SetTexture(0.79, 0.63, 0.29, 1)
-            else c.edge[k]:SetTexture(0.28, 0.24, 0.18, 1) end
+            if on then ns.Paint(c.edge[k], 0.79, 0.63, 0.29, 1)
+            else ns.Paint(c.edge[k], 0.28, 0.24, 0.18, 1) end
         end
         c.title:SetText(ns.T(c.mode == MODE_CITADEL and "jump.modeCitadel" or "jump.modeClassic"))
         c.sub:SetText(ns.T(c.mode == MODE_CITADEL and "jump.modeCitadelTip" or "jump.modeClassicTip"))
@@ -1562,10 +1562,10 @@ function Game:MenuSyncRight(mode)
     for i = 1, #menu.hero do
         local b = menu.hero[i]
         local on = (b.hero or 0) == pick
-        b.bg:SetTexture(on and 0.16 or 0.09, on and 0.12 or 0.08, on and 0.07 or 0.06, 0.92)
+        ns.Paint(b.bg, on and 0.16 or 0.09, on and 0.12 or 0.08, on and 0.07 or 0.06, 0.92)
         for k = 1, 4 do
-            if on then b.edge[k]:SetTexture(0.79, 0.63, 0.29, 1)
-            else b.edge[k]:SetTexture(0.26, 0.22, 0.17, 1) end
+            if on then ns.Paint(b.edge[k], 0.79, 0.63, 0.29, 1)
+            else ns.Paint(b.edge[k], 0.26, 0.22, 0.17, 1) end
         end
         if b.anyCap then b.anyCap:SetText(ns.T("jump.heroAny")) end
     end
@@ -1588,8 +1588,8 @@ function Game:MenuSyncRight(mode)
             local w = (top > 0) and (M.barW * v / top) or 0
             if w < 2 then w = 2 end
             r.bar:SetWidth(w)
-            if i == 1 then r.bar:SetTexture(0.79, 0.63, 0.29, 0.9)
-            else r.bar:SetTexture(0.42, 0.34, 0.22, 0.9) end
+            if i == 1 then ns.Paint(r.bar, 0.79, 0.63, 0.29, 0.9)
+            else ns.Paint(r.bar, 0.42, 0.34, 0.22, 0.9) end
             r.bar:Show()
         else
             r.n:Hide(); r.at:Hide(); r.score:Hide(); r.bar:Hide()
@@ -1644,27 +1644,27 @@ function Game:PaintBiome(h)
     local hi1, hi2, hi3 = mix3(a.hi, b.hi, t)
     for i = 1, SKY_BANDS do
         local k = (i - 1) / (SKY_BANDS - 1)
-        view.band[i]:SetTexture(lo1 + (hi1 - lo1) * k,
+        ns.Paint(view.band[i], lo1 + (hi1 - lo1) * k,
                                 lo2 + (hi2 - lo2) * k,
                                 lo3 + (hi3 - lo3) * k, 1)
     end
     local w1, w2, w3 = mix3(a.wall, b.wall, t)
-    view.wallBase[1]:SetTexture(w1, w2, w3, 1)
-    view.wallBase[2]:SetTexture(w1, w2, w3, 1)
+    ns.Paint(view.wallBase[1], w1, w2, w3, 1)
+    ns.Paint(view.wallBase[2], w1, w2, w3, 1)
     local m1, m2, m3 = w1 * 1.55 + 0.03, w2 * 1.55 + 0.03, w3 * 1.55 + 0.03
     local d1, d2, d3 = w1 * 0.55, w2 * 0.55, w3 * 0.55
     for i = 1, ROWS do
         local r = view.row[i]
-        r[1]:SetTexture(m1, m2, m3, 1)
-        r[2]:SetTexture(m1, m2, m3, 1)
-        for j = 3, 6 do r[j]:SetTexture(d1, d2, d3, 1) end
+        ns.Paint(r[1], m1, m2, m3, 1)
+        ns.Paint(r[2], m1, m2, m3, 1)
+        for j = 3, 6 do ns.Paint(r[j], d1, d2, d3, 1) end
     end
     local f1, f2, f3 = mix3(a.far, b.far, t)
     for i = 1, FAR_N do
         local e = view.far[i]
-        e[1]:SetTexture(f1, f2, f3, 0.14)
-        e[2]:SetTexture(f1, f2, f3, 0.18)
-        e[3]:SetTexture(f1, f2, f3, 0.22)
+        ns.Paint(e[1], f1, f2, f3, 0.14)
+        ns.Paint(e[2], f1, f2, f3, 0.18)
+        ns.Paint(e[3], f1, f2, f3, 0.22)
     end
     self.torchA = a.torch + (b.torch - a.torch) * t
 end

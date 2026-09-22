@@ -30,7 +30,7 @@ local function parse(s)
 end
 function ns.Version.Mine()
     if not mine then
-        mine = (GetAddOnMetadata and GetAddOnMetadata(ADDON, "Version"))
+        mine = ns.Compat.AddonMeta(ADDON, "Version")
             or ns.VERSION or "0.0.0"
     end
     return mine
@@ -90,7 +90,7 @@ end
 local function arm()
     if dueAt then return end
     dueAt = GetTime() + NOTE_DELAY
-    timer = timer or CreateFrame("Frame")
+    timer = timer or ns.NewFrame("Frame")
     timer:SetScript("OnUpdate", function()
         if dueAt and GetTime() >= dueAt then due() end
     end)
@@ -137,8 +137,8 @@ function ns.Version.Boot()
     end
     if not newest or ns.Version.Newer(seen, newest) then adopt(seen) end
 end
-local boot = CreateFrame("Frame")
-boot:RegisterEvent("ADDON_LOADED")
+local boot = ns.NewFrame("Frame")
+ns.Listen(boot, "ADDON_LOADED")
 boot:SetScript("OnEvent", function(self, _, who)
     if who ~= ADDON then return end
     self:UnregisterEvent("ADDON_LOADED")

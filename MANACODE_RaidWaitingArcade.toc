@@ -6,6 +6,7 @@
 ## Author: Manacode
 ## Version: 0.9.0
 ## SavedVariables: RaidWaitingArcadeDB
+compat\wotlk.lua
 arc.lua
 core\locale.lua
 locale\ruRU.lua

@@ -1641,7 +1641,7 @@ ns.soundsDB = {
     },
 }
 ns.soundsEvents = {
-    ["apothecary"] = { "big", "clear", "deny", "hover", "pick", "pop" },
+    ["apothecary"] = { "big", "clear", "deny", "pick", "pop" },
     ["arkanoid"] = { "big", "clear", "deny", "hover", "over", "pick", "pop", "start", "stuck", "turn" },
     ["breaker"] = { "big", "clear", "over", "pop" },
     ["checkers"] = { "deny", "over", "pick", "pop", "start", "turn" },

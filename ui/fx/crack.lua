@@ -35,7 +35,7 @@ ns.RegisterFX{
                 f.grow:SetDuration(SPLIT_T)
                 f.grow:SetStartDelay(SPLIT_AT)
                 f.grow:SetSmoothing("IN")
-                f.fade:SetChange(-1)
+                ns.AlphaChange(f.fade, -1)
                 f.fade:SetDuration(SPLIT_T * 0.4)
                 f.fade:SetStartDelay(SPLIT_AT + SPLIT_T * 0.6)
                 f.anim:Play()
@@ -49,7 +49,7 @@ ns.RegisterFX{
             glow.grow:SetScale(1.15, 1.15)
             glow.grow:SetDuration(GLOW_T)
             glow.grow:SetSmoothing("OUT")
-            glow.fade:SetChange(-1)
+            ns.AlphaChange(glow.fade, -1)
             glow.fade:SetDuration(GLOW_T)
             glow.anim:Play()
         end

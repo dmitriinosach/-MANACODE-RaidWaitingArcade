@@ -23,7 +23,7 @@ local function styleButton(b)
     if b.glow then
         if b.hovered and not b.pressed and not b.btnDisabled then
             local g = bt.glow
-            b.glow:SetTexture(g[1], g[2], g[3], GLOW_A)
+            ns.Paint(b.glow, g[1], g[2], g[3], GLOW_A)
             b.glow:Show()
         else
             b.glow:Hide()
@@ -41,7 +41,7 @@ local function repaintMade()
 end
 ns.OnTheme(repaintMade)
 function ns.MakeKitButton(parent)
-    local b = CreateFrame("Button", nil, parent)
+    local b = ns.NewFrame("Button", nil, parent)
     b:SetBackdrop(ns.ButtonSkin().backdrop)
     b:SetHeight(22)
     b.kitPaint = paintMade
@@ -107,7 +107,7 @@ ns.OnTheme(function()
 end)
 local INFO_BTN, INFO_ICON_SZ, INFO_CAP_GAP = 20, 13, 5
 function ns.MakeHelpButton(parent)
-    local b = CreateFrame("Button", nil, parent)
+    local b = ns.NewFrame("Button", nil, parent)
     b:SetWidth(INFO_BTN); b:SetHeight(INFO_BTN)
     b.ring = b:CreateTexture(nil, "BORDER")
     b.ring:SetTexture(INFO_DISC)
@@ -171,7 +171,7 @@ ns.OnTheme(function()
     for i = 1, #checks do ns.PaintTitle(checks[i].label, checks[i]) end
 end)
 function ns.MakeCheck(parent)
-    local c = CreateFrame("CheckButton", nil, parent)
+    local c = ns.NewFrame("CheckButton", nil, parent)
     c:SetSize(24, 24)
     c:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up")
     c:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down")
@@ -219,13 +219,13 @@ local function ensureList(sel)
         end
         return list
     end
-    catcher = CreateFrame("Frame", nil, win)
+    catcher = ns.NewFrame("Frame", nil, win)
     catcher:SetAllPoints(win)
     catcher:SetFrameStrata("FULLSCREEN_DIALOG")
     catcher:EnableMouse(true)
     catcher:SetScript("OnMouseDown", function() ns.SelectClose() end)
     catcher:Hide()
-    list = CreateFrame("Frame", nil, catcher)
+    list = ns.NewFrame("Frame", nil, catcher)
     list:SetFrameLevel(catcher:GetFrameLevel() + 10)
     ns.DressCard(list)
     listCap = list:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
@@ -406,7 +406,7 @@ local function stepHome(s)
     if s.onSet then s.onSet(s.value) end
 end
 function ns.MakeStepper(parent)
-    local s = CreateFrame("Frame", nil, parent)
+    local s = ns.NewFrame("Frame", nil, parent)
     s:SetHeight(22)
     s.isStepper = true
     s.less = ns.MakeKitButton(s)

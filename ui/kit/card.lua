@@ -23,7 +23,7 @@ end
 function Card:Ensure(host)
     local sp = self.spec
     if not self.overlay then
-        self.overlay = CreateFrame("Frame", sp.name, host)
+        self.overlay = ns.NewFrame("Frame", sp.name, host)
         self.overlay:EnableMouse(true)
         self.overlay:Hide()
         if sp.name and sp.escape then
@@ -31,8 +31,8 @@ function Card:Ensure(host)
         end
         self.dim = self.overlay:CreateTexture(nil, "BACKGROUND")
         self.dim:SetAllPoints()
-        self.dim:SetTexture(0, 0, 0, DIM_A)
-        self.card = CreateFrame("Frame", nil, self.overlay)
+        ns.Paint(self.dim, 0, 0, 0, DIM_A)
+        self.card = ns.NewFrame("Frame", nil, self.overlay)
         self.card:SetWidth(sp.width or WIDTH)
         self.card:SetPoint("CENTER", self.overlay, "CENTER", 0, 0)
         ns.DressCard(self.card, self:Look())
@@ -42,11 +42,11 @@ function Card:Ensure(host)
         self.note = ns.TitleText(self.card:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall"))
         self.note:SetPoint("TOPRIGHT", self.card, "TOPRIGHT", -12, -14)
         self.note:SetJustifyH("RIGHT")
-        self.scroll = CreateFrame("ScrollFrame", nil, self.card)
+        self.scroll = ns.NewFrame("ScrollFrame", nil, self.card)
         self.scroll:SetPoint("TOPLEFT", self.card, "TOPLEFT", 0, -HEAD)
         self.scroll:SetPoint("BOTTOMRIGHT", self.card, "BOTTOMRIGHT", 0, FOOT)
         self.scroll:EnableMouseWheel(true)
-        self.body = CreateFrame("Frame", nil, self.scroll)
+        self.body = ns.NewFrame("Frame", nil, self.scroll)
         self.body:SetWidth(sp.width or WIDTH)
         self.body:SetHeight(1)
         self.scroll:SetScrollChild(self.body)
@@ -54,7 +54,7 @@ function Card:Ensure(host)
         self.track:SetWidth(BAR_W)
         self.track:SetPoint("TOPRIGHT", self.card, "TOPRIGHT", -4, -HEAD)
         self.track:SetPoint("BOTTOMRIGHT", self.card, "BOTTOMRIGHT", -4, FOOT)
-        self.track:SetTexture(1, 1, 1, 0.08)
+        ns.Paint(self.track, 1, 1, 1, 0.08)
         self.track:Hide()
         self.thumb = self.card:CreateTexture(nil, "OVERLAY")
         self.thumb:SetWidth(BAR_W)
@@ -140,7 +140,7 @@ function Card:SyncBar()
     self.thumb:SetPoint("TOPRIGHT", self.card, "TOPRIGHT",
             -4, -HEAD - (seen - h) * at)
     local r, g, b = ns.Attn()
-    self.thumb:SetTexture(r, g, b, 0.75)
+    ns.Paint(self.thumb, r, g, b, 0.75)
     self.track:Show()
     self.thumb:Show()
 end
@@ -164,7 +164,7 @@ function Card:ArtHost(ln, art)
     ln.hosts = ln.hosts or {}
     local h = ln.hosts[art]
     if not h then
-        h = CreateFrame("Frame", nil, self.body)
+        h = ns.NewFrame("Frame", nil, self.body)
         ln.hosts[art] = h
     end
     for a, other in pairs(ln.hosts) do
@@ -334,8 +334,8 @@ local DECK_FONT = "Fonts\\ARIALN.TTF"
 local floor = math.floor
 local function deckFont(fs, size, flags)
     flags = flags or "THICKOUTLINE"
-    if not fs:SetFont(DECK_FONT, size, flags) then
-        fs:SetFont((fs:GetFont()), size, flags)
+    if not ns.SetFont(fs, DECK_FONT, size, flags) then
+        ns.SetFont(fs, (fs:GetFont()), size, flags)
     end
     if flags == "" then
         fs:SetShadowOffset(0, 0)
@@ -344,7 +344,7 @@ local function deckFont(fs, size, flags)
     end
 end
 function ns.MakeDeckCard(parent)
-    local f = CreateFrame("Frame", nil, parent)
+    local f = ns.NewFrame("Frame", nil, parent)
     f:SetBackdrop(ns.CARD_BACKDROP)
     f.rank = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     f.rank:SetPoint("CENTER", f, "CENTER", 0, 0)
@@ -491,7 +491,7 @@ function ns.DeckCardEdge(f, r, g, b)
     local e = ns.DECK_EDGE
     local rr, gg, bb = r or e[1], g or e[2], b or e[3]
     for i = 1, #f.paper do
-        f.paper[i]:SetTexture(rr, gg, bb, 1)
+        ns.Paint(f.paper[i], rr, gg, bb, 1)
     end
 end
 local function suitParts(tex)
@@ -526,7 +526,7 @@ local function paintSuit(tex, suit, r, g, b)
     if not r then
         r, g, b = ns.DeckSuitInk(suit)
     end
-    tex:SetTexture(0, 0, 0, 0)
+    ns.Paint(tex, 0, 0, 0, 0)
     tex:Show()
     local w, h = tex:GetWidth() or 0, tex:GetHeight() or 0
     local box = suitParts(tex)
@@ -534,7 +534,7 @@ local function paintSuit(tex, suit, r, g, b)
         local p = s.shape[i]
         if p then
             local t = box[i]
-            t:SetTexture(r, g, b, 1)
+            ns.Paint(t, r, g, b, 1)
             t:ClearAllPoints()
             t:SetPoint("TOPLEFT", tex, "TOPLEFT", p[1] * w, -p[2] * h)
             t:SetWidth(p[3] * w)
@@ -622,7 +622,7 @@ local function coverOf(f)
     if f.cover then
         return f.cover
     end
-    local c = CreateFrame("Frame", nil, f)
+    local c = ns.NewFrame("Frame", nil, f)
     c:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
     c:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", 0, 0)
     c:SetBackdrop(COVER_BACKDROP)
@@ -632,7 +632,7 @@ local function coverOf(f)
     local function band(col, a, inset, thick)
         local function bar(a1, x1, y1, a2, x2, y2, w, h)
             local t = c:CreateTexture(nil, "OVERLAY")
-            t:SetTexture(col[1], col[2], col[3], a)
+            ns.Paint(t, col[1], col[2], col[3], a)
             t:SetPoint(a1, c, a1, x1, y1)
             t:SetPoint(a2, c, a2, x2, y2)
             if w then
@@ -711,7 +711,7 @@ function ns.DeckCardCoverTone(f, k)
     end
     for i = 1, #(c.bars or {}) do
         local b = c.bars[i]
-        b.t:SetTexture(b.r * k, b.g * k, b.b * k, b.a)
+        ns.Paint(b.t, b.r * k, b.g * k, b.b * k, b.a)
     end
 end
 function ns.DeckCardLevel(f, level)
@@ -836,7 +836,7 @@ function ns.DeckCardPoster(f, icon, caption)
         f.frame:SetAllPoints(f)
         f.frame:SetTexCoord(0, 1, 0, 1)
     else
-        f.frame:SetTexture(0, 0, 0, 0.62)
+        ns.Paint(f.frame, 0, 0, 0, 0.62)
         f.frame:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", x1, y1)
         f.frame:SetWidth(x2 - x1)
         f.frame:SetHeight(h * POSTER_PLATE_Y * 2)

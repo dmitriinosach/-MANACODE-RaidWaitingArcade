@@ -612,7 +612,7 @@ local function layout(canvas, count)
     return best or measure(canvas, count, 2)
 end
 local function paint(t, c)
-    t:SetTexture(c[1], c[2], c[3], c[4] or 1)
+    ns.Paint(t, c[1], c[2], c[3], c[4] or 1)
 end
 local function place(t, x, y, w, h)
     t:ClearAllPoints()
@@ -635,7 +635,7 @@ local function styleFlask(f)
     f.bowlEdge:SetAlpha(c[4] or 1)
 end
 local function makeFlask(canvas)
-    local f = CreateFrame("Button", nil, canvas)
+    local f = ns.NewFrame("Button", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel() + 1)
     f.shadow = f:CreateTexture(nil, "BACKGROUND")
     f.shadow:SetTexture(DISC)
@@ -651,7 +651,7 @@ local function makeFlask(canvas)
     f.bowl:SetVertexColor(GLASS[1], GLASS[2], GLASS[3])
     f.bowl:SetAlpha(GLASS[4])
     f.hl = ns.Fill(f, "HIGHLIGHT", { 1, 1, 1, 0.06 })
-    f.liq = CreateFrame("Frame", nil, f)
+    f.liq = ns.NewFrame("Frame", nil, f)
     f.liq:SetFrameLevel(f:GetFrameLevel() + 1)
     f.cap = f.liq:CreateTexture(nil, "BACKGROUND")
     f.cap:SetTexture(DISC)
@@ -668,7 +668,7 @@ local function makeFlask(canvas)
         f.slots[s] = it
     end
     f.surf = ns.Fill(f.liq, "OVERLAY", SURFACE)
-    f.bub = CreateFrame("Frame", nil, f)
+    f.bub = ns.NewFrame("Frame", nil, f)
     f.bub:SetFrameLevel(f:GetFrameLevel() + 2)
     f.bubs, f.bubX = {}, {}
     for k = 1, BUBBLES do
@@ -678,7 +678,7 @@ local function makeFlask(canvas)
         b:Hide()
         f.bubs[k] = b
     end
-    f.glass = CreateFrame("Frame", nil, f)
+    f.glass = ns.NewFrame("Frame", nil, f)
     f.glass:SetFrameLevel(f:GetFrameLevel() + 3)
     f.shine = ns.Fill(f.glass, "ARTWORK", SHINE)
     f.edges = {}
@@ -702,8 +702,7 @@ local function makeFlask(canvas)
     f.glow:SetTexture(WHITE)
     f.glow:Hide()
     f:SetScript("OnEnter", function(b)
-        styleFlask(b);
-        ns.Sfx.Play("hover")
+        styleFlask(b)
     end)
     f:SetScript("OnLeave", function(b)
         styleFlask(b)
@@ -805,7 +804,7 @@ local function layoutFlask(f, g)
         it.fy, it.fh = nil, nil
         it.icon:SetWidth(f.tokI)
         it.icon:SetHeight(f.tokI)
-        it.q:SetFont(fontPath, max(8, floor(cell * 0.42)), "OUTLINE")
+        ns.SetFont(it.q, fontPath, max(8, floor(cell * 0.42)), "OUTLINE")
         it.q:ClearAllPoints()
         it.q:SetPoint("CENTER", f.liq, "BOTTOMLEFT", cell / 2,
                 (s - 1) * (cell + SLOT_GAP) + cell / 2)
@@ -866,7 +865,7 @@ local function paintSlot(it, col, icons, hidden, showIcon, gLo, gHi)
     if it.col ~= key or it.gLo ~= gLo or it.gHi ~= gHi then
         it.col, it.gLo, it.gHi = key, gLo, gHi
         local h = hidden and COL_HIDDEN or (HUE[col] or HUE[1])
-        it.fill:SetGradientAlpha("VERTICAL",
+        ns.Gradient(it.fill, "VERTICAL",
                 h[1] * gLo, h[2] * gLo, h[3] * gLo, 1,
                 h[1] * gHi, h[2] * gHi, h[3] * gHi, 1)
         if hidden then
@@ -895,7 +894,7 @@ local function placeToken(f, it)
             floor(it.dw / 2), floor(it.dy + it.dh / 2))
 end
 local function makeFly(canvas)
-    local f = CreateFrame("Frame", nil, canvas)
+    local f = ns.NewFrame("Frame", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel() + 20)
     f.fill = f:CreateTexture(nil, "ARTWORK")
     f.fill:SetTexture(DISC)
@@ -903,13 +902,13 @@ local function makeFly(canvas)
 end
 local function buildUI(canvas)
     local u = {}
-    u.hud = CreateFrame("Frame", nil, canvas)
+    u.hud = ns.NewFrame("Frame", nil, canvas)
     u.hud:SetAllPoints(canvas)
     u.hud:SetFrameLevel(canvas:GetFrameLevel() + HUD_LEVEL)
     u.status = u.hud:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     u.status:SetPoint("TOPLEFT", u.hud, "TOPLEFT", MARGIN_X, -8)
     u.status:Hide()
-    u.plate = CreateFrame("Frame", nil, u.hud)
+    u.plate = ns.NewFrame("Frame", nil, u.hud)
     u.plate:SetPoint("CENTER", u.hud, "CENTER", 0, 0)
     u.plate:SetHeight(PLATE_H)
     u.plate:SetBackdrop(ns.CARD_BACKDROP)
@@ -925,7 +924,7 @@ local function buildUI(canvas)
     return u
 end
 local function makeBack(canvas)
-    local f = CreateFrame("Frame", nil, canvas)
+    local f = ns.NewFrame("Frame", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel())
     f:SetAllPoints(canvas)
     f.base = f:CreateTexture(nil, "BACKGROUND")
@@ -940,13 +939,13 @@ local function makeBack(canvas)
     f.veil:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
     f.veil:SetHeight(max(1, floor(canvas.H * VEIL_K)))
     f.veil:SetTexture(WHITE)
-    f.veil:SetGradientAlpha("VERTICAL", 0, 0, 0, 0, 0, 0, 0, VEIL_A)
+    ns.Gradient(f.veil, "VERTICAL", 0, 0, 0, 0, 0, 0, 0, VEIL_A)
     f.ledge = f:CreateTexture(nil, "ARTWORK")
     f.ledge:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 0, 0)
     f.ledge:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", 0, 0)
     f.ledge:SetHeight(LEDGE_H)
     f.ledge:SetTexture(WHITE)
-    f.ledge:SetGradientAlpha("VERTICAL",
+    ns.Gradient(f.ledge, "VERTICAL",
             LEDGE_TOP[1] * LEDGE_LOW, LEDGE_TOP[2] * LEDGE_LOW, LEDGE_TOP[3] * LEDGE_LOW, 1,
             LEDGE_TOP[1], LEDGE_TOP[2], LEDGE_TOP[3], 1)
     f.ledgeEdge = f:CreateTexture(nil, "OVERLAY")
@@ -961,7 +960,7 @@ local function makeBack(canvas)
     paint(f.ledgeDark, LEDGE_DARK)
     f.plank = f:CreateTexture(nil, "OVERLAY")
     f.plank:SetTexture(WHITE)
-    f.plank:SetGradientAlpha("VERTICAL",
+    ns.Gradient(f.plank, "VERTICAL",
             LEDGE_EDGE[1] * PLANK_LOW, LEDGE_EDGE[2] * PLANK_LOW, LEDGE_EDGE[3] * PLANK_LOW, 1,
             LEDGE_EDGE[1], LEDGE_EDGE[2], LEDGE_EDGE[3], 1)
     f.plank:Hide()
@@ -1312,7 +1311,7 @@ function Game:Draw()
                 local c = HUE[DISP[top]] or HUE[1]
                 local m = GLOW_MIX
                 local r, gg, b = c[1] + (1 - c[1]) * m, c[2] + (1 - c[2]) * m, c[3] + (1 - c[3]) * m
-                f.glow:SetGradientAlpha("VERTICAL", r, gg, b, GLOW_A, r, gg, b, 0)
+                ns.Gradient(f.glow, "VERTICAL", r, gg, b, GLOW_A, r, gg, b, 0)
                 local dip = floor(cell * GLOW_DIP)
                 place(f.glow, -EDGE, f.bubY1 - dip, cell + EDGE * 2, h + dip)
                 f.glow:Show()

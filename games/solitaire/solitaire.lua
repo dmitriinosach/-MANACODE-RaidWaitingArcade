@@ -89,8 +89,8 @@ local drag
 local lastTap
 local FONT_TXT = "Fonts\\ARIALN.TTF"
 local function bigFont(fs, size)
-    if fs:SetFont(FONT_TXT, size, "THICKOUTLINE") then return end
-    fs:SetFont((fs:GetFont()), size, "THICKOUTLINE")
+    if ns.SetFont(fs, FONT_TXT, size, "THICKOUTLINE") then return end
+    ns.SetFont(fs, (fs:GetFont()), size, "THICKOUTLINE")
 end
 local SLOT_LIP = 6
 local SLOT_TONE = {
@@ -138,7 +138,7 @@ local function useSlot(canvas, x, y)
     slotUsed = slotUsed + 1
     local f = slots[slotUsed]
     if not f then
-        f = CreateFrame("Frame", nil, board)
+        f = ns.NewFrame("Frame", nil, board)
         f:SetWidth(CARD_W)
         f:SetHeight(CARD_H)
         f:SetBackdrop(ns.CARD_BACKDROP)
@@ -156,10 +156,10 @@ local function toneSlot(f, tone)
     f:SetBackdropBorderColor(sk.edge[1], sk.edge[2], sk.edge[3], sk.edge[4])
     if not f.lip then return end
     local sh, li = sk.shade, sk.light
-    f.lip[1]:SetTexture(sh[1], sh[2], sh[3], sh[4])
-    f.lip[3]:SetTexture(sh[1], sh[2], sh[3], sh[4])
-    f.lip[2]:SetTexture(li[1], li[2], li[3], li[4])
-    f.lip[4]:SetTexture(li[1], li[2], li[3], li[4])
+    ns.Paint(f.lip[1], sh[1], sh[2], sh[3], sh[4])
+    ns.Paint(f.lip[3], sh[1], sh[2], sh[3], sh[4])
+    ns.Paint(f.lip[2], li[1], li[2], li[3], li[4])
+    ns.Paint(f.lip[4], li[1], li[2], li[3], li[4])
 end
 local function placeSlots(canvas, m)
     slotUsed = 0
@@ -254,13 +254,13 @@ local function buildMenu(canvas)
 end
 local function ensureView(canvas)
     if cardLayer then return end
-    board = CreateFrame("Frame", nil, canvas)
+    board = ns.NewFrame("Frame", nil, canvas)
     board:SetAllPoints()
     board:SetFrameLevel(canvas:GetFrameLevel() + 1)
-    cardLayer = CreateFrame("Frame", nil, canvas)
+    cardLayer = ns.NewFrame("Frame", nil, canvas)
     cardLayer:SetAllPoints()
     cardLayer:SetFrameLevel(canvas:GetFrameLevel() + 2)
-    dragHost = CreateFrame("Frame", nil, canvas)
+    dragHost = ns.NewFrame("Frame", nil, canvas)
     dragHost:Hide()
     dragHost:SetScript("OnUpdate", function()
         if dragTick then dragTick() end
@@ -287,7 +287,7 @@ local function ensureView(canvas)
         end
         nicheCap[g.key] = ns.MakeCap(niche, g.x, 9)
         local val = niche:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        val:SetFont(VAL_FONT, 16, "")
+        ns.SetFont(val, VAL_FONT, 16, "")
         val:SetJustifyH("RIGHT")
         val:SetPoint("TOPRIGHT", niche, "TOPLEFT", g.x + g.w, -6)
         nicheVal[g.key] = val
@@ -308,7 +308,7 @@ local function ensureView(canvas)
     end
     cardF = {}
     for id = 1, 52 do cardF[id] = buildCard() end
-    local bannerHost = CreateFrame("Frame", nil, canvas)
+    local bannerHost = ns.NewFrame("Frame", nil, canvas)
     bannerHost:SetAllPoints()
     bannerHost:SetFrameLevel(canvas:GetFrameLevel() + 3)
     banner = bannerHost:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -329,7 +329,7 @@ end
 local function miniSlot(i)
     local f = menu.miniSlot[i]
     if not f then
-        f = CreateFrame("Frame", nil, menu.root)
+        f = ns.NewFrame("Frame", nil, menu.root)
         f:SetFrameLevel(menu.root:GetFrameLevel() + 1)
         f:SetBackdrop(ns.CARD_BACKDROP)
         local sk = SLOT_TONE.plain
@@ -1420,7 +1420,7 @@ local function helpArt(host)
         paper:SetHeight(sw)
         paper:SetPoint("TOPLEFT", host, "TOPLEFT", x, -4)
         local p = ns.DECK_PAPER
-        paper:SetTexture(p[1], p[2], p[3], 1)
+        ns.Paint(paper, p[1], p[2], p[3], 1)
         local t = host:CreateTexture(nil, "ARTWORK")
         t:SetWidth(sw - 8)
         t:SetHeight(sw - 8)
@@ -1521,7 +1521,7 @@ local ICON_BACK = { 0.24, 0.32, 0.50 }
 local ICON_SUIT = 1
 local function iconFill(host, n, layer, x, y, w, h, c)
     local t = ns.ArtFill(host, n, layer)
-    t:SetTexture(c[1], c[2], c[3], 1)
+    ns.Paint(t, c[1], c[2], c[3], 1)
     t:SetWidth(w); t:SetHeight(h)
     t:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
 end

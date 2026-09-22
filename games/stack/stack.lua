@@ -290,15 +290,15 @@ local function dressBox(f, kind)
     if f.kind == kind then return end
     f.kind = kind
     local k = CRATE_KINDS[kind] or CRATE_KINDS[1]
-    f.body:SetTexture(k.body[1], k.body[2], k.body[3])
-    f.top:SetTexture(k.top[1], k.top[2], k.top[3])
-    f.bot:SetTexture(k.bot[1], k.bot[2], k.bot[3])
+    ns.Paint(f.body, k.body[1], k.body[2], k.body[3])
+    ns.Paint(f.top, k.top[1], k.top[2], k.top[3])
+    ns.Paint(f.bot, k.bot[1], k.bot[2], k.bot[3])
     local slots = { f.b1, f.b2, f.a1, f.a2 }
     local parts = { k.b1, k.b2, k.a1, k.a2 }
     for i = 1, 4 do
         local t, p = slots[i], parts[i]
         if p then
-            t:SetTexture(p[5][1], p[5][2], p[5][3])
+            ns.Paint(t, p[5][1], p[5][2], p[5][3])
             t:SetWidth(p[3]); t:SetHeight(p[4])
             t:ClearAllPoints()
             t:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", p[1], p[2])
@@ -559,11 +559,11 @@ local function ensureView(canvas)
     view.toast.text = view.toast:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     view.toast.text:SetPoint("CENTER", view.toast, "CENTER", 0, 0)
     view.hud = hudFrame(canvas)
-    view.lane = CreateFrame("ScrollFrame", nil, canvas)
+    view.lane = ns.NewFrame("ScrollFrame", nil, canvas)
     view.lane:SetWidth(CANVAS_W); view.lane:SetHeight(LANE_H)
     view.lane:SetPoint("BOTTOMLEFT", canvas, "BOTTOMLEFT", 0, LANE_Y)
     view.lane:SetFrameLevel(canvas:GetFrameLevel() + 2)
-    view.laneChild = CreateFrame("Frame", nil, view.lane)
+    view.laneChild = ns.NewFrame("Frame", nil, view.lane)
     view.laneChild:SetWidth(CANVAS_W); view.laneChild:SetHeight(LANE_H)
     view.lane:SetScrollChild(view.laneChild)
     grabPool = ns.NewPool(function() return grabFrame(view.laneChild) end)
@@ -1368,11 +1368,11 @@ end
 local function dressWorker(f, class)
     if f.dressed == class.key then return end
     f.dressed = class.key
-    f.hat:SetTexture(class.hat[1], class.hat[2], class.hat[3])
-    f.brim:SetTexture(class.hat[1], class.hat[2], class.hat[3])
-    f.body:SetTexture(class.vest[1], class.vest[2], class.vest[3])
-    f.armL:SetTexture(class.vest[1], class.vest[2], class.vest[3])
-    f.armR:SetTexture(class.vest[1], class.vest[2], class.vest[3])
+    ns.Paint(f.hat, class.hat[1], class.hat[2], class.hat[3])
+    ns.Paint(f.brim, class.hat[1], class.hat[2], class.hat[3])
+    ns.Paint(f.body, class.vest[1], class.vest[2], class.vest[3])
+    ns.Paint(f.armL, class.vest[1], class.vest[2], class.vest[3])
+    ns.Paint(f.armR, class.vest[1], class.vest[2], class.vest[3])
 end
 local function put(t, f, x, y)
     t:ClearAllPoints()
@@ -1430,18 +1430,18 @@ local function showcaseArt(host)
     local width = host:GetWidth()
     for i = 1, #WORKERS do
         local w = WORKERS[i]
-        local row = CreateFrame("Button", nil, host)
+        local row = ns.NewFrame("Button", nil, host)
         row:SetWidth(width)
         row:SetHeight(SHOW_ROW_H)
         row:SetPoint("TOPLEFT", host, "TOPLEFT", 0, -(i - 1) * (SHOW_ROW_H + SHOW_GAP))
         row.bg = row:CreateTexture(nil, "BACKGROUND")
         row.bg:SetAllPoints()
-        row.bg:SetTexture(1, 1, 1, 0.05)
+        ns.Paint(row.bg, 1, 1, 1, 0.05)
         row.sel = row:CreateTexture(nil, "BORDER")
         row.sel:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
         row.sel:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", 0, 0)
         row.sel:SetWidth(3)
-        row.sel:SetTexture(1, 0.82, 0.18, 1)
+        ns.Paint(row.sel, 1, 0.82, 0.18, 1)
         row.fig = workerFrame(row)
         row.fig:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -7)
         dressWorker(row.fig, w)
@@ -1487,18 +1487,18 @@ local function shiftArt(host)
     local pw = floor((host:GetWidth() - 2 * PLATE_GAP) / #SHIFTS)
     for i = 1, #SHIFTS do
         local sh = SHIFTS[i]
-        local p = CreateFrame("Button", nil, host)
+        local p = ns.NewFrame("Button", nil, host)
         p:SetWidth(pw)
         p:SetHeight(PLATE_H)
         p:SetPoint("TOPLEFT", host, "TOPLEFT", (i - 1) * (pw + PLATE_GAP), 0)
         p.bg = p:CreateTexture(nil, "BACKGROUND")
         p.bg:SetAllPoints()
-        p.bg:SetTexture(1, 1, 1, 0.05)
+        ns.Paint(p.bg, 1, 1, 1, 0.05)
         p.sel = p:CreateTexture(nil, "BORDER")
         p.sel:SetPoint("BOTTOMLEFT", p, "BOTTOMLEFT", 0, 0)
         p.sel:SetPoint("BOTTOMRIGHT", p, "BOTTOMRIGHT", 0, 0)
         p.sel:SetHeight(3)
-        p.sel:SetTexture(1, 0.82, 0.18, 1)
+        ns.Paint(p.sel, 1, 0.82, 0.18, 1)
         p.name = p:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         p.name:SetPoint("TOP", p, "TOP", 0, -7)
         p.name:SetText(ns.TL(sh.label))
@@ -1575,7 +1575,7 @@ function Game:PanelSync()
     if not view or not self.class then return end
     local h = view.hud
     local hat = self.class.hat
-    h.hat:SetTexture(hat[1], hat[2], hat[3])
+    ns.Paint(h.hat, hat[1], hat[2], hat[3])
     h.name:SetText(ns.TL(self.class.label))
     h.shiftCap:SetText(ns.T("stack.hudShift"))
     h.shift:SetText(ns.TL(self.shift.label))
@@ -1639,15 +1639,15 @@ function Game:Draw()
         local kill = self:Doomed(fl)
         local col = kill and C_PAD_KILL or C_PAD
         local m = markPool:Acquire()
-        m.pad:SetTexture(col[1], col[2], col[3], kill and 0.34 or 0.16)
-        m.line:SetTexture(col[1], col[2], col[3], 1)
+        ns.Paint(m.pad, col[1], col[2], col[3], kill and 0.34 or 0.16)
+        ns.Paint(m.line, col[1], col[2], col[3], 1)
         m:ClearAllPoints()
         m:SetPoint("BOTTOMLEFT", stage, "BOTTOMLEFT",
             OFFSET_X + (fl.c - 1) * CELL + half, (lr - 1) * CELL + half)
         local drawR = fl.r + (1 - (fl.t or 0)) * (fl.fromR - fl.r)
         local gh = (drawR - lr - 1) * CELL + GAP
         if gh >= 1 then
-            m.guide:SetTexture(col[1], col[2], col[3], kill and 0.6 or 0.35)
+            ns.Paint(m.guide, col[1], col[2], col[3], kill and 0.6 or 0.35)
             m.guide:SetHeight(gh)
             m.guide:Show()
         else

@@ -1,0 +1,30 @@
+name: Release
+
+# Тег v* — раздача: архив собирается, уезжает на CurseForge и в GitHub Releases.
+# «beta» или «alpha» в имени тега packager сам превращает в тип файла.
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Версия игры задана явно: базовый .toc несёт 30300 (приватные 3.3.5a), а
+      # _Camelot — 16001. CurseForge таких не знает, и автоопределение по .toc
+      # пометило бы файл чужими версиями. Значения — в Settings → Variables.
+      - uses: BigWigsMods/packager@v2
+        with:
+          args: -p ${{ vars.CF_PROJECT_ID }} -g ${{ vars.GAME_VERSION }}
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_API_KEY: ${{ secrets.CF_API_TOKEN }}
+          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}

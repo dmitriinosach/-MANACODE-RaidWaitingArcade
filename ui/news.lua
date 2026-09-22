@@ -38,12 +38,12 @@ local function keep()
 end
 local function frames()
     if anchor then return anchor end
-    anchor = CreateFrame("Frame", nil, UIParent)
+    anchor = ns.NewFrame("Frame", nil, UIParent)
     anchor:SetWidth(WIDTH); anchor:SetHeight(1)
     anchor:SetMovable(true)
     anchor:SetClampedToScreen(true)
     restore()
-    tail = CreateFrame("Frame", nil, UIParent)
+    tail = ns.NewFrame("Frame", nil, UIParent)
     tail:SetWidth(WIDTH); tail:SetHeight(1)
     local side = ns.News.Up() and "BOTTOM" or "TOP"
     tail:SetPoint(side, anchor, side, 0, 0)
@@ -59,7 +59,7 @@ local function paintPlate(p)
     p.title:SetTextColor(ns.Accent())
 end
 local function build()
-    local p = CreateFrame("Button", nil, UIParent)
+    local p = ns.NewFrame("Button", nil, UIParent)
     p:SetWidth(WIDTH)
     p:SetFrameStrata("HIGH")
     p:SetClampedToScreen(true)
@@ -229,7 +229,7 @@ end)
 local function gripFrame()
     if grip then return grip end
     frames()
-    grip = CreateFrame("Frame", nil, UIParent)
+    grip = ns.NewFrame("Frame", nil, UIParent)
     grip:SetAllPoints(anchor)
     grip:SetHeight(52)
     local side = ns.News.Up() and "BOTTOM" or "TOP"

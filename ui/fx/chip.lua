@@ -31,7 +31,7 @@ ns.RegisterFX{
             puff.grow:SetScale(1.8, 1.4)
             puff.grow:SetDuration(PUFF_T)
             puff.grow:SetSmoothing("OUT")
-            puff.fade:SetChange(-1)
+            ns.AlphaChange(puff.fade, -1)
             puff.fade:SetDuration(PUFF_T)
             puff.anim:Play()
             for p = 1, #PIECES do
@@ -53,7 +53,7 @@ ns.RegisterFX{
                 f.grow:SetScale(pc.squeeze, 0.85)
                 f.grow:SetDuration(PIECE_T)
                 f.grow:SetSmoothing("IN")
-                f.fade:SetChange(-1)
+                ns.AlphaChange(f.fade, -1)
                 f.fade:SetDuration(PIECE_T * 0.4)
                 f.fade:SetStartDelay(PIECE_T * 0.6)
                 f.anim:Play()

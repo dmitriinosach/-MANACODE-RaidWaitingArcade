@@ -75,7 +75,7 @@ function M.SetModelPath(path)
     for _, f in ipairs({ cage, body }) do
         local m = f and f.model
         if m then
-            pcall(m.SetModel, m, MODEL)
+            pcall(m.SetModel, m, ns.Compat.Model(MODEL))
             m.hold = MODEL_HOLD
             m.seq, m.facing, m.shown = nil, nil, nil
         end
@@ -105,14 +105,14 @@ local function makeModel(parent, w, h)
     m:SetWidth(w)
     m:SetHeight(h)
     m:SetPoint("CENTER", parent, "CENTER", 0, 0)
-    if not pcall(m.SetModel, m, MODEL) then
+    if not pcall(m.SetModel, m, ns.Compat.Model(MODEL)) then
         m:Hide()
         return nil
     end
     m.hold = MODEL_HOLD
     m.anim = 0
     m:SetScript("OnShow", function(self)
-        pcall(self.SetModel, self, MODEL)
+        pcall(self.SetModel, self, ns.Compat.Model(MODEL))
         self.hold = MODEL_HOLD
         self.seq = nil
         self.facing = nil
@@ -161,7 +161,7 @@ function M.SyncCage()
 end
 function M.Mount(parent)
     if cage then return cage end
-    cage = CreateFrame("Button", nil, parent)
+    cage = ns.NewFrame("Button", nil, parent)
     cage:SetWidth(CAGE_W)
     cage:SetHeight(CAGE_H)
     cage.model = makeModel(cage, CAGE_W, CAGE_H)
@@ -170,7 +170,7 @@ function M.Mount(parent)
     cage.floor:SetPoint("BOTTOMLEFT", cage, "BOTTOMLEFT", 2, 0)
     cage.floor:SetPoint("BOTTOMRIGHT", cage, "BOTTOMRIGHT", -2, 0)
     cage.floor:SetHeight(7)
-    local bars = CreateFrame("Frame", nil, cage)
+    local bars = ns.NewFrame("Frame", nil, cage)
     bars:SetAllPoints(cage)
     bars:SetFrameLevel(cage:GetFrameLevel() + 2)
     bars.list = {}
@@ -235,13 +235,13 @@ local function place()
 end
 local function ensureBody()
     if body then return body end
-    body = CreateFrame("Button", nil, UIParent)
+    body = ns.NewFrame("Button", nil, UIParent)
     body:SetFrameStrata("FULLSCREEN_DIALOG")
     body:SetWidth(BODY)
     body:SetHeight(BODY)
     body:EnableMouse(true)
     body.model = makeModel(body, BODY, BODY)
-    body.hand = CreateFrame("Frame", nil, body)
+    body.hand = ns.NewFrame("Frame", nil, body)
     body.hand:SetFrameLevel(body:GetFrameLevel() + 3)
     body.hand:SetWidth(HAND)
     body.hand:SetHeight(HAND)
@@ -255,7 +255,7 @@ local function ensureBody()
     body.shadow:SetWidth(38)
     body.shadow:SetHeight(14)
     body.shadow:SetPoint("BOTTOM", body, "BOTTOM", 0, 2)
-    body.say = CreateFrame("Frame", nil, body)
+    body.say = ns.NewFrame("Frame", nil, body)
     body.say:SetFrameLevel(body:GetFrameLevel() + 4)
     body.say:SetWidth(120)
     body.say:SetHeight(16)
@@ -273,7 +273,7 @@ local function ensureBody()
         end
     end)
     body:Hide()
-    cover = CreateFrame("Frame", nil, UIParent)
+    cover = ns.NewFrame("Frame", nil, UIParent)
     cover:SetFrameStrata("DIALOG")
     cover.fill = ns.Fill(cover, "BACKGROUND", 0.06, 0.06, 0.06, 1)
     cover.fill:SetAllPoints()
@@ -281,14 +281,14 @@ local function ensureBody()
     cover.art:SetTexture(SLOT_ART)
     cover.art:SetPoint("CENTER", cover, "CENTER", 0, -1)
     cover:Hide()
-    fly = CreateFrame("Frame", nil, UIParent)
+    fly = ns.NewFrame("Frame", nil, UIParent)
     fly:SetFrameStrata("FULLSCREEN_DIALOG")
     fly:SetWidth(HAND)
     fly:SetHeight(HAND)
     fly.icon = fly:CreateTexture(nil, "ARTWORK")
     fly.icon:SetAllPoints()
     fly:Hide()
-    timer = CreateFrame("Frame", nil, UIParent)
+    timer = ns.NewFrame("Frame", nil, UIParent)
     timer:Hide()
     timer:SetScript("OnUpdate", function(self, dt)
         t.gone = t.gone + dt
@@ -650,9 +650,9 @@ function M.Abort()
     state = "caged"
     M.SyncCage()
 end
-local events = CreateFrame("Frame", nil, UIParent)
-events:RegisterEvent("PLAYER_REGEN_DISABLED")
-events:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+local events = ns.NewFrame("Frame", nil, UIParent)
+ns.Listen(events, "PLAYER_REGEN_DISABLED")
+ns.Listen(events, "ACTIONBAR_SLOT_CHANGED")
 events:SetScript("OnEvent", function(_, event, slot)
     if event == "PLAYER_REGEN_DISABLED" then
         M.Abort()

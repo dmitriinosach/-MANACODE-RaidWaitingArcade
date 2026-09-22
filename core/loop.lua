@@ -5,7 +5,7 @@ local MAX_STEPS = 6
 local FRAME = 1 / 60
 local since = 0
 ns.Loop = {}
-local driver = CreateFrame("Frame", "RaidWaitingArcadeLoop", UIParent)
+local driver = ns.NewFrame("Frame", "RaidWaitingArcadeLoop", UIParent)
 driver:Hide()
 local cur
 local acc = 0
@@ -92,13 +92,13 @@ end
 function ns.Loop.Current()
     return cur
 end
-local events = CreateFrame("Frame", "RaidWaitingArcadeEvents", UIParent)
-events:RegisterEvent("ADDON_LOADED")
-events:RegisterEvent("PLAYER_LOGOUT")
-events:RegisterEvent("PLAYER_REGEN_DISABLED")
-events:RegisterEvent("PLAYER_REGEN_ENABLED")
-events:RegisterEvent("READY_CHECK")
-events:RegisterEvent("PARTY_INVITE_REQUEST")
+local events = ns.NewFrame("Frame", "RaidWaitingArcadeEvents", UIParent)
+ns.Listen(events, "ADDON_LOADED")
+ns.Listen(events, "PLAYER_LOGOUT")
+ns.Listen(events, "PLAYER_REGEN_DISABLED")
+ns.Listen(events, "PLAYER_REGEN_ENABLED")
+ns.Listen(events, "READY_CHECK")
+ns.Listen(events, "PARTY_INVITE_REQUEST")
 events:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" then
         if arg1 == ADDON then

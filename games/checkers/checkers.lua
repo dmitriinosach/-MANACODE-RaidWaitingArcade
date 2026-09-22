@@ -411,7 +411,7 @@ local function coat(tex, anchor, d, k, c1, a1, c2, a2)
     tex:SetPoint("CENTER", anchor, "CENTER",
                  floor(d * (k.x or 0) + 0.5), floor(d * k.y + 0.5))
     tex:SetTexture(DISC)
-    tex:SetGradientAlpha("VERTICAL", c1[1], c1[2], c1[3], a1, c2[1], c2[2], c2[3], a2)
+    ns.Gradient(tex, "VERTICAL", c1[1], c1[2], c1[3], a1, c2[1], c2[2], c2[3], a2)
     tex:Show()
 end
 local function dressPiece(p, anchor, d, tone, king)
@@ -1304,7 +1304,7 @@ function Game:Build()
         t:SetWidth(self.cell)
         t:SetHeight(self.cell)
         t:SetPoint("BOTTOMLEFT", deck, "BOTTOMLEFT", x, y)
-        t:SetTexture(col[1], col[2], col[3], col[4])
+        ns.Paint(t, col[1], col[2], col[3], col[4])
         t:Show()
     end
     for k = 1, N do

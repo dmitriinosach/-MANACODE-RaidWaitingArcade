@@ -454,7 +454,7 @@ end
 local function makeCard(canvas)
     local c = ns.MakeFlip(canvas, "slot")
     c:EnableMouse(false)
-    c.fx = CreateFrame("Frame", nil, c)
+    c.fx = ns.NewFrame("Frame", nil, c)
     c.fx:SetAllPoints(c)
     c.fx:SetFrameLevel(c:GetFrameLevel() + 2)
     c.fx.flash = c.fx:CreateTexture(nil, "ARTWORK")
@@ -573,7 +573,7 @@ end
 function Game:Hover()
     local canvas = self.canvas
     if not hl then
-        hl = CreateFrame("Frame", nil, field)
+        hl = ns.NewFrame("Frame", nil, field)
         hl:SetFrameLevel(field:GetFrameLevel() + 5)
         hl.tex = hl:CreateTexture(nil, "OVERLAY")
         hl.tex:SetAllPoints(hl)
@@ -606,10 +606,10 @@ function Game:Hover()
     hl:Show()
 end
 local function bigFont(fs, size)
-    fs:SetFont(VAL_FONT, size, "")
+    ns.SetFont(fs, VAL_FONT, size, "")
 end
 local function makePlate(parent, kind)
-    local f = CreateFrame(kind or "Frame", nil, parent)
+    local f = ns.NewFrame(kind or "Frame", nil, parent)
     f.bg = f:CreateTexture(nil, "BACKGROUND")
     f.bg:SetAllPoints()
     f.line = {}
@@ -621,8 +621,8 @@ local function makePlate(parent, kind)
     return f
 end
 local function paintPlate(f, bg, edge)
-    f.bg:SetTexture(bg[1], bg[2], bg[3], bg[4] or 1)
-    for i = 1, 4 do f.line[i]:SetTexture(edge[1], edge[2], edge[3], edge[4] or 1) end
+    ns.Paint(f.bg, bg[1], bg[2], bg[3], bg[4] or 1)
+    for i = 1, 4 do ns.Paint(f.line[i], edge[1], edge[2], edge[3], edge[4] or 1) end
 end
 local function makeCap(parent, x, y, text)
     local fs = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -633,7 +633,7 @@ local function makeCap(parent, x, y, text)
 end
 local function makeSeam(parent)
     local t = parent:CreateTexture(nil, "ARTWORK")
-    t:SetTexture(C_SEAM[1], C_SEAM[2], C_SEAM[3], 0.45)
+    ns.Paint(t, C_SEAM[1], C_SEAM[2], C_SEAM[3], 0.45)
     return t
 end
 local COL_CAPS = {
@@ -649,7 +649,7 @@ local COL_CAPS = {
 }
 local function buildCol(canvas)
     ui = {}
-    ui.root = CreateFrame("Frame", nil, canvas)
+    ui.root = ns.NewFrame("Frame", nil, canvas)
     ui.root:SetFrameLevel(canvas:GetFrameLevel() + 3)
     ui.root:SetAllPoints(canvas)
     ui.root:Hide()
@@ -657,7 +657,7 @@ local function buildCol(canvas)
     ui.seam:SetWidth(1)
     ui.seam:SetPoint("TOP", ui.root, "TOPRIGHT", -(PAD_X + COL_W + MID / 2), -PAD_Y)
     ui.seam:SetPoint("BOTTOM", ui.root, "BOTTOMRIGHT", -(PAD_X + COL_W + MID / 2), PAD_Y)
-    ui.col = CreateFrame("Frame", nil, ui.root)
+    ui.col = ns.NewFrame("Frame", nil, ui.root)
     ui.col:SetFrameLevel(ui.root:GetFrameLevel() + 1)
     ui.col:SetPoint("TOPRIGHT", ui.root, "TOPRIGHT", -PAD_X, -PAD_Y)
     ui.col:SetPoint("BOTTOMRIGHT", ui.root, "BOTTOMRIGHT", -PAD_X, PAD_Y)
@@ -680,12 +680,12 @@ local function buildCol(canvas)
     ui.rule:SetHeight(1)
     ui.rule:Hide()
     ui.barBg = ui.col:CreateTexture(nil, "ARTWORK")
-    ui.barBg:SetTexture(C_DARK[1], C_DARK[2], C_DARK[3], 1)
+    ns.Paint(ui.barBg, C_DARK[1], C_DARK[2], C_DARK[3], 1)
     ui.barBg:SetWidth(COL_W)
     ui.barBg:SetHeight(BAR_H)
     ui.barBg:Hide()
     ui.bar = ui.col:CreateTexture(nil, "OVERLAY")
-    ui.bar:SetTexture(C_GOLD[1], C_GOLD[2], C_GOLD[3], 0.85)
+    ns.Paint(ui.bar, C_GOLD[1], C_GOLD[2], C_GOLD[3], 0.85)
     ui.bar:SetHeight(BAR_H)
     ui.bar:SetWidth(1)
     ui.bar:SetPoint("TOPLEFT", ui.barBg, "TOPLEFT", 0, 0)
@@ -704,7 +704,7 @@ local function buildCol(canvas)
 end
 local function buildMenu(canvas)
     local m = {}
-    m.root = CreateFrame("Frame", nil, canvas)
+    m.root = ns.NewFrame("Frame", nil, canvas)
     m.root:SetFrameLevel(canvas:GetFrameLevel() + 6)
     m.root:SetAllPoints(canvas)
     m.root:Hide()
@@ -874,7 +874,7 @@ local function buildMenu(canvas)
     m.note:SetPoint("TOP", m.root, "TOP", 0, -NOTE_TOP)
     m.note:SetWidth(600)
     m.note:SetJustifyH("CENTER")
-    m.lock = CreateFrame("Frame", nil, m.root)
+    m.lock = ns.NewFrame("Frame", nil, m.root)
     m.lock:SetFrameLevel(m.root:GetFrameLevel() + 5)
     m.lock:SetPoint("TOPLEFT", m.root, "TOPLEFT", 0, 0)
     m.lock:SetPoint("TOPRIGHT", m.root, "TOPRIGHT", 0, 0)
@@ -894,13 +894,13 @@ local function buildMenu(canvas)
 end
 function ensureView(canvas)
     if field then return end
-    deco = CreateFrame("Frame", nil, canvas)
+    deco = ns.NewFrame("Frame", nil, canvas)
     deco:SetFrameLevel(canvas:GetFrameLevel())
     deco:SetAllPoints(canvas)
     local skin = ns.window:ScreenFill(deco)
     skin:SetTexture(TEX_HIDE)
     skin:SetVertexColor(C_HIDE[1], C_HIDE[2], C_HIDE[3], 1)
-    field = CreateFrame("Frame", nil, canvas)
+    field = ns.NewFrame("Frame", nil, canvas)
     field:SetFrameLevel(canvas:GetFrameLevel() + 1)
     field:SetAllPoints(canvas)
     field:Hide()

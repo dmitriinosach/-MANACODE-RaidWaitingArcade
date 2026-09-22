@@ -4,6 +4,7 @@ local ABOUT = {
     titleKey = "abtTitle",
     lineKeys = { "abtLine1", "abtLine2", "abtLine3" },
     site = "https://wow-addons.manacode.su",
+    sitePage = { ruRU = "/arcade/", other = "/en/arcade/" },
     discord = "https://discord.gg/CYnxS6R9qY",
     release = "https://github.com/dmitriinosach/-MANACODE-RaidWaitingArcade/releases",
     releaseName = "GitHub",
@@ -13,6 +14,10 @@ local MIRRORS = {
     { label = "WoWInterface", icon = "INV_Misc_EngGizmos_20", url = "" },
 }
 ns.About.DATA = ABOUT
+function ns.About.Site()
+    local page = ABOUT.sitePage[ns.CurrentLocale()] or ABOUT.sitePage.other
+    return ABOUT.site .. page
+end
 ns.About.MIRRORS = MIRRORS
 function ns.About.Links()
     local out = {}
@@ -24,7 +29,7 @@ function ns.About.Links()
     add(ABOUT.releaseName or ns.T("abtRelease"), ABOUT.release,
         "INV_Crate_04", "linkTipRelease")
     add("Discord", ABOUT.discord, "INV_Misc_Note_01", "linkTipDiscord")
-    add(ns.T("abtOthers"), ABOUT.site, "INV_Misc_Book_09", "linkTipOthers")
+    add(ns.T("abtOthers"), ns.About.Site(), "INV_Misc_Book_09", "linkTipOthers")
     for _, m in ipairs(MIRRORS) do add(m.label, m.url, m.icon) end
     return out
 end
@@ -37,7 +42,7 @@ local function copyRow(parent, label, url, y)
     local fs = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     fs:SetPoint("TOPLEFT", parent, "TOPLEFT", 16, -y - 4)
     fs:SetText(label)
-    local box = CreateFrame("Frame", nil, parent)
+    local box = ns.NewFrame("Frame", nil, parent)
     box:SetWidth(ROW_W)
     box:SetHeight(ROW_H)
     box:SetPoint("TOPLEFT", parent, "TOPLEFT", ROW_X, -y)
@@ -52,7 +57,7 @@ local function copyRow(parent, label, url, y)
     local key = box:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     key:SetPoint("RIGHT", box, "RIGHT", -7, 0)
     key:SetText(ns.T("abtCopyKey"))
-    local edit = CreateFrame("EditBox", nil, box)
+    local edit = ns.NewFrame("EditBox", nil, box)
     edit:SetFrameLevel(box:GetFrameLevel() + 1)
     edit:SetHeight(ROW_H - 6)
     edit:SetPoint("LEFT", box, "LEFT", 7, 0)
@@ -74,7 +79,7 @@ local function copyRow(parent, label, url, y)
     return y + ROW_H + 6
 end
 local function build()
-    frame = CreateFrame("Frame", ADDON .. "AboutFrame", UIParent)
+    frame = ns.NewFrame("Frame", ADDON .. "AboutFrame", UIParent)
     frame:SetSize(460, 400)
     frame:SetPoint("CENTER")
     frame:SetFrameStrata("DIALOG")
@@ -93,7 +98,7 @@ local function build()
     frame:SetBackdropColor(1, 1, 1, 1)
     frame:SetBackdropBorderColor(1, 1, 1, 1)
     tinsert(UISpecialFrames, ADDON .. "AboutFrame")
-    local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
+    local close = ns.NewFrame("Button", nil, frame, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -4, -4)
     local y = 18
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -116,7 +121,7 @@ local function build()
     y = y + 22
     y = copyRow(frame, ns.T("abtRelease"), ABOUT.release, y)
     y = copyRow(frame, "Discord", ABOUT.discord, y)
-    y = copyRow(frame, ns.T("abtOthers"), ABOUT.site, y)
+    y = copyRow(frame, ns.T("abtOthers"), ns.About.Site(), y)
     local shown = 0
     for _, m in ipairs(MIRRORS) do
         if m.url and m.url ~= "" then

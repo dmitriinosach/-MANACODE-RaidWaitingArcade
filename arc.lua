@@ -21,8 +21,7 @@ function ns.MarkBroken(id, why)
     for i = #ns.gameOrder, 1, -1 do
         if ns.gameOrder[i].id == id then tremove(ns.gameOrder, i) end
     end
-    ns.say(("игра %s убрана из списка: %s. Подробности — /arc broken.")
-        :format(id, why or "?"))
+    ns.say(ns.T("gameBroken", id, why or "?"))
 end
 function ns.SafeCall(game, method, ...)
     local f = game and game[method]
@@ -116,7 +115,7 @@ SlashCmdList["RAIDWAITINGARCADE"] = function(msg)
             n = n + 1
             ns.say(("|cffff4040%s|r — %s"):format(gid, why))
         end
-        if n == 0 then ns.say("сломанных игр нет.") end
+        if n == 0 then ns.say(ns.T("noBroken")) end
         return
     end
     if id == "about" then
@@ -129,7 +128,7 @@ SlashCmdList["RAIDWAITINGARCADE"] = function(msg)
         return
     end
     if id ~= "" then
-        ns.say("нет такой игры: " .. id)
+        ns.say(ns.T("noSuchGame", id))
     end
     ns.window:Toggle()
 end

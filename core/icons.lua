@@ -12,14 +12,14 @@ function ns.IconPath(name)
     return "Interface\\Icons\\" .. name
 end
 function ns.Icons.Item(itemID)
-    return GetItemIcon(itemID) or QMARK
+    return ns.Compat.ItemIcon(itemID) or QMARK
 end
 function ns.Icons.FromBags()
     local seen, out = {}, {}
     for bag = 0, NUM_BAG_SLOTS do
-        local slots = GetContainerNumSlots(bag) or 0
+        local slots = ns.Compat.BagSlots(bag) or 0
         for slot = 1, slots do
-            local tex = GetContainerItemInfo(bag, slot)
+            local tex = ns.Compat.BagItemIcon(bag, slot)
             if tex and not seen[tex] then
                 seen[tex] = true
                 out[#out + 1] = tex
@@ -42,7 +42,7 @@ function ns.Icons.Set(kind, n)
         end
         for _, id in ipairs(ns.itemSets.items or {}) do
             if #out >= n then break end
-            local tex = GetItemIcon(id)
+            local tex = ns.Compat.ItemIcon(id)
             if tex and not seen[tex] then
                 seen[tex] = true
                 out[#out + 1] = tex
@@ -51,7 +51,7 @@ function ns.Icons.Set(kind, n)
     end
     for _, id in ipairs(ns.itemSets.gems) do
         if #out >= n then break end
-        local tex = GetItemIcon(id)
+        local tex = ns.Compat.ItemIcon(id)
         if tex and not seen[tex] then
             seen[tex] = true
             out[#out + 1] = tex
@@ -361,7 +361,7 @@ function ns.Pics.Apply(tex, name, r, g, b)
         end
     end
     tex:SetVertexColor(1, 1, 1)
-    tex:SetTexture(r or FALLBACK[1], g or FALLBACK[2], b or FALLBACK[3])
+    ns.Paint(tex, r or FALLBACK[1], g or FALLBACK[2], b or FALLBACK[3])
     return false
 end
 local function middle(pw, ph, aw, ah)

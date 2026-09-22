@@ -10,7 +10,7 @@ local DISC = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 local function put(t, host, x, y, w, h, c)
     t:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
     t:SetWidth(max(1, w)); t:SetHeight(max(1, h))
-    t:SetTexture(c[1], c[2], c[3], 1)
+    ns.Paint(t, c[1], c[2], c[3], 1)
 end
 local function card(host, i, x, y, w, h, edge, fill, layer)
     local k = max(1, floor(w * 0.09 + 0.5))

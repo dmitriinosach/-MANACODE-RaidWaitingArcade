@@ -19,7 +19,7 @@ ns.RegisterFX{
         flash.grow:SetScale(2.4, 2.4)
         flash.grow:SetDuration(BOOM)
         flash.grow:SetSmoothing("OUT")
-        flash.fade:SetChange(-1)
+        ns.AlphaChange(flash.fade, -1)
         flash.fade:SetDuration(BOOM)
         flash.anim:Play()
         for i = 1, #cells do
@@ -34,7 +34,7 @@ ns.RegisterFX{
             f.move:SetSmoothing("OUT")
             f.grow:SetScale(0.5, 0.5)
             f.grow:SetDuration(BOOM)
-            f.fade:SetChange(-1)
+            ns.AlphaChange(f.fade, -1)
             f.fade:SetDuration(BOOM)
             f.anim:Play()
         end

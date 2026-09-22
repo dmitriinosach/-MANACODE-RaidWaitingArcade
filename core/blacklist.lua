@@ -2,6 +2,7 @@ local ADDON, ns = ...
 ns.Blacklist = {}
 ns.Blacklist.stamp = 1
 function ns.Blacklist.Key(tex)
+    if type(tex) ~= "string" then return tostring(tex) end
     local name = tex:match("[^\\/]+$") or tex
     return name:lower()
 end

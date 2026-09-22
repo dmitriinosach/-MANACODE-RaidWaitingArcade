@@ -1,0 +1,5 @@
+package-as: MANACODE_RaidWaitingArcade
+
+ignore:
+  - README.md
+  - .idea

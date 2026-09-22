@@ -8,7 +8,7 @@ local APPLE = { 0.878, 0.322, 0.373 }
 local function put(t, host, x, y, w, h, c)
     t:SetPoint("TOPLEFT", host, "TOPLEFT", x, -y)
     t:SetWidth(max(1, w)); t:SetHeight(max(1, h))
-    t:SetTexture(c[1], c[2], c[3], 1)
+    ns.Paint(t, c[1], c[2], c[3], 1)
 end
 function ns.SnakeTileIcon(host, size)
     local seg = max(4, floor(size * 7 / 36 + 0.5))

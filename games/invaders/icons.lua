@@ -5,12 +5,7 @@ local paths, lows
 local function build()
     if paths then return end
     paths, lows = {}, {}
-    if type(GetNumMacroIcons) ~= "function" or type(GetMacroIconInfo) ~= "function" then
-        return
-    end
-    local n = GetNumMacroIcons() or 0
-    for i = 1, n do
-        local p = GetMacroIconInfo(i)
+    for _, p in ipairs(ns.Compat.MacroIcons()) do
         if type(p) == "string" and p ~= "" then
             if not find(p, "\\", 1, true) then p = "Interface\\Icons\\" .. p end
             paths[#paths + 1] = p

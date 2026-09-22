@@ -137,7 +137,7 @@ end
 local function paintGoldBar(f, boost)
     local k = 1 + boost
     f.bar:SetTexture(BLANK_TEX)
-    f.bar:SetGradientAlpha("VERTICAL",
+    ns.Gradient(f.bar, "VERTICAL",
         min(GOLD_LOW[1] * k, 1), min(GOLD_LOW[2] * k, 1), min(GOLD_LOW[3] * k, 1), 1,
         min(GOLD_HI[1] * k, 1), min(GOLD_HI[2] * k, 1), min(GOLD_HI[3] * k, 1), 1)
 end
@@ -159,7 +159,7 @@ local function boardPool()
 end
 local view, brickPool, ballPool, fallPool
 local function newBrick(canvas)
-    local f = CreateFrame("Frame", nil, canvas)
+    local f = ns.NewFrame("Frame", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel() + 2)
     f:SetWidth(BRICK_W)
     f:SetHeight(BRICK_H)
@@ -186,7 +186,7 @@ local function newBrick(canvas)
     return f
 end
 local function newBall(canvas)
-    local f = CreateFrame("Frame", nil, canvas)
+    local f = ns.NewFrame("Frame", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel() + 4)
     f:SetWidth(BALL)
     f:SetHeight(BALL)
@@ -203,7 +203,7 @@ local function newBall(canvas)
     return f
 end
 local function newFall(canvas)
-    local f = CreateFrame("Frame", nil, canvas)
+    local f = ns.NewFrame("Frame", nil, canvas)
     f:SetFrameLevel(canvas:GetFrameLevel() + 3)
     f:SetWidth(FALL_W)
     f:SetHeight(FALL_H)
@@ -213,7 +213,7 @@ local function newFall(canvas)
     f.gloss:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
     f.gloss:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
     f.gloss:SetHeight(1)
-    f.gloss:SetTexture(1, 1, 1, 0.5)
+    ns.Paint(f.gloss, 1, 1, 1, 0.5)
     f.badge = f:CreateTexture(nil, "OVERLAY")
     f.badge:SetWidth(FALL_H)
     f.badge:SetHeight(FALL_H)
@@ -323,7 +323,7 @@ local function ensureView(canvas)
         if w then t:SetWidth(w) end
         if h then t:SetHeight(h) end
         t:SetTexture(BLANK_TEX)
-        t:SetGradientAlpha(dir, 0, 0, 0, a1, 0, 0, 0, a2)
+        ns.Gradient(t, dir, 0, 0, 0, a1, 0, 0, 0, a2)
     end
     vignette("TOPLEFT", "BOTTOMLEFT", VIG_SIDE, nil, "HORIZONTAL", VIG_SIDE_A, 0)
     vignette("TOPRIGHT", "BOTTOMRIGHT", VIG_SIDE, nil, "HORIZONTAL", 0, VIG_SIDE_A)
@@ -343,7 +343,7 @@ local function ensureView(canvas)
     brickPool = ns.NewPool(function() return newBrick(canvas) end)
     ballPool = ns.NewPool(function() return newBall(canvas) end)
     fallPool = ns.NewPool(function() return newFall(canvas) end)
-    view.pad = CreateFrame("Frame", nil, canvas)
+    view.pad = ns.NewFrame("Frame", nil, canvas)
     view.pad:SetFrameLevel(canvas:GetFrameLevel() + 3)
     view.pad:SetHeight(PAD_H)
     view.pad.fill = view.pad:CreateTexture(nil, "BACKGROUND")
@@ -554,7 +554,7 @@ function Game:RefreshBricks()
                 end
                 paintGoldBar(f, self.flash[i] and FLASH_BOOST or 0)
                 f.bar:Show()
-                f.fill:SetTexture(0, 0, 0, 0)
+                ns.Paint(f.fill, 0, 0, 0, 0)
                 f.edgeHi:Hide()
                 f.edgeLow:Hide()
                 f.art:Hide()
@@ -569,12 +569,12 @@ function Game:RefreshBricks()
                 if hurt then shade = HIT_SHADE
                 elseif not strong then shade = NORMAL_SHADE end
                 f.fill:SetTexture(BLANK_TEX)
-                f.fill:SetGradientAlpha("VERTICAL",
+                ns.Gradient(f.fill, "VERTICAL",
                     r * shade * BRICK_LOW, g * shade * BRICK_LOW, b * shade * BRICK_LOW, 1,
                     r * shade, g * shade, b * shade, 1)
                 if strong and not hurt then
-                    f.edgeHi:SetTexture(1, 1, 1, EDGE_HI_A)
-                    f.edgeLow:SetTexture(0, 0, 0, EDGE_LOW_A)
+                    ns.Paint(f.edgeHi, 1, 1, 1, EDGE_HI_A)
+                    ns.Paint(f.edgeLow, 0, 0, 0, EDGE_LOW_A)
                     f.edgeHi:Show()
                     f.edgeLow:Show()
                 else
@@ -1118,7 +1118,7 @@ function Game:Draw()
     view.pad:ClearAllPoints()
     view.pad:SetPoint("BOTTOMLEFT", self.canvas, "BOTTOMLEFT", self.px - padHalf, PAD_TOP - PAD_H)
     view.pad.fill:SetTexture(BLANK_TEX)
-    view.pad.fill:SetGradientAlpha("VERTICAL",
+    ns.Gradient(view.pad.fill, "VERTICAL",
         PAD_LOW[1], PAD_LOW[2], PAD_LOW[3], 1,
         PAD_HI[1], PAD_HI[2], PAD_HI[3], 1)
     local cr, cg, cb = PAD_HI[1], PAD_HI[2], PAD_HI[3]
@@ -1132,11 +1132,11 @@ function Game:Draw()
     end
     view.pad.capL:SetWidth(capW)
     view.pad.capL:SetTexture(BLANK_TEX)
-    view.pad.capL:SetGradientAlpha("VERTICAL", cr * 0.7, cg * 0.7, cb * 0.7, 1, cr, cg, cb, 1)
+    ns.Gradient(view.pad.capL, "VERTICAL", cr * 0.7, cg * 0.7, cb * 0.7, 1, cr, cg, cb, 1)
     view.pad.capR:SetWidth(capW)
     view.pad.capR:SetTexture(BLANK_TEX)
-    view.pad.capR:SetGradientAlpha("VERTICAL", cr * 0.7, cg * 0.7, cb * 0.7, 1, cr, cg, cb, 1)
-    view.pad.gloss:SetTexture(cr, cg, cb, 0.5)
+    ns.Gradient(view.pad.capR, "VERTICAL", cr * 0.7, cg * 0.7, cb * 0.7, 1, cr, cg, cb, 1)
+    ns.Paint(view.pad.gloss, cr, cg, cb, 0.5)
     local heat = min(self.chain, CHAIN_HOT) / CHAIN_HOT
     local br = BALL_COLD[1] + (BALL_HOT[1] - BALL_COLD[1]) * heat
     local bg = BALL_COLD[2] + (BALL_HOT[2] - BALL_COLD[2]) * heat
@@ -1161,7 +1161,7 @@ function Game:Draw()
             f.kindDrawn = fb.kind
             local r, g, b = ns.Palette.RGB(BONUS_COLOUR[fb.kind])
             f.fill:SetTexture(BLANK_TEX)
-            f.fill:SetGradientAlpha("VERTICAL", r * 0.6, g * 0.6, b * 0.6, 1, r, g, b, 1)
+            ns.Gradient(f.fill, "VERTICAL", r * 0.6, g * 0.6, b * 0.6, 1, r, g, b, 1)
             local icon = self.bonusIcon[fb.kind]
             if icon then
                 f.badge:SetTexture(icon)

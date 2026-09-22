@@ -584,7 +584,7 @@ local function dressCell(c, sk, grain)
     for k = 1, 9 do
         local fs = c.mark[k]
         if mf then
-            fs:SetFont(mf.font, mf.size, mf.outline)
+            ns.SetFont(fs, mf.font, mf.size, mf.outline)
         else
             fs:SetFontObject(MARK_FONT)
         end
@@ -601,7 +601,7 @@ local probed = {}
 local function haveTexture(path)
     if probed[path] ~= nil then return probed[path] end
     if not probe then
-        local f = CreateFrame("Frame", nil, UIParent)
+        local f = ns.NewFrame("Frame", nil, UIParent)
         f:Hide()
         probe = f:CreateTexture(nil, "BACKGROUND")
     end
@@ -629,7 +629,7 @@ function Game:ApplySkin()
         f:Show()
     end
     local scr = sk.screen
-    ui.screen.tex:SetTexture(scr[1], scr[2], scr[3], 1)
+    ns.Paint(ui.screen.tex, scr[1], scr[2], scr[3], 1)
     ui.screen:Show()
     dress(ui.board, 4)
     dress(ui.boardPal, 3)
@@ -660,7 +660,7 @@ function Game:PickSkin(key)
 end
 local function buildUI(canvas)
     local u = {}
-    u.side = CreateFrame("Frame", nil, canvas)
+    u.side = ns.NewFrame("Frame", nil, canvas)
     u.side:SetPoint("BOTTOMLEFT", canvas, "BOTTOMLEFT", PAL_X, OY)
     u.side:SetWidth(PAL_W)
     u.side:SetHeight(FIELD)
@@ -712,7 +712,7 @@ local function buildUI(canvas)
         if cur and not cur.won then cur:Move{ k = "hint" } end
     end
     local function border()
-        local f = CreateFrame("Frame", nil, canvas)
+        local f = ns.NewFrame("Frame", nil, canvas)
         f:SetFrameLevel(canvas:GetFrameLevel() + 6)
         f:SetBackdrop({ edgeFile = EDGE_TEX, edgeSize = 12 })
         f:SetWidth(CELL + 6)
@@ -721,14 +721,14 @@ local function buildUI(canvas)
         return f
     end
     local function board(w, h)
-        local f = CreateFrame("Frame", nil, canvas)
+        local f = ns.NewFrame("Frame", nil, canvas)
         f:SetFrameLevel(canvas:GetFrameLevel() + 1)
         f:SetWidth(w)
         f:SetHeight(h)
         f:Hide()
         return f
     end
-    u.screen = CreateFrame("Frame", nil, canvas)
+    u.screen = ns.NewFrame("Frame", nil, canvas)
     u.screen:SetFrameLevel(canvas:GetFrameLevel())
     u.screen:SetAllPoints(canvas)
     u.screen.tex = ns.window:ScreenFill(u.screen)
@@ -739,7 +739,7 @@ local function buildUI(canvas)
     u.boardPal:SetPoint("BOTTOMLEFT", canvas, "BOTTOMLEFT", PAL_X - PAL_EDGE, PAL_Y - PAL_EDGE)
     u.hl = border()
     u.kb = border()
-    u.flash = CreateFrame("Frame", nil, canvas)
+    u.flash = ns.NewFrame("Frame", nil, canvas)
     u.flash:SetFrameLevel(canvas:GetFrameLevel() + 8)
     u.flash:SetPoint("BOTTOMLEFT", canvas, "BOTTOMLEFT", OX, OY)
     u.flash:SetWidth(FIELD)
@@ -809,7 +809,7 @@ local function paint(c, col, grain)
     if grain then
         c.bg:SetVertexColor(col[1], col[2], col[3], col[4] or 1)
     else
-        c.bg:SetTexture(col[1], col[2], col[3], col[4])
+        ns.Paint(c.bg, col[1], col[2], col[3], col[4])
     end
 end
 local function setDigit(c, txt, sk)
@@ -820,7 +820,7 @@ local function setDigit(c, txt, sk)
     if txt and (sk.font or sk.outline ~= "THICKOUTLINE") then
         local font, size = c.center:GetFont()
         if size then
-            c.center:SetFont(sk.font or font, size, sk.outline ~= "" and sk.outline or nil)
+            ns.SetFont(c.center, sk.font or font, size, sk.outline ~= "" and sk.outline or nil)
         end
     end
 end

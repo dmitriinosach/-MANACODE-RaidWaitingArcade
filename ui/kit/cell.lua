@@ -51,14 +51,14 @@ local function cellLeave(self)
     if self and self.onLeave then self.onLeave(self) end
 end
 ns.CellEnter = cellEnter
-local shiftWatch = CreateFrame("Frame")
-shiftWatch:RegisterEvent("MODIFIER_STATE_CHANGED")
+local shiftWatch = ns.NewFrame("Frame")
+ns.Listen(shiftWatch, "MODIFIER_STATE_CHANGED")
 shiftWatch:SetScript("OnEvent", function(_, _, key, state)
     if not compareItem or (key ~= "LSHIFT" and key ~= "RSHIFT") then return end
     if state == 1 then showCompare() else hideCompare() end
 end)
 function ns.MakeCell(parent)
-    local b = CreateFrame("Button", nil, parent)
+    local b = ns.NewFrame("Button", nil, parent)
     b.icon = b:CreateTexture(nil, "ARTWORK")
     b.icon:SetAllPoints(b)
     ns.CropIcon(b.icon)
@@ -66,7 +66,7 @@ function ns.MakeCell(parent)
     b.slot:SetTexture(SLOT_TEX)
     b.slot:SetPoint("CENTER", b, "CENTER", 0, 0)
     b.slot:Hide()
-    b.over = CreateFrame("Frame", nil, b)
+    b.over = ns.NewFrame("Frame", nil, b)
     b.over:SetAllPoints(b)
     b.over:SetFrameLevel(b:GetFrameLevel() + 1)
     b.check = b.over:CreateTexture(nil, "OVERLAY")
@@ -157,9 +157,9 @@ local NUM_FONT = "Fonts\\ARIALN.TTF"
 function ns.CellCenter(b, text)
     if not text or text == "" then b.center:Hide(); return end
     local px = math.floor((b:GetWidth() or ICON) * CENTER_RATIO + 0.5)
-    local ok = b.center:SetFont(NUM_FONT, px, "THICKOUTLINE")
+    local ok = ns.SetFont(b.center, NUM_FONT, px, "THICKOUTLINE")
     if not ok then
-        ok = b.center:SetFont((b.center:GetFont()), px, "THICKOUTLINE")
+        ok = ns.SetFont(b.center, (b.center:GetFont()), px, "THICKOUTLINE")
     end
     b.center:SetText(text)
     b.center:Show()
@@ -167,11 +167,11 @@ end
 function ns.Fill(f, layer, r, g, b, a)
     if type(r) == "table" then r, g, b, a = r[1], r[2], r[3], r[4] end
     local t = f:CreateTexture(nil, layer)
-    t:SetTexture(r, g, b, a or 1)
+    ns.Paint(t, r, g, b, a or 1)
     return t
 end
 function ns.PlainFrame(parent, level)
-    local f = CreateFrame("Frame", nil, parent)
+    local f = ns.NewFrame("Frame", nil, parent)
     f:SetFrameLevel(parent:GetFrameLevel() + level)
     return f
 end
@@ -277,7 +277,7 @@ function Mini:Fill(c, r, col)
         f.bg = f:CreateTexture(nil, "BACKGROUND")
         f.bg:SetAllPoints(f)
     end
-    f.bg:SetTexture(col[1], col[2], col[3], col[4] or 1)
+    ns.Paint(f.bg, col[1], col[2], col[3], col[4] or 1)
     f.bg:Show()
 end
 function Mini:Ring(c, r, alpha)
