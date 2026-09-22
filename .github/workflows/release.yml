@@ -9,6 +9,7 @@ on:
 
 jobs:
   release:
+    if: ${{ vars.CF_PROJECT_ID != '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
