@@ -37,6 +37,16 @@ ns.Sfx.gameLabel = {
         deny  = "так нельзя: карта не ложится",
         over  = "партия окончена",
     },
+    ["durak"] = {
+        start = "раздача",
+        pick  = "карту взяли из руки",
+        pop   = "карта легла на стол",
+        big   = "карты забрали со стола",
+        clear = "бито: отбой ушёл",
+        turn  = "ваш ход",
+        deny  = "так нельзя: карта не ложится",
+        over  = "партия окончена",
+    },
     ["gems"] = {
         pick  = "камень выбран",
         pop   = "линия снята",
@@ -157,6 +167,14 @@ local BAKED = {
         ["clear"] = "Sound" .. BS .. "Interface" .. BS .. "LevelUp.wav",
         ["over"]  = "Sound" .. BS .. "Interface" .. BS .. "GuildVaultClose.wav",
         ["hover"] = "Sound" .. BS .. "Interface" .. BS .. "MouseOverTarget.wav",
+    },
+    ["durak"] = {
+        ["pick"]  = "Sound" .. BS .. "interface" .. BS .. "PickUp" .. BS .. "PickUpParchment_Paper.wav",
+        ["pop"]   = "Sound" .. BS .. "interface" .. BS .. "PickUp" .. BS .. "PutDownParchment_Paper.wav",
+        ["big"]   = "Sound" .. BS .. "interface" .. BS .. "PickUp" .. BS .. "PickUpBook.wav",
+        ["clear"] = "Sound" .. BS .. "interface" .. BS .. "iAbilitiesTurnPageA.wav",
+        ["turn"]  = "Sound" .. BS .. "Interface" .. BS .. "MouseOverTarget.wav",
+        ["start"] = "Sound" .. BS .. "interface" .. BS .. "PickUp" .. BS .. "PutDownBook.wav",
     },
     ["invaders"] = {
         ["shotfire"]    = "sound" .. BS .. "spells" .. BS .. "wandfirecast1.wav",

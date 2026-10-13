@@ -141,10 +141,20 @@ end
 function ns.Duo.GoSolo()
     if stage ~= "held" then return end
     local id = gameId
-    if peer and mid then ns.Link.Send(peer, "END", mid, "quit") end
+    if peer and mid then ns.Link.Send(peer, "END", mid, "drop") end
     reset()
     heldAt, reWait = nil, nil
     if id then ns.Store.SetDuo(id, nil) end
+end
+local function release(id, who)
+    if stage ~= "held" then return end
+    if id == gameId and not sameName(who, peer) then
+        ns.Duo.GoSolo()
+        return
+    end
+    if id == gameId then ns.Store.SetDuo(id, nil) end
+    reset()
+    heldAt, reWait = nil, nil
 end
 function ns.Duo.Adopt(id)
     if stage then return end
@@ -191,11 +201,12 @@ function ns.Duo.Target()
     return name, nil
 end
 function ns.Duo.Invite(id, name, o)
-    if stage then return false end
+    if stage and stage ~= "held" then return false end
     local who = ns.Link.Norm(name)
     local def = who and ns.games[id]
     if not who or not def or def.duo ~= "turns" then return false end
     if ns.Link.State(who) ~= "yes" then return false end
+    release(id, who)
     mid = time()
     local roll = ns.RNG.New(mid + math.floor(GetTime() * 1000))
     local first = (roll:Int(2) == 1) and "h" or "g"
@@ -234,7 +245,7 @@ ns.Link.On("INV", function(from, aMid, aGame, aVer, aOpts, aFirst)
         ns.Link.Send(from, "NO", m, "game")
         return
     end
-    if stage then
+    if stage and stage ~= "held" then
         ns.Link.Send(from, "NO", m, "busy")
         return
     end
@@ -253,6 +264,11 @@ ns.Link.On("INV", function(from, aMid, aGame, aVer, aOpts, aFirst)
         function()
             pending = nil
             invited[k] = nil
+            if stage and stage ~= "held" then
+                ns.Link.Send(from, "NO", m, "busy")
+                return
+            end
+            release(aGame, from)
             ns.Link.Send(from, "YES", m)
             peer = from
             begin(aGame, o, m, (aFirst == "h") and 2 or 1)
@@ -270,12 +286,25 @@ ns.Link.On("YES", function(from, aMid)
     begin(gameId, opts, mid, side)
 end)
 ns.Link.On("NO", function(from, aMid, aWhy)
-    if stage ~= "asking" or from ~= peer then return end
-    if tonumber(aMid) ~= mid then return end
+    if from ~= peer or tonumber(aMid) ~= mid then return end
     local key = ({ no = "duoNoNo", busy = "duoNoBusy", combat = "duoNoCombat",
                    timeout = "duoNoTimeout", game = "duoNoGame",
                    closed = "duoNoClosed" })[aWhy] or "duoNoNo"
     local who = peer
+    if stage == "held" and reWait then
+        reWait = nil
+        if aWhy == "game" then
+            if gameId then ns.Store.SetDuo(gameId, nil) end
+            reset()
+            heldAt = nil
+            say(nil)
+            ns.Invite.Note(ns.T("duoGone", who))
+        else
+            say(ns.T(key, who))
+        end
+        return
+    end
+    if stage ~= "asking" then return end
     reset()
     say(ns.T(key, who))
     ns.News.Push{ text = ns.T(key, who), key = "duo" }
@@ -299,7 +328,33 @@ ns.Link.On("MV", function(from, aMid, aN, aMove)
     remote = nil
     ns.window:RefreshHead()
 end)
+local function findHeld(m)
+    for id in pairs(ns.games) do
+        local blk = ns.Store.Duo(id)
+        if blk and blk.mid == m then return id, blk end
+    end
+    return nil, nil
+end
+local function dropped(from, m)
+    if stage and stage ~= "asking" and from == peer and m == mid then
+        if gameId then ns.Store.SetDuo(gameId, nil) end
+        if stage == "play" then ns.window:SaveCurrent() end
+        reset()
+        heldAt, reWait, awaySince = nil, nil, nil
+        ns.Invite.Note(ns.T("duoDropped", from))
+        return
+    end
+    local id, blk = findHeld(m)
+    if id and ns.Link.Norm(blk.peer) == ns.Link.Norm(from) then
+        ns.Store.SetDuo(id, nil)
+        ns.Invite.Note(ns.T("duoDropped", from))
+    end
+end
 ns.Link.On("END", function(from, aMid, aWhy)
+    if aWhy == "drop" then
+        dropped(from, ns.Link.Num(aMid))
+        return
+    end
     if not stage or stage == "held" or from ~= peer then return end
     if ns.Link.Num(aMid) ~= mid then return end
     local who = peer
@@ -353,13 +408,6 @@ function ns.Duo.Resume()
     ns.Link.Send(peer, "RE", mid, n)
     reWait = GetTime() + HOST_WAIT
     say(ns.T("duoCalling", peer))
-end
-local function findHeld(m)
-    for id in pairs(ns.games) do
-        local blk = ns.Store.Duo(id)
-        if blk and blk.mid == m then return id, blk end
-    end
-    return nil, nil
 end
 ns.Link.On("OF", function(from, aMid, aWhat)
     if stage ~= "play" or from ~= peer then return end

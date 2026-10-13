@@ -1,9 +1,9 @@
 local ADDON, ns = ...
 local RU, EN = ns.locales.ruRU, ns.locales.enUS
-RU["solitaire.label"] = "Пасьянс"
-EN["solitaire.label"] = "Solitaire"
-RU["solitaire.tip"] = "Косынка, Свободная ячейка и Юкон: разобрать раскладку по мастям в четыре дома"
-EN["solitaire.tip"] = "Klondike, FreeCell, and Yukon: sort the layout by suit into four foundations"
+RU["solitaire.label"] = "Карточные игры"
+EN["solitaire.label"] = "Card games"
+RU["solitaire.tip"] = "Косынка, Свободная ячейка, Юкон и Дурак против ботов"
+EN["solitaire.tip"] = "Klondike, FreeCell, Yukon, and Durak against bots"
 RU["solitaire.nicheMoves"] = "ХОДЫ"
 EN["solitaire.nicheMoves"] = "MOVES"
 RU["solitaire.nicheBest"] = "ЛУЧШЕЕ"

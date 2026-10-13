@@ -1,6 +1,6 @@
 local ADDON, ns = ...
 ns.ADDON = ADDON
-ns.VERSION = "0.9.0"
+ns.VERSION = "0.10.0-beta1"
 ns.games = {}
 ns.gameOrder = {}
 RaidWaitingArcadeNS = ns
@@ -98,10 +98,9 @@ function ns.GameList()
 end
 function ns.MenuList()
     local keep = ns.menuFilter
-    if not keep then return ns.gameOrder end
     local out = {}
     for _, def in ipairs(ns.gameOrder) do
-        if keep(def) then out[#out + 1] = def end
+        if not def.hub and (not keep or keep(def)) then out[#out + 1] = def end
     end
     return out
 end

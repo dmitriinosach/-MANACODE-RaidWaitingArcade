@@ -15,7 +15,10 @@ local TAGS = {
     INV = true, YES = true, NO = true, MV = true, END = true, RE = true,
     PR = true, PRY = true, PRN = true, PRX = true,
     OF = true,
+    TO = true, TC = true, TJ = true, TN = true, TL = true, TR = true,
+    TY = true, TS = true, TA = true, TX = true, TI = true,
 }
+local NOGAP = { MV = true, TS = true, TA = true, TL = true, TY = true, TX = true }
 local function int(lo, hi)
     return function(v)
         if not string.find(v, "^%d+$") or #v > 10 then return false end
@@ -39,6 +42,9 @@ local GAME  = shape("^%l+$", 24)
 local PACK  = shape("^[%w_=;%.%-]*$", BODY_MAX)
 local CLS   = shape("^%u*$", 12)
 local WHY   = oneOf("no", "busy", "combat", "timeout", "game", "closed")
+local KINDS = shape("^[bopx]+$", 9)
+local NAMES = shape("^[^%s|]+$", 120)
+local BLOB  = shape("^[%w_%.%-]*$", 200)
 local SCHEMA = {
     HI   = { PROTO, APPV },
     HERE = { PROTO, int(0, 3), APPV, CLS },
@@ -46,13 +52,24 @@ local SCHEMA = {
     YES  = { MID },
     NO   = { MID, WHY },
     MV   = { MID, int(1, 100000), PACK },
-    END  = { MID, oneOf("over", "resign", "desync", "quit", "silence", "logout") },
+    END  = { MID, oneOf("over", "resign", "desync", "quit", "silence", "logout", "drop") },
     RE   = { MID, STEP },
     OF   = { MID, oneOf("draw", "yes", "no") },
     PR   = { PROTO },
     PRY  = {},
     PRN  = { WHY },
     PRX  = {},
+    TO   = { MID, GAME, PROTO, KINDS, PACK },
+    TC   = { MID },
+    TJ   = { MID, PROTO },
+    TN   = { MID, oneOf("full", "game", "busy", "closed") },
+    TL   = { MID, KINDS, NAMES, NAMES, int(1, 9) },
+    TR   = { MID },
+    TY   = { MID, oneOf("y", "n") },
+    TS   = { MID, STEP, BLOB },
+    TA   = { MID, STEP, PACK },
+    TX   = { MID, oneOf("leave", "kick", "close") },
+    TI   = { MID, GAME, PROTO, PACK },
 }
 local function fits(tag, ...)
     local rule = SCHEMA[tag]
@@ -156,15 +173,34 @@ function ns.Link.Send(to, tag, ...)
     ns.Compat.SendAddon(PREFIX, body, "WHISPER", to)
     return true
 end
-local shouted = false
-local partyWas, partyAt = 0, 0
-local PARTY_GAP = 15
 local function around()
     local raid, party = ns.Compat.GroupSize()
     if raid > 0 then return raid, "RAID" end
     if party > 0 then return party, "PARTY" end
     return 0, nil
 end
+function ns.Link.Broadcast(tag, ...)
+    if not TAGS[tag] then return false end
+    local n = select("#", ...)
+    local strs = {}
+    for i = 1, n do strs[i] = tostring((select(i, ...))) end
+    if not fits(tag, unpack(strs, 1, n)) then return false end
+    local body = tag
+    for i = 1, n do
+        if not field(strs[i]) then return false end
+        body = body .. "\t" .. strs[i]
+    end
+    if #body > BODY_MAX then return false end
+    if IsInGuild and IsInGuild() and budgetOk() then
+        ns.Compat.SendAddon(PREFIX, body, "GUILD")
+    end
+    local _, chan = around()
+    if chan and budgetOk() then ns.Compat.SendAddon(PREFIX, body, chan) end
+    return true
+end
+local shouted = false
+local partyWas, partyAt = 0, 0
+local PARTY_GAP = 15
 local function hereBody()
     return "HERE\t" .. VER .. "\t" .. ns.Link.Here() .. "\t" .. ns.Version.Mine()
         .. "\t" .. (ns.Link.MyClass() or "")
@@ -320,7 +356,7 @@ f:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
         rec = {}
         heard[k] = rec
     end
-    if rec[tag] and now - rec[tag] < RECV_GAP and tag ~= "MV" then return end
+    if rec[tag] and now - rec[tag] < RECV_GAP and not NOGAP[tag] then return end
     rec[tag] = now
     if tag == "HI" then
         if ns.Ignore and ns.Ignore.Blocked(from) then return end

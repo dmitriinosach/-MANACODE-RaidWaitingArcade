@@ -4,7 +4,7 @@
 ## Notes: Mini-games in WoW theme. Play while the raid gathers.
 ## Notes-ruRU: Мини-игры на три минуты, пока собирается рейд
 ## Author: Manacode
-## Version: 0.9.0
+## Version: 0.10.0-beta1
 ## SavedVariables: RaidWaitingArcadeDB
 compat\wotlk.lua
 arc.lua
@@ -41,6 +41,7 @@ core\link.lua
 core\ignore.lua
 core\duo.lua
 core\pair.lua
+core\table.lua
 core\search.lua
 core\palette.lua
 core\sfx.lua
@@ -55,6 +56,7 @@ ui\kit\button.lua
 ui\kit\keytable.lua
 ui\kit\board.lua
 ui\kit\card.lua
+ui\kit\hub.lua
 ui\kit\help.lua
 ui\kit\slides.lua
 ui\kit\curtain.lua
@@ -157,6 +159,9 @@ games\solitaire\mode_klondike.lua
 games\solitaire\mode_freecell.lua
 games\solitaire\mode_yukon.lua
 games\solitaire\solitaire.lua
+games\durak\locale.lua
+games\durak\rules.lua
+games\durak\durak.lua
 games\gofish\locale.lua
 games\gofish\shelves.lua
 games\gofish\chars.lua

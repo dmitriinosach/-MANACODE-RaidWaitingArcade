@@ -59,12 +59,10 @@ local felt
 local niche, exit, nicheCap, nicheVal
 local menu
 local M_PAD = 16
-local SLOT_TOP, SLOT_H, SLOT_GAP = 20, 104, 8
-local SEAM1, SEAM2 = 147, 394
-local BAND_TOP = 160
+local SEAM1, SEAM2 = ns.CardHub.Bottom() + 12, 394
+local BAND_TOP = SEAM1 + 12
 local PLAY_W, PLAY_H, PLAY_TOP = 220, 44, 414
 local PAIR_W, PAIR_GAP = 200, 16
-local MENU_MAX = 4
 local LIFT_TIME = 0.34
 local GROW_TIME = 0.32
 local MINI_X, MINI_W = M_PAD, CANVAS_W - M_PAD * 2
@@ -207,25 +205,6 @@ local function buildCard()
     f:Hide()
     return f
 end
-local function buildTile(root)
-    local t = ns.MakeSlot(root, LOOK)
-    t:SetHeight(SLOT_H)
-    t.name = t:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    t.name:SetPoint("TOPLEFT", t, "TOPLEFT", 12, -11)
-    t.line = t:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    t.line:SetPoint("TOPLEFT", t, "TOPLEFT", 12, -34)
-    t.line:SetJustifyH("LEFT")
-    t.line:SetJustifyV("TOP")
-    t.best = t:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    t.best:SetPoint("BOTTOMLEFT", t, "BOTTOMLEFT", 12, 9)
-    t.foot = t:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    t.foot:SetPoint("BOTTOMRIGHT", t, "BOTTOMRIGHT", -12, 9)
-    t:SetScript("OnClick", function(self2)
-        local g = ns.Loop.Current()
-        if g and g.Pick and self2.pick then ns.Sfx.Ui(); g:Pick(self2.pick) end
-    end)
-    return t
-end
 local function seam(parent, y)
     local t = ns.Fill(parent, "ARTWORK", C_SEAM)
     t:SetHeight(1)
@@ -239,8 +218,7 @@ local function buildMenu(canvas)
     m.root:EnableMouse(true)
     m.bg = ns.MakeTable(m.root, LOOK)
     m.bg:Show()
-    m.tile = {}
-    for i = 1, MENU_MAX do m.tile[i] = buildTile(m.root) end
+    m.hub = ns.MakeCardHub(m.root, LOOK)
     seam(m.root, SEAM1)
     seam(m.root, SEAM2)
     m.mini, m.miniSlot, m.miniOf = {}, {}, {}
@@ -439,10 +417,46 @@ local function bestText(sec)
     local mm = floor(sec / 60)
     return ns.T("solitaire.menuBest", ("%d:%02d"):format(mm, floor(sec - mm * 60)))
 end
+ns.CardHub.Provide(1, ID, function()
+    local here = ns.CardHub.Here(ID)
+    local out = {}
+    for _, it in ipairs(ns.Patience.List()) do
+        local key = it.key
+        local md = ns.Patience.Get(key)
+        local on = here and here.phase == "menu" and here.mode == key or false
+        local waits
+        if on then
+            waits = here:Started()
+        else
+            local rec = ns.Store.Load(ID, { mode = key })
+            waits = (rec and rec.moves and #rec.moves > 0) and true or false
+        end
+        local best
+        if waits then
+            best = ns.T("solitaire.menuLive")
+        else
+            local rec = ns.Records.Best(ID, { mode = key })
+            best = bestText(rec and rec.time)
+        end
+        out[#out + 1] = {
+            label = ns.TL(md.label), line = ns.TL(md.line),
+            best = best, bestGold = waits,
+            foot = ns.T("solitaire.menuCols", md.cols), on = on,
+            open = function()
+                local g = ns.CardHub.Here(ID)
+                if g then
+                    g:Pick(key)
+                    return
+                end
+                ns.window:SaveCurrent()
+                staying = true
+                ns.window:StartGame(ID, { mode = key }, true)
+            end,
+        }
+    end
+    return out
+end)
 local function syncMenu(self)
-    local list = ns.Patience.List()
-    local count = #list
-    local w = floor((CANVAS_W - M_PAD * 2 - SLOT_GAP * (count - 1)) / count)
     local live = self:Started()
     menu.play:SetText(ns.T("solitaire.menuPlay"))
     if live then
@@ -466,43 +480,7 @@ local function syncMenu(self)
                            floor((CANVAS_W - PLAY_W) / 2), -PLAY_TOP)
         menu.resume:Hide()
     end
-    for i = 1, MENU_MAX do
-        local t = menu.tile[i]
-        local it = list[i]
-        if not it then t:Hide() else
-            local md = ns.Patience.Get(it.key)
-            local on = (it.key == self.mode)
-            t:SetWidth(w)
-            t:ClearAllPoints()
-            t:SetPoint("TOPLEFT", menu.root, "TOPLEFT",
-                       M_PAD + (i - 1) * (w + SLOT_GAP), -SLOT_TOP)
-            t:Tone(on)
-            t.name:SetText(ns.TL(md.label))
-            local c = on and C_GOLD or C_TEXT
-            t.name:SetTextColor(c[1], c[2], c[3])
-            c = on and C_SOFT or C_CAP
-            t.line:SetWidth(w - 24)
-            t.line:SetText(ns.TL(md.line))
-            t.line:SetTextColor(c[1], c[2], c[3])
-            local waits = live
-            if not on then
-                local rec = ns.Store.Load(ID, { mode = it.key })
-                waits = (rec and rec.moves and #rec.moves > 0) and true or false
-            end
-            if waits then
-                t.best:SetText(ns.T("solitaire.menuLive"))
-                t.best:SetTextColor(C_GOLD[1], C_GOLD[2], C_GOLD[3])
-            else
-                local best = ns.Records.Best(ID, { mode = it.key })
-                t.best:SetText(bestText(best and best.time))
-                t.best:SetTextColor(c[1], c[2], c[3])
-            end
-            t.foot:SetText(ns.T("solitaire.menuCols", md.cols))
-            t.foot:SetTextColor(c[1], c[2], c[3])
-            t.pick = it.key
-            t:Show()
-        end
-    end
+    menu.hub:Sync()
     syncMini(self)
 end
 local function paintCard(f, card, tone)

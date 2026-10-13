@@ -345,9 +345,11 @@ end
 local function tileMinWidth(list)
     local w = 0
     for _, def in ipairs(list) do
-        probe:SetText(def.label or def.id)
-        local need = probe:GetStringWidth()
-        if need > w then w = need end
+        for word in tostring(def.label or def.id):gmatch("%S+") do
+            probe:SetText(word)
+            local need = probe:GetStringWidth()
+            if need > w then w = need end
+        end
     end
     return math.ceil(w) + TILE_PAD_X * 2 + ICON_SZ + ICON_GAP
 end
