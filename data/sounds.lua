@@ -1652,6 +1652,7 @@ ns.soundsEvents = {
     ["jump"] = { "big", "over", "pop" },
     ["merge"] = { "clear", "pop" },
     ["mines"] = { "big", "clear", "over", "pick", "pop" },
+    ["nonogram"] = { "big", "clear", "pop" },
     ["pairs"] = { "clear", "deny", "over", "pick", "pop" },
     ["recipe"] = { "over", "pick", "pop" },
     ["slide"] = { "clear", "hover", "pick" },

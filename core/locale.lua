@@ -3,10 +3,17 @@ ns.locales = ns.locales or {}
 ns.localeNames = {
     ruRU = "Русский",
     enUS = "English",
+    esES = "Español",
 }
-ns.localeOrder = { "ruRU", "enUS" }
+ns.localeOrder = { "ruRU", "enUS", "esES" }
 local MISSING = "??"
 local DEFAULT = "ruRU"
+local SECOND = "enUS"
+local ALIAS = { esMX = "esES" }
+local function clientLocale()
+    local code = GetLocale()
+    return ALIAS[code] or code
+end
 function ns.LocaleList()
     local out = {}
     for _, code in ipairs(ns.localeOrder) do
@@ -18,7 +25,8 @@ function ns.CurrentLocale()
     local db = ns.Store and ns.Store.DB and ns.Store.DB()
     local pref = db and db.uiLang
     return (pref and ns.locales[pref]) and pref
-        or (ns.locales[GetLocale()] and GetLocale())
+        or (ns.locales[clientLocale()] and clientLocale())
+        or (ns.locales[SECOND] and SECOND)
         or DEFAULT
 end
 function ns.LocalePref()
@@ -103,8 +111,11 @@ function ns.T(key, ...)
         s = base
     else
         local own = ns.locales[lang] and ns.locales[lang][key]
+        local second = lang ~= SECOND and ns.locales[SECOND] and ns.locales[SECOND][key]
         if own ~= nil then
             s = own
+        elseif second ~= nil and second ~= false then
+            s = second
         elseif base ~= nil then
             s = MISSING
         end

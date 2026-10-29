@@ -3,13 +3,18 @@
 ## Title-ruRU: |cff3399ff[MANACODE]|r Аркада |cff808080— пока ждём рейд|r
 ## Notes: Mini-games in WoW theme. Play while the raid gathers.
 ## Notes-ruRU: Мини-игры на три минуты, пока собирается рейд
+## Title-esES: |cff3399ff[MANACODE]|r Arcade |cff808080- mientras se reúne la banda|r
+## Title-esMX: |cff3399ff[MANACODE]|r Arcade |cff808080- mientras se reúne la banda|r
+## Notes-esES: Minijuegos para jugar mientras se reúne la banda.
+## Notes-esMX: Minijuegos para jugar mientras se reúne la banda.
 ## Author: Manacode
-## Version: 0.10.0-beta1
+## Version: 1.0.0
 ## SavedVariables: RaidWaitingArcadeDB
 compat\wotlk.lua
 arc.lua
 core\locale.lua
 locale\ruRU.lua
+locale\esES.lua
 locale\enUS.lua
 data\gems.lua
 data\bombs.lua
@@ -114,6 +119,9 @@ games\sudoku\locale.lua
 games\sudoku\icon.lua
 games\sudoku\skins.lua
 games\sudoku\sudoku.lua
+games\nonogram\locale.lua
+games\nonogram\pack.lua
+games\nonogram\nonogram.lua
 games\mines\locale.lua
 games\mines\shelves.lua
 games\mines\gen.lua

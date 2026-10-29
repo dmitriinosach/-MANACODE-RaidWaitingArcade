@@ -120,6 +120,11 @@ ns.Sfx.gameLabel = {
         clear = "строка стёрта",
         over  = "стакан переполнен",
     },
+    ["nonogram"] = {
+        pop   = "стежок положен",
+        big   = "линия сошлась",
+        clear = "узор собран",
+    },
     ["sudoku"] = {
         pick  = "цифра взята в руку",
         pop   = "ход по полю принят",
@@ -216,6 +221,11 @@ local BAKED = {
         ["stuck"] = "Sound" .. BS .. "Doodad" .. BS .. "GnomereganElevatorStop.wav",
         ["turn"]  = "sound" .. BS .. "doodad" .. BS .. "icecrown_lever_close.wav",
         ["over"]  = "Sound" .. BS .. "Effects" .. BS .. "DeathImpacts" .. BS .. "mDeathImpactMediumWoodA.wav",
+    },
+    ["nonogram"] = {
+        ["pop"]   = "Sound" .. BS .. "interface" .. BS .. "PickUp" .. BS .. "PutDownFoodGeneric.wav",
+        ["big"]   = "Sound" .. BS .. "Interface" .. BS .. "Glyph_MinorCreate.wav",
+        ["clear"] = "Sound" .. BS .. "interface" .. BS .. "iQuestComplete.wav",
     },
     ["sudoku"] = {
         ["clear"] = "Sound" .. BS .. "Interface" .. BS .. "Glyph_MinorCreate.wav",

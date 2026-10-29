@@ -1,8 +1,8 @@
 # Raid Waiting Arcade
 
-Addon for World of Warcraft. Listed in the addon list as **[MANACODE] Arcade** (Russian client: **[MANACODE] Аркада**). Author: Manacode. Version 0.9.0, beta.
+Addon for World of Warcraft. Listed in the addon list as **[MANACODE] Arcade** (Russian client: **[MANACODE] Аркада**). Spanish client: **[MANACODE] Arcade**. Author: Manacode. Version 1.0.0.
 
-Twenty mini-games inside the game client for the time between joining a raid and the first pull. Each game takes a few minutes. A game saves on Esc and survives `/reload`. Four games can be played with another person: Chess, Checkers, Pairs and Chests. Both players need the addon and must be on the same realm and faction; distance does not matter.
+Twenty-two mini-games inside the game client for the time between joining a raid and the first pull. Each game takes a few minutes. A game saves on Esc and survives `/reload`. Five games can be played with other people: Chess, Checkers, Pairs and Chests with one partner, Durak at a table of up to four. Both players need the addon and must be on the same realm and faction; distance does not matter.
 
 ## Games
 
@@ -13,11 +13,13 @@ Twenty mini-games inside the game client for the time between joining a raid and
 - Chess (2 players) — standard chess against another person; there is no bot.
 - Chests (2 players) — a memory card game against the character at the table or against a friend.
 - Construction — a crane swings a floor on a cable; a precise landing fills the floor with tenants.
+- Durak (2-4 players) — the card game: get rid of your cards before the others; throw-in and passing variants, bots take empty seats.
 - Invaders — waves of enemies from above; auto-fire, spacebar for the ability.
 - Jumper — the character jumps on its own, arrow keys steer it sideways; climb as high as you can.
 - Match Three — swap adjacent gems and match lines of three or more.
 - Merge — slide the board with arrow keys; two matching potions merge into the next recipe.
 - Mines — clear the minefield; the number on a tile tells how many mines are nearby.
+- Nonogram — fill in cells by the numbers beside rows and columns until a picture appears; 35 pictures, 5x5 to 15x15.
 - Pairs (2 players) — flip two cards at a time and find the matches.
 - Recipe — guess the secret recipe in a few pinches: brew the mix and read the result.
 - Slide — a picture cut up and shuffled; tiles slide into the empty spot.
@@ -27,7 +29,7 @@ Twenty mini-games inside the game client for the time between joining a raid and
 - Sudoku — digits 1–9 with no repeats in any row, column or box.
 - Tetris — a 10-by-20 board: pieces fall, full lines clear.
 
-Languages: English and Russian.
+Languages: English, Russian and Spanish.
 
 ## Supported clients
 
@@ -51,7 +53,7 @@ Known issue of the Forever beta client itself: it does not load addon saved data
 ## Usage
 
 - `/arc` — open or close the window. `/arcade` and the minimap button do the same.
-- `/arc chess` — open a game directly, past the menu. Game ids: `apothecary arkanoid breaker checkers chess gems gofish invaders jump merge mines pairs recipe slide snake solitaire stack sudoku tetris tower`.
+- `/arc chess` — open a game directly, past the menu. Game ids: `apothecary arkanoid breaker checkers chess durak gems gofish invaders jump merge mines nonogram pairs recipe slide snake solitaire stack sudoku tetris tower`.
 - `/arc about` — window with links: releases, Discord. The client cannot open links, so the address is shown pre-selected for Ctrl+C.
 - `/arc broken` — which games were disabled by an error, and why.
 
@@ -124,7 +126,7 @@ Download only from the Releases page, the website or the Discord server. Do not 
 ## Использование
 
 - `/arc` — открыть или закрыть окно. То же делают `/arcade` и значок у миникарты.
-- `/arc chess` — сразу в игру, мимо меню. Идентификаторы игр: `apothecary arkanoid breaker checkers chess gems gofish invaders jump merge mines pairs recipe slide snake solitaire stack sudoku tetris tower`.
+- `/arc chess` — сразу в игру, мимо меню. Идентификаторы игр: `apothecary arkanoid breaker checkers chess durak gems gofish invaders jump merge mines nonogram pairs recipe slide snake solitaire stack sudoku tetris tower`.
 - `/arc about` — окно со ссылками: релизы, Discord. Открыть ссылку клиент не умеет, поэтому адрес встаёт выделенным под Ctrl+C.
 - `/arc broken` — какие игры отключились из-за ошибки и почему.
 
