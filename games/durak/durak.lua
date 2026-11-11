@@ -393,7 +393,7 @@ function Game:Start(seed, moves)
     self.browse = false
     self.phase = restored and "play" or "menu"
     self.myTurn = false
-    if not self.guest then
+    if not self.guest and not (restored and T.Regather(ID)) then
         local kinds = {}
         for i = 1, 3 do kinds[i] = self.seats:sub(i, i) end
         T.Host(ID, { variant = self.variant }, kinds)
@@ -538,6 +538,13 @@ end
 function Game:SeatLeft(pos)
     local q = self:SeatOf(pos)
     if q then self.away[q] = true end
+    self:Draw()
+end
+function Game:SeatBack(pos)
+    local q = self:SeatOf(pos)
+    if not q then return end
+    self.away[q], self.miss[q] = nil, 0
+    self:Push(q)
     self:Draw()
 end
 function Game:SetView(blob)
@@ -1094,6 +1101,7 @@ end
 T.Hooks(ID, {
     act = function(pos, m, seq) if game then game:RemoteAct(pos, m, seq) end end,
     left = function(pos) if game then game:SeatLeft(pos) end end,
+    back = function(pos) if game then game:SeatBack(pos) end end,
     view = function(blob) if game then game:SetView(blob) end end,
 })
 T.OnChange(function()
@@ -1164,6 +1172,7 @@ ns.RegisterGame{
     duo = "none",
     look = LOOK,
     physics = false,
+    live = true,
     ownPanel = true,
     deck = true,
     record = false,

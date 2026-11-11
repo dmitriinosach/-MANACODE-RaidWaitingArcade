@@ -2,7 +2,7 @@ local ADDON, ns = ...
 ns.Link = {}
 local PREFIX = "rwArc"
 ns.Compat.RegisterPrefix(PREFIX)
-local VER = 1
+local VER = 2
 local BODY_MAX = 248
 local SEND_CAP = 10
 local RECV_GAP = 0.5
@@ -16,9 +16,9 @@ local TAGS = {
     PR = true, PRY = true, PRN = true, PRX = true,
     OF = true,
     TO = true, TC = true, TJ = true, TN = true, TL = true, TR = true,
-    TY = true, TS = true, TA = true, TX = true, TI = true,
+    TY = true, TS = true, TA = true, TX = true, TI = true, TK = true,
 }
-local NOGAP = { MV = true, TS = true, TA = true, TL = true, TY = true, TX = true }
+local NOGAP = { MV = true, END = true, TS = true, TA = true, TL = true, TY = true, TX = true, TK = true }
 local function int(lo, hi)
     return function(v)
         if not string.find(v, "^%d+$") or #v > 10 then return false end
@@ -45,6 +45,8 @@ local WHY   = oneOf("no", "busy", "combat", "timeout", "game", "closed")
 local KINDS = shape("^[bopx]+$", 9)
 local NAMES = shape("^[^%s|]+$", 120)
 local BLOB  = shape("^[%w_%.%-]*$", 200)
+local PICK  = shape("^[%w_]+$", 16)
+local PICKS = shape("^[%w_%.%-]+$", 90)
 local SCHEMA = {
     HI   = { PROTO, APPV },
     HERE = { PROTO, int(0, 3), APPV, CLS },
@@ -63,13 +65,14 @@ local SCHEMA = {
     TC   = { MID },
     TJ   = { MID, PROTO },
     TN   = { MID, oneOf("full", "game", "busy", "closed") },
-    TL   = { MID, KINDS, NAMES, NAMES, int(1, 9) },
+    TL   = { MID, KINDS, NAMES, NAMES, int(1, 9), PACK, PICKS },
     TR   = { MID },
     TY   = { MID, oneOf("y", "n") },
     TS   = { MID, STEP, BLOB },
     TA   = { MID, STEP, PACK },
-    TX   = { MID, oneOf("leave", "kick", "close") },
+    TX   = { MID, oneOf("leave", "kick", "close", "hold") },
     TI   = { MID, GAME, PROTO, PACK },
+    TK   = { MID, PICK },
 }
 local function fits(tag, ...)
     local rule = SCHEMA[tag]
@@ -344,10 +347,10 @@ f:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
     if #message > BODY_MAX then return end
     if string.find(message, "|", 1, true) then return end
     if string.find((message:gsub("\t", "")), "%c") then return end
-    local tag, a, b, c, d, e, extra = strsplit("\t", message)
+    local tag, a, b, c, d, e, f6, f7, extra = strsplit("\t", message)
     if not TAGS[tag] or extra ~= nil then return end
-    if not fits(tag, a, b, c, d, e) then return end
-    for i = 1, #seers do seers[i](from, tag, a, b, c, d, e) end
+    if not fits(tag, a, b, c, d, e, f6, f7) then return end
+    for i = 1, #seers do seers[i](from, tag, a, b, c, d, e, f6, f7) end
     local now = GetTime()
     local k = from:lower()
     local rec = heard[k]
@@ -371,7 +374,7 @@ f:SetScript("OnEvent", function(_, event, prefix, message, channel, sender)
         return
     end
     local fn = hooks[tag]
-    if fn then fn(from, a, b, c, d, e) end
+    if fn then fn(from, a, b, c, d, e, f6, f7) end
 end)
 ns.Link.busy = false
 function ns.Link.Here()

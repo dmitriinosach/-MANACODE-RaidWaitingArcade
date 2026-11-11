@@ -326,6 +326,7 @@ ns.Link.On("MV", function(from, aMid, aN, aMove)
     remote = true
     ns.SafeCall(game, "Move", move)
     remote = nil
+    if game.AfterPeer and stage == "play" then ns.SafeCall(game, "AfterPeer") end
     ns.window:RefreshHead()
 end)
 local function findHeld(m)
@@ -530,6 +531,6 @@ ticker:SetScript("OnUpdate", function(_, elapsed)
     end
     if lastHeard and now - lastHeard >= QUIET then
         pinged = now
-        ns.Link.Send(peer, "HI", ns.Link.Version())
+        ns.Link.Send(peer, "HI", ns.Link.Version(), ns.Version.Mine())
     end
 end)

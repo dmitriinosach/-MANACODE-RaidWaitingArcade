@@ -1,6 +1,6 @@
 local ADDON, ns = ...
 ns.ADDON = ADDON
-ns.VERSION = "1.0.0"
+ns.VERSION = "1.1.0-beta1"
 ns.games = {}
 ns.gameOrder = {}
 RaidWaitingArcadeNS = ns

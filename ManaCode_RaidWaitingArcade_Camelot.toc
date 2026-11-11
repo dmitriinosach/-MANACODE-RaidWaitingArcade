@@ -8,7 +8,7 @@
 ## Notes-esES: Minijuegos para jugar mientras se reúne la banda.
 ## Notes-esMX: Minijuegos para jugar mientras se reúne la banda.
 ## Author: Manacode
-## Version: 1.0.0
+## Version: 1.1.0-beta1
 ## SavedVariables: RaidWaitingArcadeDB
 compat\mainline.lua
 data\fdid_mainline.lua
@@ -67,6 +67,7 @@ ui\kit\help.lua
 ui\kit\slides.lua
 ui\kit\curtain.lua
 ui\kit\call.lua
+ui\kit\number.lua
 ui\kit\anim.lua
 ui\fx\fx.lua
 ui\fx\shrink.lua
@@ -157,6 +158,9 @@ games\arkanoid\shelves.lua
 games\arkanoid\arkanoid.lua
 games\checkers\locale.lua
 games\checkers\checkers.lua
+games\seabattle\locale.lua
+games\seabattle\rules.lua
+games\seabattle\seabattle.lua
 games\chess\locale.lua
 games\chess\pieces.lua
 games\chess\lobby.lua
@@ -171,6 +175,14 @@ games\solitaire\solitaire.lua
 games\durak\locale.lua
 games\durak\rules.lua
 games\durak\durak.lua
+games\tycoon\locale.lua
+games\tycoon\boards.lua
+games\tycoon\rules.lua
+games\tycoon\bots.lua
+games\tycoon\view.lua
+games\tycoon\panels.lua
+games\tycoon\room.lua
+games\tycoon\tycoon.lua
 games\gofish\locale.lua
 games\gofish\shelves.lua
 games\gofish\chars.lua

@@ -725,7 +725,7 @@ local function build()
             Window:RefreshHead()
             return
         end
-        if not ns.Duo.MyTurn() then return end
+        if not (curDef and curDef.freeClick) and not ns.Duo.MyTurn() then return end
         if not ns.Keys.MouseOn(curDef and curDef.id) then return end
         local x, y = canvasPoint(self)
         ns.SafeCall(cur, "Click", x, y, button)
@@ -733,7 +733,7 @@ local function build()
     canvas:SetScript("OnMouseUp", function(self, button)
         if not cur or not cur.Release then return end
         if ns.Loop.IsPaused() then return end
-        if not ns.Duo.MyTurn() then return end
+        if not (curDef and curDef.freeClick) and not ns.Duo.MyTurn() then return end
         if not ns.Keys.MouseOn(curDef and curDef.id) then return end
         local x, y = canvasPoint(self)
         ns.SafeCall(cur, "Release", x, y, button)
@@ -749,7 +749,9 @@ local function build()
             Window:StopGame()
             return
         end
-        if cur then
+        if cur and curDef and curDef.live then
+            Window:SaveCurrent()
+        elseif cur then
             ns.Loop.Pause(ns.T("pauseWindow"))
             ns.Loop.Stop()
         end
@@ -1056,7 +1058,7 @@ function Window:Open()
     ns.Sfx.Duck()
     ns.Music.Resume()
     if cur then
-        ns.Loop.Start(cur)
+        if ns.Loop.Current() ~= cur then ns.Loop.Start(cur) end
         ns.Loop.Pause(ns.T("pauseWindow"))
     else
         setCanvasSize(nil, nil)
@@ -1544,8 +1546,9 @@ local function syncHeld()
     heldUI.resume:SetText(ns.T("pairResume"))
     heldUI.resume.tip = ns.T("pairResumeTip")
     if ns.Duo.Calling() then heldUI.resume:Disable() else heldUI.resume:Enable() end
-    heldUI.solo:SetText(ns.T("pairSolo"))
-    heldUI.solo.tip = ns.T("pairSoloTip")
+    local drop = curDef.heldDrop
+    heldUI.solo:SetText(ns.T(drop and "pairDrop" or "pairSolo"))
+    heldUI.solo.tip = ns.T(drop and "pairDropTip" or "pairSoloTip")
     heldUI:SetWidth(14 + (heldUI.text:GetStringWidth() or 0) + GAP + 130 + ROW + 130 + 14)
     heldUI:Show()
 end

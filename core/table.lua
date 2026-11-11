@@ -7,6 +7,8 @@ local READY_WAIT = 15
 local JOIN_WAIT = 6
 local RELEASE_WAIT = 1
 local TICK = 0.5
+local BACK_TTL = 3 * 3600
+local BACK_DELAY = 6
 local role
 local room
 local rooms = {}
@@ -15,6 +17,9 @@ local hooks = {}
 local joining
 local announceAt = 0
 local releaseAt
+local backAt
+local lineAt = 0
+local LINE_GAP = 0.5
 local function tell()
     for i = 1, #watchers do pcall(watchers[i]) end
 end
@@ -53,6 +58,14 @@ function T.Kind(p)
 end
 function T.Name(p) return room and room.names[p] or nil end
 function T.Class(p) return room and room.cls[p] or nil end
+function T.PickOf(p) return room and room.picks and room.picks[p] or nil end
+local function remember(r)
+    ns.Config.Set("table", "last", r and { host = r.host, mid = r.mid, game = r.game, at = time() } or nil)
+end
+local function packOpts(opts)
+    local s = ns.Link.Encode(opts)
+    return s ~= "" and s or "-"
+end
 local function listStr(t, n)
     local out = {}
     for p = 1, n do
@@ -81,19 +94,51 @@ local function announce(force)
     end
     broadcast("TO", room.mid, room.game, ns.Link.Version(), kindsStr(), ns.Link.Encode(room.opts))
 end
-local function lineup()
-    if role ~= "host" then return end
+local function sendLineup()
+    lineAt = GetTime()
+    room.lineDue = nil
     local ks = kindsStr()
     local n = #room.kinds
     local names, cls = listStr(room.names, n), listStr(room.cls, n)
+    local picks = { [1] = room.picks[0] }
+    for p = 1, n do picks[p + 1] = room.picks[p] end
+    local opts, pk = packOpts(room.opts), listStr(picks, n + 1)
     for p = 1, n do
-        if room.names[p] then ns.Link.Send(room.names[p], "TL", room.mid, ks, names, cls, p) end
+        if room.names[p] then ns.Link.Send(room.names[p], "TL", room.mid, ks, names, cls, p, opts, pk) end
     end
+end
+local function lineup()
+    if role ~= "host" or not room then return end
+    if GetTime() - lineAt >= LINE_GAP then sendLineup() else room.lineDue = true end
+end
+local function pickFree(p, v)
+    for q, w in pairs(room.picks) do
+        if q ~= p and w == v then return false end
+    end
+    return true
+end
+local function keepHosted()
+    if role ~= "host" or not room or not room.playing then return end
+    local names = {}
+    for p = 1, #room.kinds do names[p] = room.names[p] or room.gone[p] end
+    local picks = {}
+    for q, v in pairs(room.picks) do picks[q] = v end
+    ns.Config.Set("table", "hosted", { game = room.game, mid = room.mid, at = time(), kinds = { unpack(room.kinds) },
+        names = names, picks = picks, opts = room.opts })
+end
+local function dropHosted()
+    ns.Config.Set("table", "hosted", nil)
 end
 local function dropPlayer(p, why)
     local who = room.names[p]
     if not who then return end
     room.names[p], room.cls[p] = nil, nil
+    if room.playing and not why then
+        room.gone[p] = who
+        keepHosted()
+    else
+        room.picks[p] = nil
+    end
     if why then ns.Link.Send(who, "TX", room.mid, why) end
     if room.ready then room.ready = nil end
     hook("left", p, who)
@@ -114,10 +159,35 @@ function T.Host(game, opts, kinds)
         return
     end
     role = "host"
-    room = { mid = time(), game = game, opts = opts or {}, kinds = {}, names = {}, cls = {} }
+    dropHosted()
+    room = { mid = time(), game = game, opts = opts or {}, kinds = {}, names = {}, cls = {}, picks = {}, gone = {} }
     for p = 1, #kinds do room.kinds[p] = kinds[p] end
     announce(true)
     tell()
+end
+function T.Regather(game)
+    local h = ns.Config.Get("table", "hosted")
+    if type(h) ~= "table" or h.game ~= game or type(h.kinds) ~= "table" or time() - (h.at or 0) > BACK_TTL then
+        return false
+    end
+    if role == "guest" then T.Leave() end
+    releaseAt = nil
+    role = "host"
+    room = { mid = h.mid, game = game, opts = h.opts or {}, kinds = {}, names = {}, cls = {}, picks = {}, gone = {},
+             playing = true }
+    for p = 1, #h.kinds do room.kinds[p] = h.kinds[p] end
+    for q, v in pairs(h.picks or {}) do room.picks[tonumber(q) or q] = v end
+    for p, who in pairs(h.names or {}) do
+        p = tonumber(p) or p
+        if type(who) == "string" and room.kinds[p] == "o" then
+            room.gone[p] = who
+            ns.Link.Send(who, "TI", room.mid, game, ns.Link.Version(), ns.Link.Encode(room.opts))
+        end
+    end
+    keepHosted()
+    announce(true)
+    tell()
+    return true
 end
 function T.Players()
     local out = {}
@@ -133,6 +203,17 @@ function T.Free(p)
     lineup()
     announce(true)
     tell()
+end
+function T.Pick(v)
+    if type(v) ~= "string" or #v > 16 or not v:find("^[%w_]+$") or not room then return false end
+    if role == "guest" then
+        return ns.Link.Send(room.host, "TK", room.mid, v)
+    end
+    if role ~= "host" or not pickFree(0, v) then return false end
+    room.picks[0] = v
+    lineup()
+    tell()
+    return true
 end
 function T.Invite(who)
     if role ~= "host" then return false end
@@ -164,12 +245,15 @@ function T.Begin()
     if role ~= "host" then return end
     room.playing = true
     room.ready = nil
+    keepHosted()
     announce(true)
     tell()
 end
 function T.End()
     if role ~= "host" then return end
     room.playing = false
+    room.gone = {}
+    dropHosted()
     announce(true)
     tell()
 end
@@ -177,10 +261,12 @@ function T.SendView(p, seq, blob)
     if role ~= "host" or not room.names[p] then return end
     ns.Link.Send(room.names[p], "TS", room.mid, seq, blob)
 end
-function T.Close()
+function T.Close(hold)
     if role ~= "host" then return end
+    local why = (hold and room.playing) and "hold" or "close"
+    if why == "hold" then keepHosted() else dropHosted() end
     for p = 1, #room.kinds do
-        if room.names[p] then ns.Link.Send(room.names[p], "TX", room.mid, "close") end
+        if room.names[p] then ns.Link.Send(room.names[p], "TX", room.mid, why) end
     end
     broadcast("TC", room.mid)
     role, room = nil, nil
@@ -198,6 +284,7 @@ end
 function T.Leave()
     if role ~= "guest" then return end
     ns.Link.Send(room.host, "TX", room.mid, "leave")
+    if not room.seen then remember(nil) end
     role, room = nil, nil
     tell()
 end
@@ -264,7 +351,21 @@ ns.Link.On("TJ", function(from, aMid, aVer)
     end
     if tonumber(aVer) ~= ns.Link.Version() then ns.Link.Send(from, "TN", mid, "game") return end
     if ns.Ignore and ns.Ignore.Blocked(from) then ns.Link.Send(from, "TN", mid, "closed") return end
-    if room.playing then ns.Link.Send(from, "TN", mid, "busy") return end
+    if room.playing then
+        local back
+        for q, who in pairs(room.gone) do
+            if same(who, from) and room.kinds[q] == "o" and not room.names[q] then back = q end
+        end
+        if not back then ns.Link.Send(from, "TN", mid, "busy") return end
+        room.gone[back] = nil
+        room.names[back] = from
+        room.cls[back] = ns.Link.PeerClass(from)
+        ns.Invite.Note(ns.T("tableBack", from))
+        sendLineup()
+        hook("back", back, from)
+        tell()
+        return
+    end
     local p = seatOf(from) or openSeat()
     if not p then ns.Link.Send(from, "TN", mid, "full") return end
     room.names[p] = from
@@ -276,27 +377,32 @@ ns.Link.On("TJ", function(from, aMid, aVer)
 end)
 ns.Link.On("TN", function(from, aMid, aWhy)
     if not joining or not same(from, joining.host) or ns.Link.Num(aMid) ~= joining.mid then return end
+    if joining.back then remember(nil) end
     joining = nil
     ns.Invite.Note(ns.T("tableNo_" .. aWhy, from))
     tell()
 end)
-ns.Link.On("TL", function(from, aMid, aKinds, aNames, aCls, aPos)
+ns.Link.On("TL", function(from, aMid, aKinds, aNames, aCls, aPos, aOpts, aPicks)
     local mid = ns.Link.Num(aMid)
     local fresh = joining and same(from, joining.host) and mid == joining.mid
     if not fresh and not guestOnly(from, aMid) then return end
-    local kinds, names, cls = {}, {}, {}
+    local kinds, names, cls, picks = {}, {}, {}, {}
     for i = 1, #aKinds do kinds[i] = aKinds:sub(i, i) end
     local i = 0
     for v in aNames:gmatch("[^.]+") do i = i + 1; names[i] = (v ~= "-") and v or nil end
     i = 0
     for v in aCls:gmatch("[^.]+") do i = i + 1; cls[i] = (v ~= "-") and v or nil end
+    i = -1
+    for v in (aPicks or ""):gmatch("[^.]+") do i = i + 1; picks[i] = (v ~= "-") and v or nil end
     local pos = tonumber(aPos)
     if fresh then
         role = "guest"
         room = { host = from, mid = mid, game = joining.game, opts = joining.opts }
         joining = nil
+        remember(room)
     end
-    room.kinds, room.names, room.cls, room.pos = kinds, names, cls, pos
+    if aOpts then room.opts = ns.Link.Decode(aOpts) end
+    room.kinds, room.names, room.cls, room.pos, room.picks = kinds, names, cls, pos, picks
     if fresh then openGame(room.game, room.opts) end
     tell()
 end)
@@ -332,6 +438,10 @@ ns.Link.On("TY", function(from, aMid, aYes)
 end)
 ns.Link.On("TS", function(from, aMid, aSeq, aBlob)
     if not guestOnly(from, aMid) then return end
+    if not room.seen then
+        room.seen = true
+        remember(room)
+    end
     local g = ns.Loop.Current()
     if not (g and g.def and g.def.id == room.game) or g:IsOver() then
         g = openGame(room.game, room.opts)
@@ -348,8 +458,9 @@ ns.Link.On("TX", function(from, aMid, aWhy)
     if guestOnly(from, aMid) then
         local host = room.host
         hook("closed")
+        if aWhy ~= "hold" then remember(nil) end
         role, room = nil, nil
-        ns.Invite.Note(ns.T(aWhy == "kick" and "tableKicked" or "tableClosed", host))
+        ns.Invite.Note(ns.T(aWhy == "kick" and "tableKicked" or aWhy == "hold" and "tableHold" or "tableClosed", host))
         tell()
         return
     end
@@ -363,6 +474,48 @@ ns.Link.On("TX", function(from, aMid, aWhy)
         tell()
     end
 end)
+ns.Link.On("TK", function(from, aMid, aPick)
+    if not hostOnly(from, aMid) then return end
+    local p = seatOf(from)
+    if not p or room.playing then return end
+    if pickFree(p, aPick) then room.picks[p] = aPick end
+    lineup()
+    tell()
+end)
+local function offerHost()
+    local h = ns.Config.Get("table", "hosted")
+    if type(h) ~= "table" or role or joining then return false end
+    local def = ns.games[h.game]
+    if not def or time() - (h.at or 0) > BACK_TTL or not ns.Store.HasSaved(h.game) then
+        dropHosted()
+        return false
+    end
+    ns.Invite.Ask(UnitName("player"), ns.TL(def.label) or h.game, 60,
+        function()
+            ns.window:Open()
+            ns.window:StartGame(h.game, nil, true)
+        end,
+        function() dropHosted() end,
+        ns.T("tableGatherAsk"))
+    return true
+end
+local function offerBack()
+    if offerHost() then return end
+    local last = ns.Config.Get("table", "last")
+    if type(last) ~= "table" or role or joining then return end
+    if not (last.host and last.mid and ns.games[last.game]) or time() - (last.at or 0) > BACK_TTL then
+        remember(nil)
+        return
+    end
+    local def = ns.games[last.game]
+    ns.Invite.Ask(last.host, ns.TL(def.label) or last.game, 45,
+        function()
+            T.Join(last.host, last.mid, last.game, {})
+            if joining then joining.back = true end
+        end,
+        function() remember(nil) end,
+        ns.T("tableBackAsk"))
+end
 ns.Link.On("TI", function(from, aMid, aGame, aVer, aOpts)
     local mid = ns.Link.Num(aMid)
     if not mid or tonumber(aVer) ~= ns.Link.Version() then return end
@@ -380,9 +533,15 @@ end)
 local ticker = ns.NewFrame("Frame")
 local since = 0
 ns.Listen(ticker, "PLAYER_LOGOUT")
-ticker:SetScript("OnEvent", function(_, event)
+ns.Listen(ticker, "PLAYER_ENTERING_WORLD")
+ticker:SetScript("OnEvent", function(self, event)
+    if event == "PLAYER_ENTERING_WORLD" then
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+        backAt = GetTime() + BACK_DELAY
+        return
+    end
     if event ~= "PLAYER_LOGOUT" then return end
-    if role == "host" then T.Close() elseif role == "guest" then T.Leave() end
+    if role == "host" then T.Close(true) elseif role == "guest" then T.Leave() end
 end)
 ticker:SetScript("OnUpdate", function(_, dt)
     since = since + dt
@@ -395,6 +554,10 @@ ticker:SetScript("OnUpdate", function(_, dt)
         ns.Invite.Note(ns.T("tableNo_timeout", host))
         tell()
     end
+    if backAt and now >= backAt then
+        backAt = nil
+        offerBack()
+    end
     if releaseAt and now >= releaseAt then
         releaseAt = nil
         local g = ns.Loop.Current()
@@ -404,6 +567,7 @@ ticker:SetScript("OnUpdate", function(_, dt)
         end
     end
     if role ~= "host" or not room then return end
+    if room.lineDue and now - lineAt >= LINE_GAP then sendLineup() end
     announce(false)
     local r = room.ready
     if r and now >= r.until_ then

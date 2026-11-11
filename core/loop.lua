@@ -70,6 +70,7 @@ function ns.Loop.Stop()
 end
 function ns.Loop.Pause(why)
     if not cur or paused then return end
+    if cur.def and cur.def.live then return end
     paused = true
     pauseWhy = why
     ns.Keys.Clear()
