@@ -8,7 +8,7 @@
 ## Notes-esES: Minijuegos para jugar mientras se reúne la banda.
 ## Notes-esMX: Minijuegos para jugar mientras se reúne la banda.
 ## Author: Manacode
-## Version: 1.1.0-beta1
+## Version: 1.1.0
 ## SavedVariables: RaidWaitingArcadeDB
 compat\wotlk.lua
 arc.lua
