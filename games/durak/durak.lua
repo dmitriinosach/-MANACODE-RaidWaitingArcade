@@ -620,8 +620,12 @@ function Game:Clock()
         end
     end
     if left then
-        hud.clock:SetText(tostring(max(0, floor(left + 0.5))))
-        paint(hud.clock, left <= 10 and C.fool or C.gold)
+        local sec = max(0, floor(left + 0.5))
+        if hud.clockSec ~= sec then
+            hud.clockSec = sec
+            hud.clock:SetText(tostring(sec))
+            paint(hud.clock, left <= 10 and C.fool or C.gold)
+        end
         hud.clock:Show()
     else
         hud.clock:Hide()

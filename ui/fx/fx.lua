@@ -39,7 +39,7 @@ function ns.FX.LevelOptions()
     return out
 end
 local pool
-local function newGhost()
+local function newGhost(owner)
     local f = ns.NewFrame("Frame", nil, UIParent)
     f.tex = f:CreateTexture(nil, "OVERLAY")
     f.tex:SetAllPoints(f)
@@ -47,12 +47,13 @@ local function newGhost()
     f.move = f.anim:CreateAnimation("Translation")
     f.grow = f.anim:CreateAnimation("Scale")
     f.fade = f.anim:CreateAnimation("Alpha")
-    f.anim:SetScript("OnFinished", function() f:Hide() end)
+    f.anim:SetScript("OnFinished", function() owner:Release(f) end)
+    f:SetScript("OnHide", function() owner:Release(f) end)
     return f
 end
 function ns.FX.Ghost(parent, x, y, size, tex, crop)
     pool = pool or ns.NewPool(newGhost)
-    local f = pool:Acquire()
+    local f = pool:Take()
     f:SetParent(parent)
     f:SetFrameLevel(parent:GetFrameLevel() + 5)
     f:SetWidth(size); f:SetHeight(size)
@@ -76,9 +77,8 @@ function ns.FX.Stop()
     for i = 1, pool:Size() do
         local f = pool.items[i]
         f.anim:Stop()
-        f:Hide()
+        pool:Release(f)
     end
-    pool:Reset()
 end
 local FANCY_EVERY = 3
 local tick, turn = 0, 0

@@ -33,3 +33,25 @@ end
 function Pool:Size()
     return #self.items
 end
+function Pool:Take()
+    local free = self.free
+    local it = free and free[#free]
+    if it then
+        free[#free] = nil
+        self.idle[it] = nil
+    else
+        it = self.factory(self)
+        self.items[#self.items + 1] = it
+    end
+    if self.reset then self.reset(it, self) end
+    it:Show()
+    return it
+end
+function Pool:Release(it)
+    self.idle = self.idle or {}
+    if self.idle[it] then return end
+    self.idle[it] = true
+    self.free = self.free or {}
+    self.free[#self.free + 1] = it
+    it:Hide()
+end

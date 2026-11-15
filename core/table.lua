@@ -146,7 +146,13 @@ end
 function T.Host(game, opts, kinds)
     if role == "guest" then T.Leave() end
     releaseAt = nil
+    if role == "host" and room and room.game ~= game then T.Close() end
     if role == "host" and room and room.game == game then
+        if room.playing then
+            room.playing = false
+            room.gone = {}
+            dropHosted()
+        end
         room.opts = opts or {}
         for p = 1, #kinds do
             if kinds[p] ~= "o" and room.names[p] then dropPlayer(p, "kick") end
@@ -170,6 +176,11 @@ function T.Regather(game)
     if type(h) ~= "table" or h.game ~= game or type(h.kinds) ~= "table" or time() - (h.at or 0) > BACK_TTL then
         return false
     end
+    if role == "host" and room and room.mid == h.mid then
+        releaseAt = nil
+        return true
+    end
+    if role == "host" then T.Close() end
     if role == "guest" then T.Leave() end
     releaseAt = nil
     role = "host"
@@ -355,6 +366,14 @@ ns.Link.On("TJ", function(from, aMid, aVer)
         local back
         for q, who in pairs(room.gone) do
             if same(who, from) and room.kinds[q] == "o" and not room.names[q] then back = q end
+        end
+        local sat = seatOf(from)
+        if sat then
+            room.cls[sat] = ns.Link.PeerClass(from)
+            sendLineup()
+            hook("back", sat, from)
+            tell()
+            return
         end
         if not back then ns.Link.Send(from, "TN", mid, "busy") return end
         room.gone[back] = nil

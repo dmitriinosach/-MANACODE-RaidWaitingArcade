@@ -139,7 +139,7 @@ function ns.Duo.OfferDraw()
     say(ns.T("duoDrawSent"))
 end
 function ns.Duo.GoSolo()
-    if stage ~= "held" then return end
+    if stage ~= "held" or starting then return end
     local id = gameId
     if peer and mid then ns.Link.Send(peer, "END", mid, "drop") end
     reset()

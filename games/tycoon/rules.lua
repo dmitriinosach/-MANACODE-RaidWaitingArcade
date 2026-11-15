@@ -523,7 +523,7 @@ end
 local function afterMove(S)
     local s = S.turn
     if S.again and S.jail[s] == 0 then
-        S.phase, S.rolled, S.again = "pre", false, false
+        S.phase, S.rolled, S.again, S.flow = "pre", false, false, "pre"
     else
         S.phase = "post"
     end
@@ -948,11 +948,13 @@ function R.View(S, left)
         left = left and floor(min(left, 124) / 2) * 2 or 63, n = S.n, seats = {}, own = {}, lv = {}, mort = {},
         ev = { k = S.ev.k, s = S.ev.s, c = S.ev.c, v = S.ev.v }, over = S.over, buyAt = S.buyAt,
     }
+    local order = {}
+    for i, s in ipairs(S.out) do order[s] = i end
     for q = 1, S.n do
         local f = S.free[q]
         v.seats[q] = {
             pos = S.pos[q], cash = S.cash[q], jail = S.jail[q], free = f, token = S.token[q],
-            out = R.Place(S, q) or 0, alive = S.alive[q],
+            out = order[q] or 0, alive = S.alive[q],
         }
     end
     for _, c in ipairs(PROPS) do
